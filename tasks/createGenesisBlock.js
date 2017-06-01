@@ -223,7 +223,7 @@ var transactions = [];
 
 var genesis = {
   passphrase: bip39.generateMnemonic(),
-  balance: 12500000000000000
+  balance: 2500000000000000 //25 million tokens
 }
 
 var premine = {
@@ -247,7 +247,7 @@ premineTx.id = arkjs.crypto.getId(premineTx);
 
 transactions.push(premineTx);
 
-for(var i=1; i<52; i++){
+for(var i=1; i<76; i++){ //75 delegates
   var delegate = {
     'passphrase': bip39.generateMnemonic(),
     'username': "genesis_"+i
@@ -287,7 +287,7 @@ var genesisBlock = create({
   timestamp:0
 });
 
-for(var i=0;i<51;i++){
+for(var i=0;i<75;i++){ //75 delegates
 	config.forging.secret.push(delegates[i].passphrase);
 }
 

@@ -1,8 +1,8 @@
 'use strict';
 
 module.exports = {
-	activeDelegates: 51,
-	maximumVotes: 1,
+	activeDelegates: 75, //changed from 51 to 75
+	maximumVotes: 75,
 	addressLength: 208,
 	blockHeaderLength: 248,
 	confirmationLength: 77,
@@ -26,7 +26,7 @@ module.exports = {
 	maxRequests: 10000 * 12,
 	maxSignaturesLength: 196 * 256,
 	maxTxsPerBlock: 50,
-	blocktime: 8,
+	blocktime: 15, //changed from 8 to 15
 	numberLength: 100000000,
 	requestLength: 104,
 	rewards: {
@@ -37,10 +37,10 @@ module.exports = {
 			200000000, // Milestone 3
 			200000000  // Milestone 4
 		],
-		offset: 75600,   // Start rewards at block, ie 7 days after net start
+		offset: 1,   // Start rewards at block, ie 7 days after net start
 		distance: 3000000, // Distance between each milestone
 	},
 	signatureLength: 196,
-	totalAmount: 12500000000000000,
+	totalAmount: 2500000000000000, // changed from 12500000000000000 to 2500000000000000
 	unconfirmedTransactionTimeOut: 10800 // 1080 blocks
 };

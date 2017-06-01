@@ -1,0 +1,160 @@
+{
+  "port": 4000,
+  "address": "10.0.0.220",
+  "version": "0.3.0",
+  "fileLogLevel": "info",
+  "logFileName": "logs/ark.log",
+  "consoleLogLevel": "debug",
+  "trustProxy": false,
+  "db": {
+    "host": "localhost",
+    "port": 5432,
+    "database": "bpl_devnet",
+    "user": "marilyn",
+    "password": "test",
+    "poolSize": 20,
+    "poolIdleTimeout": 30000,
+    "reapIntervalMillis": 1000,
+    "logEvents": [
+      "error"
+    ]
+  },
+  "api": {
+    "mount": true,
+    "access": {
+      "whiteList": []
+    },
+    "options": {
+      "limits": {
+        "max": 0,
+        "delayMs": 0,
+        "delayAfter": 0,
+        "windowMs": 60000
+      }
+    }
+  },
+  "peers": {
+    "minimumNetworkReach": 1,
+    "list": [
+      {
+        "ip": "10.0.0.220",
+        "port": 4000
+      },
+      {
+        "ip": "10.0.0.175",
+        "port": 4000
+      }
+    ],
+    "blackList": [],
+    "options": {
+      "limits": {
+        "max": 0,
+        "delayMs": 0,
+        "delayAfter": 0,
+        "windowMs": 60000
+      },
+      "maxUpdatePeers": 20,
+      "timeout": 5000
+    }
+  },
+  "forging": {
+    "coldstart": 6,
+    "force": true,
+    "secret": [
+      "predict office type glimpse vessel urge exotic gain fence salute onion stick",
+      "hope answer sister surface subject spare spike angle shove number roof rotate",
+      "observe lawsuit patrol puzzle physical warfare typical transfer broken word entry brass",
+      "improve way purse suit success venture awkward stereo salon impact olympic invest",
+      "focus scrap swim together season bounce elite waste around point art flip",
+      "allow cricket empty sunset adapt manage regular cherry harsh gravity home sister",
+      "use cloud angry shop audit hazard carbon iron twin hire shell pony",
+      "glare juice busy sense aisle unfair silver insect despair magnet better level",
+      "better half wear monitor deer drink cave outside broken meat extend leave",
+      "car foot fiction miracle awake slogan device love timber about noodle nose",
+      "erosion language trap slight number tower forget husband manage beyond tiger pen",
+      "artwork nice reveal state lounge vacuum mean breeze window balance today net",
+      "unaware fish middle spring scheme cruise tuition loyal they tree floor apple",
+      "achieve earth frozen mushroom flat describe potato split social bring scout south",
+      "tilt review grape crush label absorb stick boy tackle knock shallow oven",
+      "lake bottom bench draw carry soon view laugh dirt tuna lottery find",
+      "disorder fish ozone conduct food ride mesh mesh only muscle miracle forget",
+      "stone jelly clip fork useful reopen owner olympic useless fabric ride easily",
+      "among rent illness salad anchor also merry host cloth defense input resource",
+      "flower guess explain huge van fit insect town require nerve cherry nut",
+      "enhance catch woman ride useful defense once vocal chunk lawn pair wedding",
+      "provide home tilt potato layer render chalk alarm eager bullet rookie glide",
+      "educate ugly sniff gun recipe please measure plunge blue total border reduce",
+      "vintage monster mammal funny brown resist gossip vacuum casino sudden guide join",
+      "measure fringe viable core melody pen bunker ostrich news legend tortoise table",
+      "soda trust wheel dust wash hover hungry enable elbow decide dinosaur kid",
+      "sight tent state liquid carpet good supreme increase fan tomorrow together leisure",
+      "patrol chimney minimum normal away pattern mango isolate load invest amount upper",
+      "roof chat seek dad intact churn gravity below language immense deer claim",
+      "fog holiday system install mimic fragile bridge noodle royal april wood rude",
+      "lion holiday kit slogan initial cage box unique frequent dutch silver escape",
+      "six expect express initial genre rocket effort wrap elegant thank path fitness",
+      "plastic alien crumble correct autumn van walnut lock debris broom athlete demise",
+      "leaf card dial asset proof afraid alley mercy observe seed reason away",
+      "whale ginger face inmate issue ask fatigue zone insane sugar volcano party",
+      "truck trade student adapt pipe useless slam coin reopen usage waste all",
+      "figure enjoy grocery chat draw maid banana pulse staff planet grief hobby",
+      "hero roast bench exhaust pool relax hurt drink cigar use please innocent",
+      "unknown hello coast behind mask speak scatter lunar belt develop receive chuckle",
+      "lawsuit reform chef angry rate clown eye lucky onion mass fossil unique",
+      "fit maid recall drip dinosaur lazy awake crack unable gravity swamp warm",
+      "family boil like coral plunge message sketch short short fiscal glimpse license",
+      "rent column myself pioneer suffer clarify sustain faint pepper strong tell middle",
+      "various rebel rack busy busy convince brain color shallow tobacco voyage equip",
+      "turn delay jump wrong neck gloom dash grit maximum conduct deer cycle",
+      "master december portion kitchen analyst panther color ladder artefact popular oven grape",
+      "device disagree turkey magic pair jewel visual maple often ball nasty pond",
+      "uncle twin orchard axis ketchup naive layer rice zone peace genre already",
+      "educate absent vivid electric rib brass series sea dilemma bring rice song",
+      "february romance jeans social cupboard never voyage chief hire night dentist horror",
+      "mixture key artist manual gadget canoe blame bring little fever feature input",
+      "powder curtain eight crucial shove pigeon axis fly legal nerve crater vehicle",
+      "ecology page mesh swamp celery gasp race smooth clean box gift harbor",
+      "skill kit friend trouble educate muffin egg approve knife bread add cause",
+      "whisper response oblige coach grant lawsuit daughter around addict child erode lunch",
+      "cram birth black saddle corn canoe course bacon upon view portion squeeze",
+      "similar ten unfair organ knock siren music better tree glare make skate",
+      "company fiction large brave august enjoy hope person glance behind athlete obey",
+      "crawl income caution rebel hen lunar rent subway flip program cruel blood",
+      "oblige kangaroo chapter oval second elevator cluster earn obey vehicle girl eye",
+      "crawl scatter detail sorry useless knee arch dry festival position clock rely",
+      "orange much undo bench legend any alcohol ball artist mule insect stage",
+      "jelly scatter merry escape fade shaft antique helmet pistol dragon noodle token",
+      "table demand tube couple civil easy daring cousin unaware bounce boy finish",
+      "print excess slice raise kiwi trap inspire exclude diagram never loan layer",
+      "element satisfy path jungle cup finger naive ensure mule trick actress service",
+      "outside naive kiss give cart slot subway tenant hand call congress movie",
+      "joke flash cave ensure face point merge prepare glory maid chase always",
+      "odor gospel fatal weasel kick helmet place neglect inch guess quote success",
+      "buddy lunar frog gesture mean attack satisfy skate bomb build fetch embark",
+      "trigger miracle bike shock fragile woman buffalo express rubber patch aunt vapor",
+      "engine outer field daughter crime egg chair feed corn whisper burst odor",
+      "entry electric pyramid country people long silly few nothing dizzy pill leader",
+      "language pelican narrow drastic place just february destroy just recall salmon adjust",
+      "zone business please cat lake pact wrong tumble prison spirit extend barrel"
+    ],
+    "access": {
+      "whiteList": [
+        "127.0.0.1"
+      ]
+    }
+  },
+  "loading": {
+    "verifyOnLoading": false,
+    "loadPerIteration": 5000
+  },
+  "ssl": {
+    "enabled": false,
+    "options": {
+      "port": 443,
+      "address": "0.0.0.0",
+      "key": "./ssl/ark.key",
+      "cert": "./ssl/ark.crt"
+    }
+  },
+  "nethash": "7b51536f87b63f700bad3dd4458c0704f2e46ee97c9fc2ac798fc95660b623ac"
+}
