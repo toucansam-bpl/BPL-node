@@ -19,7 +19,7 @@ var multiSigTx = {
 	txId: ''
 };
 
-function sendArk (account, i, done) {
+function sendBpl (account, i, done) {
 	var randomArk = node.randomArk();
 
 	node.put('/api/transactions/', {
