@@ -60,7 +60,7 @@ function postVote (transaction, done) {
 	});
 }
 
-function sendArk (params, done) {
+function sendBpl (params, done) {
 	node.put('/api/transactions', params, function (err, res) {
 		node.expect(res.body).to.have.property('success').to.be.ok;
 		node.onNewBlock(function (err) {
@@ -84,7 +84,7 @@ function registerDelegate (account, done) {
 describe('POST /peer/transactions', function () {
 
 	before(function (done) {
-		sendArk({
+		sendBpl({
 			secret: node.gAccount.password,
 			amount: 100000000000,
 			recipientId: account.address
