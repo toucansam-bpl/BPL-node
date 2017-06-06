@@ -7,7 +7,9 @@ var bip39 = require('bip39');
 var ByteBuffer = require('bytebuffer');
 var bignum = require('../helpers/bignum.js');
 var ed = require('../helpers/ed.js');
+var networks = require('../networks.json');
 
+//temporarily pre-configured: database, user, password
 var config = {
     "port": 4000,
     "address": "127.0.0.1",
@@ -19,9 +21,9 @@ var config = {
     "db": {
         "host": "localhost",
         "port": 5432,
-        "database": "ark_testnet",
-        "user": null,
-        "password": "password",
+        "database": "bpl_devnet",
+        "user": "ubuntu",
+        "password": "blockpool123",
         "poolSize": 20,
         "poolIdleTimeout": 30000,
         "reapIntervalMillis": 1000,
@@ -44,7 +46,7 @@ var config = {
         }
     },
     "peers": {
-        "minimumNetworkReach":20,
+        "minimumNetworkReach":1,
         "list": [{"ip":"127.0.0.1", "port":4000}],
         "blackList": [],
         "options": {
@@ -80,7 +82,8 @@ var config = {
             "key": "./ssl/ark.key",
             "cert": "./ssl/ark.crt"
         }
-    }
+    },
+    "network":"demo"
 };
 
 sign = function (block, keypair) {
@@ -231,10 +234,10 @@ var premine = {
 }
 
 premine.publicKey = arkjs.crypto.getKeys(premine.passphrase).publicKey;
-premine.address = arkjs.crypto.getAddress(premine.publicKey);
+premine.address = arkjs.crypto.getAddress(premine.publicKey, networks[config.network].pubKeyHash);
 
 genesis.publicKey = arkjs.crypto.getKeys(genesis.passphrase).publicKey;
-genesis.address = arkjs.crypto.getAddress(genesis.publicKey);
+genesis.address = arkjs.crypto.getAddress(genesis.publicKey, networks[config.network].pubKeyHash);
 genesis.wif = arkjs.crypto.getKeys(genesis.passphrase).toWIF();
 
 var premineTx = arkjs.transaction.createTransaction(genesis.address,genesis.balance,null, premine.passphrase)
@@ -247,7 +250,7 @@ premineTx.id = arkjs.crypto.getId(premineTx);
 
 transactions.push(premineTx);
 
-for(var i=1; i<76; i++){ //75 delegates
+for(var i=1; i<136; i++){ //135 delegates
   var delegate = {
     'passphrase': bip39.generateMnemonic(),
     'username': "genesis_"+i
@@ -262,7 +265,7 @@ for(var i=1; i<76; i++){ //75 delegates
 
 
   delegate.publicKey = createDelegateTx.senderPublicKey;
-  delegate.address = arkjs.crypto.getAddress(createDelegateTx.senderPublicKey);
+  delegate.address = arkjs.crypto.getAddress(createDelegateTx.senderPublicKey, networks[config.network].pubKeyHash);
 
   votes.push("+"+delegate.publicKey)
   transactions.push(createDelegateTx);
@@ -287,7 +290,7 @@ var genesisBlock = create({
   timestamp:0
 });
 
-for(var i=0;i<75;i++){ //75 delegates
+for(var i=0;i<135;i++){ //135 delegates
 	config.forging.secret.push(delegates[i].passphrase);
 }
 
