@@ -9,6 +9,9 @@ var bignum = require('../helpers/bignum.js');
 var ed = require('../helpers/ed.js');
 var networks = require('../networks.json');
 
+var network_name = 'demo';
+arkjs.crypto.setNetworkVersion(networks[network_name].pubKeyHash);//setting the network version inside node_modules/arkjs/lib/transactions/crypto.js
+
 //temporarily pre-configured: database, user, password
 var config = {
     "port": 4000,
