@@ -30,7 +30,7 @@ __private.getAddressByPublicKey = function (publicKey, network) {
 //__API__ `create`
 
 //
-Block.prototype.create = function (data) {
+Block.prototype.create = function (data, cb) {
 
 	var transactions = data.transactions.sort(function compare(a, b) {
 		if (a.type < b.type) { return -1; }
@@ -66,25 +66,32 @@ Block.prototype.create = function (data) {
 		payloadHash.update(bytes);
 	}
 
-	var block = {
-		version: 0,
-		height: nextHeight,
-		totalAmount: totalAmount,
-		totalFee: totalFee,
-		reward: reward,
-		payloadHash: payloadHash.digest().toString('hex'),
-		timestamp: data.timestamp,
-		numberOfTransactions: blockTransactions.length,
-		payloadLength: size,
-		previousBlock: data.previousBlock.id,
-		generatorPublicKey: data.keypair.publicKey.toString('hex'),
-		transactions: blockTransactions
-	};
-	block.blockSignature = this.sign(block, data.keypair);
-	block = this.objectNormalize(block);
-	block.id = this.getId(block);
-
-	return block;
+		var self = this;
+	__private.blockReward.customCalcReward(this.scope, data.keypair.publicKey, nextHeight, function(error, reward) {
+			if(error) {
+				return cb(error);
+			} else {
+				reward = parseInt(reward);
+				var block = {
+					version: 0,
+					height: nextHeight,
+					totalAmount: totalAmount,
+					totalFee: totalFee,
+					reward: reward,
+					payloadHash: payloadHash.digest().toString('hex'),
+					timestamp: data.timestamp,
+					numberOfTransactions: blockTransactions.length,
+					payloadLength: size,
+					previousBlock: data.previousBlock.id,
+					generatorPublicKey: data.keypair.publicKey.toString('hex'),
+					transactions: blockTransactions
+				};
+				block.blockSignature = self.sign(block, data.keypair);
+				block = self.objectNormalize(block);
+				block.id = self.getId(block);
+				return cb(null, block);
+			}
+	});
 };
 
 //

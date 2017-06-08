@@ -901,11 +901,14 @@ Blocks.prototype.verifyBlockHeader = function (block) {
 		result.errors.push("No block id");
 	}
 
-	var expectedReward = __private.blockReward.calcReward(block.height);
-
-	if (block.height !== 1 && expectedReward !== block.reward) {
-		result.errors.push(['Invalid block reward:', block.reward, 'expected:', expectedReward].join(' '));
-	}
+ 	__private.blockReward.customCalcReward(library, block.generatorPublicKey, block.height, function(error, reward){
+		if(!error){
+			var expectedReward = reward;
+			if (block.height !== 1 && expectedReward !== block.reward) {
+				result.errors.push(['Invalid block reward:', block.reward, 'expected:', expectedReward].join(' '));
+			}
+		}
+	});
 
 	var lastBlock = modules.blockchain.getLastBlock();
 
@@ -984,11 +987,14 @@ Blocks.prototype.verifyBlock = function (block, checkPreviousBlock) {
 		}
 	}
 
-	var expectedReward = __private.blockReward.calcReward(block.height);
-
-	if (block.height !== 1 && expectedReward !== block.reward) {
-		result.errors.push(['Invalid block reward:', block.reward, 'expected:', expectedReward].join(' '));
-	}
+	__private.blockReward.customCalcReward(library, block.generatorPublicKey, block.height, function(error, reward){
+		if(!error){
+			var expectedReward = reward;
+			if (block.height !== 1 && expectedReward !== block.reward) {
+				result.errors.push(['Invalid block reward:', block.reward, 'expected:', expectedReward].join(' '));
+			}
+		}
+	});
 
 	var valid;
 
@@ -1478,12 +1484,10 @@ Blocks.prototype.deleteBlocksBefore = function (block, cb) {
 
 //
 Blocks.prototype.generateBlock = function (keypair, timestamp, cb) {
-
 	var transactions = modules.transactionPool.getUnconfirmedTransactionList(false, constants.maxTxsPerBlock);
 	var ready = [];
 
 	async.eachSeries(transactions, function (transaction, cb) {
-
 		if(!transaction){
 			library.logger.debug('no tx!!!');
 			return cb();
@@ -1512,29 +1516,30 @@ Blocks.prototype.generateBlock = function (keypair, timestamp, cb) {
 			});
 		});
 	}, function () {
-		var block;
 		var lastBlock = modules.blockchain.getLastBlock();
 
 		// ok sometimes it takes time to get there so timestamp
 		// could have been calculated BEFORE the lastBlock received.
 		// imagine the disaster...
-		if(timestamp <= lastBlock.timestamp){
+		if(timestamp <= lastBlock.timestamp) {
 			return cb("New block received while forging. Forging canceled");
 		}
 
 		try {
-			block = library.logic.block.create({
+			library.logic.block.create({
 				keypair: keypair,
 				timestamp: timestamp,
 				previousBlock: lastBlock,
 				transactions: ready
+			}, function (error, block) {
+				return cb(error, block);
 			});
 		} catch (e) {
 			library.logger.error("stack", e.stack);
 			return cb(e);
 		}
 
-		return cb(null, block);
+		// return cb(null, block);
 	});
 };
 
