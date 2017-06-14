@@ -152,6 +152,8 @@ BlockReward.prototype.customCalcReward = function (scope, dependentId, height, c
 												//sum up balance of all voters
 												votersTotalBalance = votersTotalBalance + (voter[0].balance/votes[0].count);
 											} catch (e) {
+												scope.logger.error(e);
+												return cb(e);
 											}
 										}
 										if(i === (accountIds.length - 1)) {
@@ -160,15 +162,21 @@ BlockReward.prototype.customCalcReward = function (scope, dependentId, height, c
 											return cb(null, rewardAmount);
 										}
 									}).catch(function (err) {
+										scope.logger.error(err);
 										return cb(err);
 									});
 						}).catch(function (err) {
+							scope.logger.error(err);
 							return cb(err);
 						});
 
 					}
 				}
+				else {
+					scope.logger.info('Couldn\'t find any voters for delegate: ',dependentId);
+				}
 		}).catch(function (err) {
+			scope.logger.error(err);
 			return cb(err);
 		});
 	}

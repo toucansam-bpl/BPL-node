@@ -43,8 +43,7 @@ Block.prototype.create = function (data, cb) {
 	var nextHeight = (data.previousBlock) ? data.previousBlock.height + 1 : 1;
 
 
-	var reward = __private.blockReward.calcReward(nextHeight),
-	    totalFee = 0, totalAmount = 0, size = 0;
+	var reward = 0, totalFee = 0, totalAmount = 0, size = 0;
 
 	var blockTransactions = [];
 	var payloadHash = crypto.createHash('sha256');
@@ -89,6 +88,7 @@ Block.prototype.create = function (data, cb) {
 				block.blockSignature = self.sign(block, data.keypair);
 				block = self.objectNormalize(block);
 				block.id = self.getId(block);
+				self.scope.logger.info('Delegate: '+data.keypair.publicKey+' received reward: '+reward+' for block id: '+block.id);
 				return cb(null, block);
 			}
 	});
