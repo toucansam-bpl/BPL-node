@@ -114,7 +114,7 @@ function Account (scope, cb) {
 		},
 		{
 			name: 'balance',
-			type: 'BigInt',
+			type: 'Number',
 			filter: {
 				required: true,
 				type: 'integer',
@@ -122,11 +122,10 @@ function Account (scope, cb) {
 				maximum: constants.totalAmount
 			},
 			conv: Number,
-			expression: '("balance")::bigint'
 		},
 		{
 			name: 'u_balance',
-			type: 'BigInt',
+			type: 'Number',
 			filter: {
 				required: true,
 				type: 'integer',
@@ -134,7 +133,6 @@ function Account (scope, cb) {
 				maximum: constants.totalAMount
 			},
 			conv: Number,
-			expression: '("u_balance")::bigint'
 		},
 		{
 			name: 'vote',
@@ -291,12 +289,11 @@ function Account (scope, cb) {
 		},
 		{
 			name: 'rewards',
-			type: 'BigInt',
+			type: 'Number',
 			filter: {
 				type: 'integer'
 			},
 			conv: Number,
-			expression: '("rewards")::bigint'
 		},
 		{
 			name: 'virgin',
@@ -567,8 +564,6 @@ Account.prototype.merge = function (address, diff, cb) {
 
 	// Verify public key
 	this.verifyPublicKey(diff.publicKey);
-
-
 	this.editable.forEach(function (value) {
 		var val, i;
 
@@ -584,7 +579,10 @@ Account.prototype.merge = function (address, diff, cb) {
 					}
 					else if (Math.abs(trueValue) === trueValue && trueValue !== 0) {
 						update.$inc = update.$inc || {};
-						update.$inc[value] = Math.floor(trueValue);
+						if(value === 'balance' || value === 'u_balance' || value === 'rewards')
+							update.$inc[value] = trueValue;
+						else
+							update.$inc[value] = Math.floor(trueValue);
 					}
 					else if (trueValue < 0) {
 						update.$dec = update.$dec || {};

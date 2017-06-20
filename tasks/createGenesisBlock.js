@@ -763,7 +763,7 @@ var config = {
             "cert": "./ssl/ark.crt"
         }
     },
-    "network":"BPL"
+    "network":"BPL-devnet"
 };
 
 //sets the networkVersion
@@ -905,7 +905,6 @@ create = function (data) {
 }
 
 var delegates = [];
-var votes = [];
 var transactions = [];
 
 var genesis = {
@@ -951,21 +950,10 @@ for(var i=1; i<136; i++){ //135 delegates
   delegate.publicKey = createDelegateTx.senderPublicKey;
   delegate.address = arkjs.crypto.getAddress(createDelegateTx.senderPublicKey, networks[config.network].pubKeyHash);
 
-  votes.push("+"+delegate.publicKey)
   transactions.push(createDelegateTx);
 
   delegates.push(delegate);
 }
-
-
-var voteTransaction = arkjs.vote.createVote(genesis.passphrase,votes);
-voteTransaction.fee = 0;
-voteTransaction.timestamp = 0;
-voteTransaction.senderId = genesis.address;
-voteTransaction.signature = arkjs.crypto.sign(voteTransaction,arkjs.crypto.getKeys(genesis.passphrase));
-voteTransaction.id = arkjs.crypto.getId(voteTransaction);
-
-transactions.push(voteTransaction);
 
 
 var genesisBlock = create({
@@ -992,16 +980,13 @@ Generates the different config file for all peers that we have added in seed_pee
 */
 seed_peers.forEach(function(peer){
   config.forging.secret = peer.secret;
-  
+  config.nethash = genesisBlock.payloadHash;//set the nethash in config file
   //to customize the address and peers list field in config.json file , we have included the below piece of code
   config.address = peer.aws; // setting up Public DNS(IPv4) of AWS in the generated config file, to avoid manually entering the same.
   config.peers.list.pop();
   config.peers.list.push({ "ip": peer.ip, "port":config.port});
   fs.writeFile("private/config_files/config."+config.network+"."+peer.ip+".json", JSON.stringify(config, null, 2));
   });
-
-
-config.nethash = genesisBlock.payloadHash;
 
 
 fs.writeFile("private/genesisBlock.private.json",JSON.stringify(genesisBlock, null, 2));
