@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS "blocks"(
   "numberOfTransactions" INT NOT NULL,
   "totalAmount" BIGINT NOT NULL,
   "totalFee" BIGINT NOT NULL,
-  "reward" BIGINT NOT NULL,
+  "reward" NUMERIC(30,10) NOT NULL,
   "payloadLength" INT NOT NULL,
   "payloadHash" bytea NOT NULL,
   "generatorPublicKey" bytea NOT NULL,

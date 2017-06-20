@@ -68,9 +68,9 @@ Block.prototype.create = function (data, cb) {
 		var self = this;
 	__private.blockReward.customCalcReward(this.scope, data.keypair.publicKey, nextHeight, function(error, reward) {
 			if(error) {
+				self.scope.logger.error(error);
 				return cb(error);
 			} else {
-				reward = parseInt(reward);
 				var block = {
 					version: 0,
 					height: nextHeight,
@@ -292,7 +292,7 @@ Block.prototype.schema = {
 			minimum: 0
 		},
 		reward: {
-			type: 'integer',
+			type: 'number',
 			minimum: 0
 		},
 		transactions: {
@@ -390,7 +390,7 @@ Block.prototype.dbRead = function (raw) {
 			numberOfTransactions: parseInt(raw.b_numberOfTransactions),
 			totalAmount: parseInt(raw.b_totalAmount),
 			totalFee: parseInt(raw.b_totalFee),
-			reward: parseInt(raw.b_reward),
+			reward: parseFloat(raw.b_reward).toFixed(10),
 			payloadLength: parseInt(raw.b_payloadLength),
 			payloadHash: raw.b_payloadHash,
 			generatorPublicKey: raw.b_generatorPublicKey,
