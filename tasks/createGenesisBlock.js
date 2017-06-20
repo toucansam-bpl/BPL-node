@@ -763,7 +763,7 @@ var config = {
             "cert": "./ssl/ark.crt"
         }
     },
-    "network":"BPL"
+    "network":"BPL-devnet"
 };
 
 //sets the networkVersion
@@ -905,7 +905,6 @@ create = function (data) {
 }
 
 var delegates = [];
-var votes = [];
 var transactions = [];
 
 var genesis = {
@@ -951,21 +950,10 @@ for(var i=1; i<136; i++){ //135 delegates
   delegate.publicKey = createDelegateTx.senderPublicKey;
   delegate.address = arkjs.crypto.getAddress(createDelegateTx.senderPublicKey, networks[config.network].pubKeyHash);
 
-  votes.push("+"+delegate.publicKey)
   transactions.push(createDelegateTx);
 
   delegates.push(delegate);
 }
-
-
-var voteTransaction = arkjs.vote.createVote(genesis.passphrase,votes);
-voteTransaction.fee = 0;
-voteTransaction.timestamp = 0;
-voteTransaction.senderId = genesis.address;
-voteTransaction.signature = arkjs.crypto.sign(voteTransaction,arkjs.crypto.getKeys(genesis.passphrase));
-voteTransaction.id = arkjs.crypto.getId(voteTransaction);
-
-transactions.push(voteTransaction);
 
 
 var genesisBlock = create({
