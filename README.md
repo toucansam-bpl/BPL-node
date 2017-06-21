@@ -1,19 +1,19 @@
-# Ark
+# BlockPool
 
-Ark is a next generation crypto-currency and decentralized application platform, written entirely in JavaScript. For more information please refer to our website: https://ark.io/.
+BlockPool is a next generation crypto-currency and decentralized application platform, written entirely in JavaScript. For more information please refer to our website: https://blockpool.io.
 
-The Token Exchange Campaign is up at https://tec.ark.io
+The Token Exchange Campaign is up at https://blockpool.io
 
 This version is still alpha, use at your own risks
 
 ## Install, Upgrade etc...
 You need to provision a linux (ubuntu tested) server (digital ocean, vultur or other).
 
-Then use the excellent ark-commander script
+Then use the bpl-commander script
 ```
 cd
-wget https://ark.io/ARKcommander.sh
-bash ARKcommander.sh
+wget https://blockpool.io/BPLcommander.sh
+bash BPLcommander.sh
 ```
 
 For developers, please read below in section "Developer Installation"
@@ -21,7 +21,7 @@ For developers, please read below in section "Developer Installation"
 ## Details
 
 This is a fork from Lisk with the following features:
-- Removed sidechains (deprecated in favor of smartbridge)
+- Removed sidechains (deprecated in favor of our BIT API)
 - Removed custom node version
 - Removed UI for stability and security reasons
 - Changed some constants (block rewards, blocktime etc...)
@@ -37,7 +37,6 @@ This is a fork from Lisk with the following features:
 
 ### Planned features:
 - Simple blockchain validation for SPV and use in lite clients
-- Add IPFS as first class citizen (using smartbridge addressing)
 - Protocol improvements (uncle forging, voting weights).
 - Remove unsecured API
 - Routing tables
@@ -61,7 +60,7 @@ Install PostgreSQL (min version: 9.5.2)
 ```
 sudo apt-get install -y postgresql postgresql-contrib
 sudo -u postgres createuser --createdb --password $USER
-createdb ark_test
+createdb bpl_test
 ```
 
 Install Node.js (tested with version 6.9.2, but any recent LTS release should do):
@@ -80,8 +79,8 @@ sudo npm install grunt-cli -g
 
 Clone this repository
 ```
-git clone https://github.com/arkecosystem/ark-node.git
-cd ark-node
+git clone https://github.com/blockpool-io/BPL-node.git
+cd BPL-node
 ```
 
 Install node modules:
@@ -91,19 +90,19 @@ npm install
 ```
 
 ## Launch
-To launch Ark on testnet:
+To launch BPL on testnet:
 ```
-createdb ark_testnet
+createdb BPL_testnet
 node run start:testnet
 ```
 
-To launch Ark on devtnet:
+To launch BPL on devtnet:
 ```
-createdb ark_devnet
+createdb BPL_devnet
 node run start:devnet
 ```
 
-To launch Ark on mainnet (when launched):
+To launch BPL on mainnet (when launched):
 ```
 createdb ark_mainnet
 node run start:mainnet
@@ -131,7 +130,7 @@ Obviously you can hack away tasks/createGenesisBlock.js for your own custom use.
 
 You can the start with your own chain on a single node (all delegates will forge on your single node) using:
 ```
-createdb ark_newtest
+createdb BPL_newtest
 npm run start:newtest
 ```
 
@@ -139,7 +138,7 @@ Then you can distribute the config.json (without the delegates secrets inside, a
 
 
 ## Tests
-Load git submodule [ark-js](https://github.com/arkecosystem/ark-js):
+Load git submodule [BPL-js](https://github.comblockpool-io/BPL-js):
 ```
 git submodule init
 git submodule update
@@ -172,6 +171,8 @@ peace vanish bleak box tuna woman rally manage undo royal lucky since
 
 
 ## Authors
+- Rajveer Singh <cyrus19901@gmail.com>
+- Brandon Cook <bcook@blockpoolio>
 - FX Thoorens <fx.thoorens@ark.io>
 - Boris Povod <boris@crypti.me>
 - Pavel Nekrasov <landgraf.paul@gmail.com>
