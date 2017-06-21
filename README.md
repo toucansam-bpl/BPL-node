@@ -183,6 +183,7 @@ peace vanish bleak box tuna woman rally manage undo royal lucky since
 
 The MIT License (MIT)
 
+Copyright (c) 2016 BlockPool
 Copyright (c) 2016 Ark
 Copyright (c) 2016 Lisk
 Copyright (c) 2014-2015 Crypti
