@@ -9,13 +9,6 @@ This version is still alpha, use at your own risks
 ## Install, Upgrade etc...
 You need to provision a linux (ubuntu tested) server (digital ocean, vultur or other).
 
-Then use the bpl-commander script
-```
-cd
-wget https://blockpool.io/BPLcommander.sh
-bash BPLcommander.sh
-```
-
 For developers, please read below in section "Developer Installation"
 
 ## Details
@@ -138,7 +131,7 @@ Then you can distribute the config.json (without the delegates secrets inside, a
 
 
 ## Tests
-Load git submodule [BPL-js](https://github.comblockpool-io/BPL-js):
+Load git submodule [BPL-js](https://github.com/blockpool-io/BPL-js):
 ```
 git submodule init
 git submodule update
