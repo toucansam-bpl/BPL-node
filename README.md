@@ -2,7 +2,7 @@
 
 BlockPool is a next generation crypto-currency and decentralized application platform, written entirely in JavaScript. For more information please refer to our website: https://blockpool.io.
 
-The Token Exchange Campaign is up at https://blockpool.io
+The Token Exchange Campaign is up at https://blockpool.io/tec.html
 
 This version is still alpha, use at your own risks
 
