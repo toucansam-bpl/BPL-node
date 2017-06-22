@@ -171,7 +171,7 @@ peace vanish bleak box tuna woman rally manage undo royal lucky since
 
 
 ## Authors
-- Rajveer Singh <cyrus19901@gmail.com>
+- Raj Singh <cyrus19901@gmail.com>
 - Brandon Cook <bcook@blockpoolio>
 - FX Thoorens <fx.thoorens@ark.io>
 - Boris Povod <boris@crypti.me>
