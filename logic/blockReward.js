@@ -136,7 +136,7 @@ BlockReward.prototype.customCalcReward = function (dependentId, height, cb) {
 				}
 				else {
 					library.logger.info('Couldn\'t find any voters for delegate: ',dependentId);
-					return cb(null, rewardAmount);
+					return cb(null, rewardAmount.toString());
 				}
 		}).catch(function (err) {
 			library.logger.error(err);
@@ -149,7 +149,7 @@ BlockReward.prototype.customCalcReward = function (dependentId, height, cb) {
 		return cb(null, fixedReward.toString());
 	}
 	else {
-		return cb(null, rewardAmount);
+		return cb(null, rewardAmount.toString());
 	}
 };
 
