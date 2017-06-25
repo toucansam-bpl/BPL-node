@@ -14,6 +14,7 @@ var schema = require('../schema/delegates.js');
 var slots = require('../helpers/slots.js');
 var sql = require('../sql/delegates.js');
 var transactionTypes = require('../helpers/transactionTypes.js');
+var bigdecimal = require("bigdecimal");
 
 // Private fields
 var modules, library, self, __private = {}, shared = {};
@@ -513,34 +514,42 @@ Delegates.prototype.getDelegates = function (query, cb) {
 		var length = Math.min(limit, count);
 		var realLimit = Math.min(offset + limit, count);
 
-		var lastBlock   = modules.blockchain.getLastBlock(),
-		    totalSupply = __private.blockReward.calcSupply(lastBlock.height);
+		var lastBlock   = modules.blockchain.getLastBlock();
+		var totalSupply = 0;
 
-		for (var i = 0; i < delegates.length; i++) {
-			delegates[i].rate = i + 1;
-			delegates[i].approval = (delegates[i].vote / totalSupply) * 100;
-			delegates[i].approval = Math.round(delegates[i].approval * 1e2) / 1e2;
+		//get total supply in the Blockchain
+		__private.blockReward.calcSupply(lastBlock.height, function(error, supply) {
+			if(!error) {
+				totalSupply = supply;
+			}
 
-			var percent = 100 - (delegates[i].missedblocks / ((delegates[i].producedblocks + delegates[i].missedblocks) / 100));
-			percent = Math.abs(percent) || 0;
+			for (var i = 0; i < delegates.length; i++) {
+				delegates[i].rate = i + 1;
+				delegates[i].approval = (delegates[i].vote / totalSupply) * 100;
+				delegates[i].approval = Math.round(delegates[i].approval * 1e2) / 1e2;
 
-			var outsider = i + 1 > slots.delegates;
-			delegates[i].productivity = (!outsider) ? Math.round(percent * 1e2) / 1e2 : 0;
-		}
+				var percent = 100 - (delegates[i].missedblocks / ((delegates[i].producedblocks + delegates[i].missedblocks) / 100));
+				percent = Math.abs(percent) || 0;
 
-		var orderBy = OrderBy(query.orderBy, {quoteField: false});
+				var outsider = i + 1 > slots.delegates;
+				delegates[i].productivity = (!outsider) ? Math.round(percent * 1e2) / 1e2 : 0;
+			}
 
-		if (orderBy.error) {
-			return cb(orderBy.error);
-		}
+			var orderBy = OrderBy(query.orderBy, {quoteField: false});
 
-		return cb(null, {
-			delegates: delegates,
-			sortField: orderBy.sortField,
-			sortMethod: orderBy.sortMethod,
-			count: count,
-			offset: offset,
-			limit: realLimit
+			if (orderBy.error) {
+				return cb(orderBy.error);
+			}
+
+			return cb(null, {
+				delegates: delegates,
+				sortField: orderBy.sortField,
+				sortMethod: orderBy.sortMethod,
+				count: count,
+				offset: offset,
+				limit: realLimit
+			});
+
 		});
 	});
 };
@@ -924,8 +933,13 @@ shared.getForgedByAccount = function (req, cb) {
 			if (err || !account) {
 				return cb(err || 'Account not found');
 			}
-			var forged = bignum(account.fees).plus(bignum(account.rewards)).toString();
-			return cb(null, {fees: account.fees, rewards: account.rewards, forged: forged});
+			//var forged = bignum(account.fees).plus(bignum(account.rewards)).toString();
+			console.log('In getForgedByAccount');
+			var big_reward = new bigdecimal.BigDecimal(''+account.rewards);
+			var big_fees = new bigdecimal.BigDecimal(''+account.fees);
+			var forged = big_fees.add(big_reward).toString();
+			console.log('In getForgedByAccount big_reward big_fees forged', big_reward.toString(), big_fees.toString());
+			return cb(null, {fees: account.fees, rewards: account.rewards, forged: forged.toString()});
 		});
 	});
 };

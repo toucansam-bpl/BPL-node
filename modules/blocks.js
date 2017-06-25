@@ -15,6 +15,7 @@ var schema = require('../schema/blocks.js');
 var slots = require('../helpers/slots.js');
 var sql = require('../sql/blocks.js');
 var transactionTypes = require('../helpers/transactionTypes.js');
+var bigdecimal = require("bigdecimal");
 
 // Private fields
 var modules, library, self, __private = {}, shared = {};
@@ -99,7 +100,7 @@ __private.attachApi = function () {
 		'get /getFee': 'getFee',
 		'get /getFees': 'getFees',
 		'get /getMilestone': 'getMilestone',
-		'get /getReward': 'getReward',
+		'get /getLastReward': 'getLastReward',
 		'get /getSupply': 'getSupply',
 		'get /getStatus': 'getStatus'
 	});
@@ -255,21 +256,23 @@ __private.getById = function (id, cb) {
 };
 
 __private.saveBlock = function (block, cb) {
-	library.db.tx(function (t) {
-		var promise = library.logic.block.dbSave(block);
-		var inserts = new Inserts(promise, promise.values);
+	library.logic.block.dbSave(block, function(error, promise) {
+		library.db.tx(function (t) {
+			var inserts = new Inserts(promise, promise.values);
 
-		var promises = [
-			t.none(inserts.template(), promise.values)
-		];
+			var promises = [
+				t.none(inserts.template(), promise.values)
+			];
 
-		t = __private.promiseTransactions(t, block, promises);
-		t.batch(promises);
-	}).then(function () {
-		return __private.afterSave(block, cb);
-	}).catch(function (err) {
-		library.logger.error("stack", err.stack);
-		return cb('Blocks#saveBlock error');
+			t = __private.promiseTransactions(t, block, promises);
+			t.batch(promises);
+		}).then(function () {
+			library.logger.info('Reward - '+promise.values.reward+' given for forging block - '+promise.values.id);
+			return __private.afterSave(block, cb);
+		}).catch(function (err) {
+			library.logger.error("stack", err.stack);
+			return cb('Blocks#saveBlock error');
+		});
 	});
 };
 
@@ -333,7 +336,7 @@ __private.getPreviousBlock = function(block, cb){
 			previousBlock = rows[0];
 
 			//TODO: get this right without this cleaning
-			previousBlock.reward = parseInt(previousBlock.reward);
+			previousBlock.reward = new bigdecimal.BigDecimal(''+previousBlock.reward).toString();
 			previousBlock.totalAmount = parseInt(previousBlock.totalAmount);
 			previousBlock.totalFee = parseInt(previousBlock.totalFee);
 
@@ -691,7 +694,7 @@ Blocks.prototype.loadBlocksOffset = function (limit, offset, verify, cb) {
 
 		async.eachSeries(blocks, function (block, seriesCb) {
 			// TODO: dirty fix due to ill sql request
-			block.reward = parseInt(block.reward);
+			block.reward = new bigdecimal.BigDecimal(''+block.reward).toString();
 			block.totalAmount = parseInt(block.totalAmount);
 			block.totalFee = parseInt(block.totalFee);
 			if(block.height%100 == 0){
@@ -832,7 +835,7 @@ Blocks.prototype.loadLastBlock = function (cb) {
 		library.db.query(sql.loadLastBlock).then(function (rows) {
 			var block=rows[0];
 			// TODO: dirty fix due to ill sql request
-			block.reward = parseInt(block.reward);
+			block.reward = new bigdecimal.BigDecimal(''+block.reward).toString();
 			block.totalAmount = parseInt(block.totalAmount);
 			block.totalFee = parseInt(block.totalFee);
 			if(!block.transactions){
@@ -901,7 +904,7 @@ Blocks.prototype.verifyBlockHeader = function (block) {
 		result.errors.push("No block id");
 	}
 
- 	__private.blockReward.customCalcReward(library, block.generatorPublicKey, block.height, function(error, reward){
+ 	__private.blockReward.customCalcReward(block.generatorPublicKey, block.height, function(error, reward){
 		if(!error){
 			var expectedReward = reward;
 			if (block.height !== 1 && expectedReward !== block.reward) {
@@ -987,7 +990,7 @@ Blocks.prototype.verifyBlock = function (block, checkPreviousBlock) {
 		}
 	}
 
-	__private.blockReward.customCalcReward(library, block.generatorPublicKey, block.height, function(error, reward){
+	__private.blockReward.customCalcReward(block.generatorPublicKey, block.height, function(error, reward){
 		if(!error){
 			var expectedReward = reward;
 			if (block.height !== 1 && expectedReward !== block.reward) {
@@ -1671,26 +1674,54 @@ shared.getMilestone = function (req, cb) {
 	return cb(null, {milestone: __private.blockReward.calcMilestone(modules.blockchain.getLastBlock().height)});
 };
 
-shared.getReward = function (req, cb) {
-	return cb(null, {reward: __private.blockReward.calcReward(modules.blockchain.getLastBlock().height)});
+//get the reward given to the last block in the Blockchain
+shared.getLastReward = function (req, cb) {
+
+	__private.blockReward.calcRewardForHeight(modules.blockchain.getLastBlock().height,function(error, details) {
+		if(error) {
+				return cb(error);
+			} else {
+				return cb(null, {details: details});
+			}
+	});
 };
 
+//get total supply of the Blockchain
 shared.getSupply = function (req, cb) {
-	return cb(null, {supply: __private.blockReward.calcSupply(modules.blockchain.getLastBlock().height)});
+
+	__private.blockReward.calcSupply(modules.blockchain.getLastBlock().height,function(error, supply) {
+		if(error) {
+				return cb(error);
+			} else {
+				return cb(null, {supply: supply});
+			}
+	});
 };
 
+//get status of the Blockchain
 shared.getStatus = function (req, cb) {
 
 	var block = modules.blockchain.getLastBlock();
+	var counter = 0;
 
-	return cb(null, {
+	var status = {
 		epoch:     constants.epochTime,
 		height:    block.height,
 		fee:       library.logic.block.calculateFee(),
 		milestone: __private.blockReward.calcMilestone(block.height),
 		nethash:   library.config.nethash,
-		reward:    __private.blockReward.calcReward(block.height),
-		supply:    __private.blockReward.calcSupply(block.height)
+	};
+
+	__private.blockReward.calcRewardForHeight(modules.blockchain.getLastBlock().height,function(error, details) {
+		if(!error) {
+			status.reward = details;
+		}
+		__private.blockReward.calcSupply(modules.blockchain.getLastBlock().height,function(error, supply) {
+			if(!error) {
+				status.supply = supply;
+			}
+			return cb(null, status);
+		});
 	});
 };
 

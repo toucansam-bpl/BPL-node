@@ -574,6 +574,17 @@ Account.prototype.merge = function (address, diff, cb) {
 					update[value] = trueValue;
 					break;
 				case Number:
+					//For big decimal precise calculations handling rewards, balance and u_balance as strings
+					if((diff['rewards'] !== undefined) && (typeof(diff['rewards']) === 'string')) {
+						update['rewards'] = diff['rewards'];
+					}
+				  if((diff['balance'] !== undefined) && (typeof(diff['balance']) === 'string')) {
+						update['balance'] = diff['balance'];
+					}
+					if((diff['u_balance'] !== undefined) && (typeof(diff['u_balance']) === 'string')) {
+						update['u_balance'] = diff['u_balance'];
+					}
+
 					if (isNaN(trueValue) || trueValue === Infinity) {
 						return cb('Encountered unsane number: ' + trueValue);
 					}

@@ -17,6 +17,7 @@
   "dependencies": {
     "arkjs": "github:arkecosystem/ark-js#mainnet",
     "async": "=2.0.1",
+    "bigdecimal": "^0.6.1",
     "bip39": "^2.2.0",
     "body-parser": "=1.15.2",
     "bytebuffer": "=5.0.1",

@@ -4,6 +4,7 @@ var async = require('async');
 var schema = require('../schema/nodeManager.js');
 var sql = require('../sql/nodeManager.js');
 var os = require('os');
+var bigdecimal = require("bigdecimal");
 
 var self, library, modules;
 
@@ -154,7 +155,7 @@ NodeManager.prototype.onBlocksReceived = function(blocks, peer, cb) {
 
 		var currentBlock;
 		async.eachSeries(blocks, function (block, eachSeriesCb) {
-			block.reward = parseInt(block.reward);
+			block.reward = new bigdecimal.BigDecimal(''+block.reward).toString();//parseInt(block.reward);
 			block.totalAmount = parseInt(block.totalAmount);
 			block.totalFee = parseInt(block.totalFee);
 			block.verified = false;
@@ -273,16 +274,49 @@ NodeManager.prototype.performSPVFix = function (cb) {
 			}
 
 			async.series(series, function(err, result){
+				// if(publicKey){
+				// 	result.balance = parseInt(result.received.total||0) - parseInt(result.spent.total||0) + parseInt(result.rewards.total||0);
+				// }
+				// else {
+				// 	result.balance = parseInt(result.received.total||0);
+				// }
+				//
+				// if(result.balance != row.balance){
+				// 	fixedAccounts.push(row);
+				// 	var diff = result.balance - row.balance;
+				// 	library.db.none("update mem_accounts set balance = balance + "+diff+", u_balance = u_balance + "+diff+" where address = '"+row.address+"';");
+				// }
 				if(publicKey){
-					result.balance = parseInt(result.received.total||0) - parseInt(result.spent.total||0) + parseInt(result.rewards.total||0);
+					var receivedTotal, spentTotal, rewardsTotal, balance;
+					var zero = new bigdecimal.BigDecimal('0');
+
+					if(result.received.total != undefined)
+					  receivedTotal = new bigdecimal.BigDecimal(''+result.received.total);
+					else
+						receivedTotal = zero;
+
+					if(result.spent.total != undefined)
+					  spentTotal = new bigdecimal.BigDecimal(''+result.spent.total);
+					else
+						spentTotal = zero;
+
+					if(result.rewards.total != undefined)
+					  rewardsTotal = new bigdecimal.BigDecimal(''+result.rewards.total);
+					else
+						rewardsTotal = zero;
+
+					result.balance = receivedTotal.subtract(spentTotal).add(rewardsTotal).toString();
 				}
 				else {
-					result.balance = parseInt(result.received.total||0);
+					result.balance = receivedTotal.toString();
 				}
 
 				if(result.balance != row.balance){
 					fixedAccounts.push(row);
-					var diff = result.balance - row.balance;
+					var resultBalance = new bigdecimal.BigDecimal(''+result.balance);
+					var rowBalance = new bigdecimal.BigDecimal(''+row.balance);
+					var diff = resultBalance.subtract(rowBalance).toString();
+					console.log('In performSPVFix receivedTotal: '+receivedTotal+' spentTotal: '+spentTotal+' rewardsTotal: '+rewardsTotal+' rowBalance: '+rowBalance+' diff: '+diff);
 					library.db.none("update mem_accounts set balance = balance + "+diff+", u_balance = u_balance + "+diff+" where address = '"+row.address+"';");
 				}
 				return eachCb();

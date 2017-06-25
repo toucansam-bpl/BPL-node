@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS "blocks"(
   "generatorPublicKey" bytea NOT NULL,
   "blockSignature" bytea NOT NULL,
   "rawtxs" TEXT NOT NULL,
+  "supply" NUMERIC(30,10),
   FOREIGN KEY("previousBlock")
   REFERENCES "blocks"("id") ON DELETE SET NULL
 );

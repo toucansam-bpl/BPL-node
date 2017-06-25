@@ -7,6 +7,8 @@ var bignum = require('../helpers/bignum.js');
 var ByteBuffer = require('bytebuffer');
 var BlockReward = require('../logic/blockReward.js');
 var constants = require('../helpers/constants.js');
+var blocksSQL = require('../sql/blocks.js');
+var bigdecimal = require("bigdecimal");
 
 // Private fields
 var __private = {}, genesisblock = null;
@@ -66,7 +68,7 @@ Block.prototype.create = function (data, cb) {
 	}
 
 		var self = this;
-	__private.blockReward.customCalcReward(this.scope, data.keypair.publicKey, nextHeight, function(error, reward) {
+	__private.blockReward.customCalcReward(data.keypair.publicKey, nextHeight, function(error, reward) {
 			if(error) {
 				self.scope.logger.error(error);
 				return cb(error);
@@ -88,7 +90,7 @@ Block.prototype.create = function (data, cb) {
 				block.blockSignature = self.sign(block, data.keypair);
 				block = self.objectNormalize(block);
 				block.id = self.getId(block);
-				self.scope.logger.info('Delegate: '+data.keypair.publicKey+' received reward: '+reward+' for block id: '+block.id);
+				self.scope.logger.info('Delegate - '+data.keypair.publicKey+' forged block - '+block.id);
 				return cb(null, block);
 			}
 	});
@@ -208,14 +210,15 @@ Block.prototype.dbFields = [
 	'payloadHash',
 	'generatorPublicKey',
 	'blockSignature',
-	'rawtxs'
+	'rawtxs',
+	'supply'
 ];
 
 //
 //__API__ `dbSave`
 
 //
-Block.prototype.dbSave = function (block) {
+Block.prototype.dbSave = function (block, cb) {
 	var payloadHash, generatorPublicKey, blockSignature, rawtxs;
 
 	try {
@@ -227,7 +230,7 @@ Block.prototype.dbSave = function (block) {
 		throw e;
 	}
 
-	return {
+	var dbObject = {
 		table: this.dbTable,
 		fields: this.dbFields,
 		values: {
@@ -244,9 +247,31 @@ Block.prototype.dbSave = function (block) {
 			payloadHash: payloadHash,
 			generatorPublicKey: generatorPublicKey,
 			blockSignature: blockSignature,
-			rawtxs:rawtxs
+			rawtxs:rawtxs,
+			supply: 0
 		}
 	};
+
+	//Set totalAmount as supply for first block
+	if(!block.previousBlock){
+		dbObject.values.supply = constants.totalAmount;
+		return cb(null, dbObject);
+	} else {
+		//Calculate total supply 2nd block onwards
+		this.scope.db.query(blocksSQL.getSupply, { id: block.previousBlock }).then(function (result) {
+			if(result.length > 0){
+				var down = bigdecimal.RoundingMode.DOWN();
+				var reward = new bigdecimal.BigDecimal(''+block.reward);
+				reward = reward.setScale(10, down);
+				var supply = new bigdecimal.BigDecimal(''+result[0].supply);
+				dbObject.values.supply = supply.add(reward).toString();
+				return cb(null, dbObject);
+			}
+		}).catch(function (err) {
+			library.logger.error(err);
+			return cb(err);
+		});
+	}
 };
 
 Block.prototype.schema = {
@@ -291,16 +316,20 @@ Block.prototype.schema = {
 			type: 'integer',
 			minimum: 0
 		},
-		reward: {
-			type: 'number',
-			minimum: 0
-		},
+		// reward: {
+		// 	type: 'number',
+		// 	minimum: 0
+		// },
 		transactions: {
 			type: 'array',
 			uniqueItems: true
 		},
 		version: {
 			type: 'integer',
+			minimum: 0
+		},
+		supply: {
+			type: 'number',
 			minimum: 0
 		}
 	},
@@ -390,7 +419,7 @@ Block.prototype.dbRead = function (raw) {
 			numberOfTransactions: parseInt(raw.b_numberOfTransactions),
 			totalAmount: parseInt(raw.b_totalAmount),
 			totalFee: parseInt(raw.b_totalFee),
-			reward: parseFloat(raw.b_reward).toFixed(10),
+			reward: new bigdecimal.BigDecimal(''+raw.b_reward).toString(),// parseInt(raw.b_reward),
 			payloadLength: parseInt(raw.b_payloadLength),
 			payloadHash: raw.b_payloadHash,
 			generatorPublicKey: raw.b_generatorPublicKey,
