@@ -94,7 +94,8 @@ var config = {
 		multisignatures: './modules/multisignatures.js',
 		transactionPool: './modules/transactionPool.js',
 		blockchain: './modules/blockchain.js',
-		nodeManager: './modules/nodeManager.js'
+		nodeManager: './modules/nodeManager.js',
+		blockRewards: './modules/blockRewards.js'
 	}
 };
 

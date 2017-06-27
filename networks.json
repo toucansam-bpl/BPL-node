@@ -10,7 +10,7 @@
     "client": {
       "token":"BLOCKPOOL",
       "symbol":"β",
-      "explorer":"https://explorer.ark.io"
+      "explorer":"http://52.66.184.223:4005"
     }
   },
   "bitcoin": {
@@ -37,7 +37,7 @@
     "client": {
       "token":"BLOCKPOOL-TEST",
       "symbol":"Tβ",
-      "explorer":"http://texplorer.ark.io"
+      "explorer":"http://52.66.184.223:4005"
     }
   },
   "demo": {
@@ -51,7 +51,7 @@
     "client": {
       "token":"BLOCKPOOL-DEMO",
       "symbol":"Dβ",
-      "explorer":"http://texplorer.ark.io"
+      "explorer":"http://52.66.184.223:4005"
     }
   },
   "devnet": {
@@ -65,7 +65,7 @@
     "client": {
       "token":"BLOCKPOOL-DEVNET",
       "symbol":"Dβ",
-      "explorer":"http://dexplorer.ark.io"
+      "explorer":"http://52.66.184.223:4005"
     }
   }
 }

@@ -561,7 +561,6 @@ Account.prototype.set = function (address, fields, cb) {
 //
 Account.prototype.merge = function (address, diff, cb) {
 	var update = {}, remove = {}, insert = {}, insert_object = {}, remove_object = {}, round = [];
-
 	// Verify public key
 	this.verifyPublicKey(diff.publicKey);
 	this.editable.forEach(function (value) {
@@ -574,13 +573,35 @@ Account.prototype.merge = function (address, diff, cb) {
 					update[value] = trueValue;
 					break;
 				case Number:
+					//For big decimal precise calculations handling rewards, balance and u_balance as strings
+					if(value === 'balance' || value === 'u_balance' || value === 'rewards') {
+						if((diff[value] !== undefined) && (typeof(diff[value]) === 'string')) {
+							//if negative value
+							if(diff[value][0] === '-') {
+								update.$dec = update.$dec || {};
+								update.$dec[value] = trueValue.substring(1, trueValue.length);
+								// If decrementing u_balance on account
+								if (update.$dec.u_balance) {
+									// Remove virginity and ensure marked columns become immutable
+									update.virgin = 0;
+								}
+							} else {
+								//if positive value
+								update.$inc = update.$inc || {};
+								update.$inc[value] = trueValue;
+							}
+
+						}
+					}
+
 					if (isNaN(trueValue) || trueValue === Infinity) {
+						console.log('TrueValue is not a number');
 						return cb('Encountered unsane number: ' + trueValue);
 					}
 					else if (Math.abs(trueValue) === trueValue && trueValue !== 0) {
 						update.$inc = update.$inc || {};
-						if(value === 'balance' || value === 'u_balance' || value === 'rewards')
-							update.$inc[value] = trueValue;
+						if(value === 'balance' || value === 'u_balance' || value === 'rewards') {
+							update.$inc[value] = trueValue;						}
 						else
 							update.$inc[value] = Math.floor(trueValue);
 					}

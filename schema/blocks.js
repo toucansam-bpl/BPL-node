@@ -48,15 +48,19 @@ module.exports = {
 				minimum: 0,
 				maximum: constants.totalAmount
 			},
-			reward: {
-				type: 'integer',
-				minimum: 0
-			},
+			// reward: {
+			// 	type: 'number',
+			// 	minimum: 0
+			// },
 			previousBlock: {
 				type: 'string'
 			},
 			height: {
 				type: 'integer'
+			},
+			supply: {
+				type: 'number',
+				minimum: 0
 			}
 		}
 	}
