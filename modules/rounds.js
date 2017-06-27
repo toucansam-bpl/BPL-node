@@ -79,9 +79,20 @@ Rounds.prototype.tick = function(block, cb){
 	}
 
 	else{
-		var reward = new bigdecimal.BigDecimal(''+block.reward);
+		var down = bigdecimal.RoundingMode.DOWN();
+		var reward;
+		if(block.reward == 0.0000000000)
+			reward = new bigdecimal.BigDecimal('0');
+		else
+			reward = new bigdecimal.BigDecimal(''+block.reward);
 		var totalFee = new bigdecimal.BigDecimal(''+block.totalFee);
-		var result = reward.add(totalFee).toString();
+		var result = reward.add(totalFee);
+		if(result.toString() !== '0') {
+			result = result.setScale(10, down);
+			result = result.toString();
+		}
+		else
+		  result = '0.0000000000';
 
 		// give block rewards + fees to the block forger
 		modules.accounts.mergeAccountAndGet({
@@ -125,9 +136,21 @@ Rounds.prototype.backwardTick = function(block, cb){
 		}
 		else{
 			var round = __private.current;
-			var reward = new bigdecimal.BigDecimal(''+block.reward);
+
+			var down = bigdecimal.RoundingMode.DOWN();
+			var reward;
+			if(block.reward == 0.0000000000)
+				reward = new bigdecimal.BigDecimal('0');
+			else
+				reward = new bigdecimal.BigDecimal(''+block.reward);
 			var totalFee = new bigdecimal.BigDecimal(''+block.totalFee);
-			var result = reward.add(totalFee).toString();
+			var result = reward.add(totalFee);
+			if(result.toString() !== '0') {
+				result = result.setScale(10, down);
+				result = result.toString();
+			}
+			else
+				result = '0.0000000000';
 			// remove block rewards + fees from the block forger
 			modules.accounts.mergeAccountAndGet({
 				publicKey: block.generatorPublicKey,

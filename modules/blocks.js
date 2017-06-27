@@ -334,7 +334,6 @@ __private.getPreviousBlock = function(block, cb){
 		}).then(function (rows) {
 
 			previousBlock = rows[0];
-
 			//TODO: get this right without this cleaning
 			previousBlock.reward = new bigdecimal.BigDecimal(''+previousBlock.reward).toString();
 			previousBlock.totalAmount = parseInt(previousBlock.totalAmount);
@@ -694,7 +693,7 @@ Blocks.prototype.loadBlocksOffset = function (limit, offset, verify, cb) {
 
 		async.eachSeries(blocks, function (block, seriesCb) {
 			// TODO: dirty fix due to ill sql request
-			block.reward = new bigdecimal.BigDecimal(''+block.reward).toString();
+			block.reward = (block.reward !=  0.0000000000 ? new bigdecimal.BigDecimal(''+block.reward).toString() : block.reward);
 			block.totalAmount = parseInt(block.totalAmount);
 			block.totalFee = parseInt(block.totalFee);
 			if(block.height%100 == 0){
@@ -835,7 +834,7 @@ Blocks.prototype.loadLastBlock = function (cb) {
 		library.db.query(sql.loadLastBlock).then(function (rows) {
 			var block=rows[0];
 			// TODO: dirty fix due to ill sql request
-			block.reward = new bigdecimal.BigDecimal(''+block.reward).toString();
+			block.reward = (block.reward !=  0.0000000000 ? new bigdecimal.BigDecimal(''+block.reward).toString() : block.reward);
 			block.totalAmount = parseInt(block.totalAmount);
 			block.totalFee = parseInt(block.totalFee);
 			if(!block.transactions){
@@ -903,7 +902,6 @@ Blocks.prototype.verifyBlockHeader = function (block) {
 	if(!block.id){
 		result.errors.push("No block id");
 	}
-
  	__private.blockReward.customCalcReward(block.generatorPublicKey, block.height, function(error, reward){
 		if(!error){
 			var expectedReward = reward;
@@ -989,7 +987,6 @@ Blocks.prototype.verifyBlock = function (block, checkPreviousBlock) {
 			}
 		}
 	}
-
 	__private.blockReward.customCalcReward(block.generatorPublicKey, block.height, function(error, reward){
 		if(!error){
 			var expectedReward = reward;

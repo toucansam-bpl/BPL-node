@@ -229,7 +229,6 @@ Block.prototype.dbSave = function (block, cb) {
 	} catch (e) {
 		throw e;
 	}
-
 	var dbObject = {
 		table: this.dbTable,
 		fields: this.dbFields,

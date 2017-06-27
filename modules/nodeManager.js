@@ -155,7 +155,7 @@ NodeManager.prototype.onBlocksReceived = function(blocks, peer, cb) {
 
 		var currentBlock;
 		async.eachSeries(blocks, function (block, eachSeriesCb) {
-			block.reward = new bigdecimal.BigDecimal(''+block.reward).toString();//parseInt(block.reward);
+			block.reward = (block.reward !=  0.0000000000 ? new bigdecimal.BigDecimal(''+block.reward).toString() : block.reward);
 			block.totalAmount = parseInt(block.totalAmount);
 			block.totalFee = parseInt(block.totalFee);
 			block.verified = false;
@@ -316,7 +316,6 @@ NodeManager.prototype.performSPVFix = function (cb) {
 					var resultBalance = new bigdecimal.BigDecimal(''+result.balance);
 					var rowBalance = new bigdecimal.BigDecimal(''+row.balance);
 					var diff = resultBalance.subtract(rowBalance).toString();
-					console.log('In performSPVFix receivedTotal: '+receivedTotal+' spentTotal: '+spentTotal+' rewardsTotal: '+rewardsTotal+' rowBalance: '+rowBalance+' diff: '+diff);
 					library.db.none("update mem_accounts set balance = balance + "+diff+", u_balance = u_balance + "+diff+" where address = '"+row.address+"';");
 				}
 				return eachCb();

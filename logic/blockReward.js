@@ -78,78 +78,83 @@ BlockReward.prototype.customCalcReward = function (dependentId, height, cb) {
 	var self = this;
 	var rewardAmount = new bigdecimal.BigDecimal('0');
 	var down = bigdecimal.RoundingMode.DOWN();
-
-	//calculate percentage corresponding to milestone
-	var percent = self.calcPercentageForMilestone(height);
-	if(percent > 0) {
-		//get all voters for delegate using delegateId i.e public key
-		library.db.query(delegateSQL.getVoters, { publicKey: dependentId}).then(function (voters) {
-			if(voters.length > 0 && voters[0].accountIds != null) {
-				var votersTotalBalance = new bigdecimal.BigDecimal('0');
-				var accountIds = voters[0].accountIds;
-				if(accountIds.length > 0) {
-					var lastVoter = accountIds[accountIds.length-1];
-				}
-				for(let i = 0; i < accountIds.length; i++ ) {
-					//get no of votes of this voter
-						library.db.query(delegateSQL.getNoOfVotes, { accountId:accountIds[i] }).then(function (votes) {
-								//get balance of each of the voters
-								library.db.query(memAccountsSQL.getBalance, { address:accountIds[i] }).then(function (voter) {
-									if (voter.length > 0) {
-											try {
-												var balance = new bigdecimal.BigDecimal(''+voter[0].balance);
-												balance =  balance.setScale(10, down);
-
-												var count = new bigdecimal.BigDecimal(''+votes[0].count);
-												count =  count.setScale(10, down);
-
-												var voteWeight = balance.divide(count, 10, down);
-												voteWeight =  voteWeight.setScale(10, down);
-
-												//sum up balance of all voters
-												votersTotalBalance = votersTotalBalance.add(voteWeight);
-												votersTotalBalance =  votersTotalBalance.setScale(10, down);
-											} catch (e) {
-												library.logger.error(e);
-												return cb(e);
-											}
-										}
-										if(lastVoter === voter[0].address) {
-											var per1 =  percent/100;
-											var per2 = new bigdecimal.BigDecimal(''+per1);
-
-											//calculate reward amount based on current milestone percentage
-											rewardAmount = votersTotalBalance.multiply(per2);
-											rewardAmount =  rewardAmount.setScale(10, down);
-											return cb(null, rewardAmount.toString());
-										}
-									}).catch(function (err) {
-										library.logger.error(err);
-										return cb(err);
-									});
-						}).catch(function (err) {
-							library.logger.error(err);
-							return cb(err);
-						});
-
+	var zeroReward ='0.0000000000';
+	if(height >= this.rewardOffset) {
+		//calculate percentage corresponding to milestone
+		var percent = self.calcPercentageForMilestone(height);
+		if(percent > 0) {
+			//get all voters for delegate using delegateId i.e public key
+			library.db.query(delegateSQL.getVoters, { publicKey: dependentId}).then(function (voters) {
+				if(voters.length > 0 && voters[0].accountIds != null) {
+					var votersTotalBalance = new bigdecimal.BigDecimal('0');
+					var accountIds = voters[0].accountIds;
+					if(accountIds.length > 0) {
+						var lastVoter = accountIds[accountIds.length-1];
 					}
-				}
-				else {
-					library.logger.info('Couldn\'t find any voters for delegate: ',dependentId);
-					return cb(null, rewardAmount.toString());
-				}
-		}).catch(function (err) {
-			library.logger.error(err);
-			return cb(err);
-		});
-	}
-	else if(percent == 0){
-		var fixedReward = new bigdecimal.BigDecimal('10000000');//0.1 BPL token
-		fixedReward =  fixedReward.setScale(10, down);
-		return cb(null, fixedReward.toString());
+					for(let i = 0; i < accountIds.length; i++ ) {
+						//get no of votes of this voter
+							library.db.query(delegateSQL.getNoOfVotes, { accountId:accountIds[i] }).then(function (votes) {
+									//get balance of each of the voters
+									library.db.query(memAccountsSQL.getBalance, { address:accountIds[i] }).then(function (voter) {
+										if (voter.length > 0) {
+												try {
+													var balance = new bigdecimal.BigDecimal(''+voter[0].balance);
+													balance =  balance.setScale(10, down);
+
+													var count = new bigdecimal.BigDecimal(''+votes[0].count);
+													count =  count.setScale(10, down);
+
+													var voteWeight = balance.divide(count, 10, down);
+													voteWeight =  voteWeight.setScale(10, down);
+
+													//sum up balance of all voters
+													votersTotalBalance = votersTotalBalance.add(voteWeight);
+													votersTotalBalance =  votersTotalBalance.setScale(10, down);
+												} catch (e) {
+													library.logger.error(e);
+													return cb(e);
+												}
+											}
+											if(lastVoter === voter[0].address) {
+												var per1 =  percent/100;
+												var per2 = new bigdecimal.BigDecimal(''+per1);
+
+												//calculate reward amount based on current milestone percentage
+												rewardAmount = votersTotalBalance.multiply(per2);
+												rewardAmount =  rewardAmount.setScale(10, down);
+												return cb(null, rewardAmount.toString());
+											}
+										}).catch(function (err) {
+											library.logger.error(err);
+											return cb(err);
+										});
+							}).catch(function (err) {
+								library.logger.error(err);
+								return cb(err);
+							});
+
+						}
+					}
+					else {
+						library.logger.info('Couldn\'t find any voters for delegate: ',dependentId);
+						return cb(null, zeroReward);
+					}
+			}).catch(function (err) {
+				library.logger.error(err);
+				return cb(err);
+			});
+		}
+		else if(percent == 0){
+			var fixedReward = new bigdecimal.BigDecimal('10000000');//0.1 BPL token
+			fixedReward =  fixedReward.setScale(10, down);
+			return cb(null, fixedReward.toString());
+		}
+		else {
+			return cb(null, zeroReward);
+		}
 	}
 	else {
-		return cb(null, rewardAmount.toString());
+		return cb(null, zeroReward);
 	}
 };
 

@@ -933,12 +933,10 @@ shared.getForgedByAccount = function (req, cb) {
 			if (err || !account) {
 				return cb(err || 'Account not found');
 			}
-			//var forged = bignum(account.fees).plus(bignum(account.rewards)).toString();
-			console.log('In getForgedByAccount');
+
 			var big_reward = new bigdecimal.BigDecimal(''+account.rewards);
 			var big_fees = new bigdecimal.BigDecimal(''+account.fees);
 			var forged = big_fees.add(big_reward).toString();
-			console.log('In getForgedByAccount big_reward big_fees forged', big_reward.toString(), big_fees.toString());
 			return cb(null, {fees: account.fees, rewards: account.rewards, forged: forged.toString()});
 		});
 	});
