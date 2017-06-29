@@ -246,7 +246,8 @@ NodeManager.prototype.performSPVFix = function (cb) {
 	library.db.query('select address, "publicKey", balance from mem_accounts').then(function(rows){
 		async.eachSeries(rows, function(row, eachCb){
 			var publicKey=row.publicKey;
-			if(publicKey){
+			//checking if publicKey is blank, if blank then publicKey.toString("hex") throws error toString of undefined
+			if(publicKey != ""){
 				publicKey=publicKey.toString("hex");
 			}
 			var receivedSQL='select sum(amount) as total, count(amount) as count from transactions where amount > 0 and "recipientId" = \''+row.address+'\';'
@@ -260,7 +261,7 @@ NodeManager.prototype.performSPVFix = function (cb) {
 					});
 				}
 			};
-			if(publicKey){
+			if(publicKey != ""){
 				series.spent = function(cb){
 					library.db.query(spentSQL).then(function(rows){
 						cb(null, rows[0]);
@@ -286,7 +287,7 @@ NodeManager.prototype.performSPVFix = function (cb) {
 				// 	var diff = result.balance - row.balance;
 				// 	library.db.none("update mem_accounts set balance = balance + "+diff+", u_balance = u_balance + "+diff+" where address = '"+row.address+"';");
 				// }
-				if(publicKey){
+				if(publicKey != ""){
 					var receivedTotal, spentTotal, rewardsTotal, balance;
 					var zero = new bigdecimal.BigDecimal('0.0000000000');
 
