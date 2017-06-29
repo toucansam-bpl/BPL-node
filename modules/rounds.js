@@ -87,7 +87,7 @@ Rounds.prototype.tick = function(block, cb){
 			reward = new bigdecimal.BigDecimal(''+block.reward);
 		var totalFee = new bigdecimal.BigDecimal(''+block.totalFee);
 		var result = reward.add(totalFee);
-		result.setScale(10, down);
+		result = result.setScale(10, down);
 
 		result = (result.toString() == '0E-10' ? '0.0000000000' : result.toString());
 
@@ -142,10 +142,10 @@ Rounds.prototype.backwardTick = function(block, cb){
 				reward = new bigdecimal.BigDecimal(''+block.reward);
 			var totalFee = new bigdecimal.BigDecimal(''+block.totalFee);
 			var result = reward.add(totalFee);
-			result.setScale(10, down);
+			result = result.setScale(10, down);
 
 			result = (result.toString() == '0E-10' ? '0.0000000000' : result.toString());
-			
+
 			// remove block rewards + fees from the block forger
 			modules.accounts.mergeAccountAndGet({
 				publicKey: block.generatorPublicKey,
