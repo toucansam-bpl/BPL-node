@@ -491,7 +491,7 @@ __private.timestampState = function (lastReceipt) {
 		__private.lastReceipt.rebuild = __private.lastReceipt.secondsAgo > 200;
 	}
 
-	if(__private.lastBlock.height < 52){
+	if(__private.lastBlock.height < 202){
 		__private.lastReceipt.rebuild = false;
 	}
 

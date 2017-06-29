@@ -335,7 +335,7 @@ __private.getPreviousBlock = function(block, cb){
 
 			previousBlock = rows[0];
 			//TODO: get this right without this cleaning
-			previousBlock.reward = new bigdecimal.BigDecimal(''+previousBlock.reward).toString();
+			previousBlock.reward = (previousBlock.reward == '0.0000000000' ? previousBlock.reward : new bigdecimal.BigDecimal(''+previousBlock.reward).toString());
 			previousBlock.totalAmount = parseInt(previousBlock.totalAmount);
 			previousBlock.totalFee = parseInt(previousBlock.totalFee);
 
@@ -693,7 +693,7 @@ Blocks.prototype.loadBlocksOffset = function (limit, offset, verify, cb) {
 
 		async.eachSeries(blocks, function (block, seriesCb) {
 			// TODO: dirty fix due to ill sql request
-			block.reward = (block.reward !=  0.0000000000 ? new bigdecimal.BigDecimal(''+block.reward).toString() : block.reward);
+			block.reward = (block.reward == '0.0000000000' ? block.reward : new bigdecimal.BigDecimal(''+block.reward).toString());
 			block.totalAmount = parseInt(block.totalAmount);
 			block.totalFee = parseInt(block.totalFee);
 			if(block.height%100 == 0){
@@ -834,7 +834,7 @@ Blocks.prototype.loadLastBlock = function (cb) {
 		library.db.query(sql.loadLastBlock).then(function (rows) {
 			var block=rows[0];
 			// TODO: dirty fix due to ill sql request
-			block.reward = (block.reward !=  0.0000000000 ? new bigdecimal.BigDecimal(''+block.reward).toString() : block.reward);
+			block.reward = (block.reward ==  '0.0000000000' ? block.reward : new bigdecimal.BigDecimal(''+block.reward).toString());
 			block.totalAmount = parseInt(block.totalAmount);
 			block.totalFee = parseInt(block.totalFee);
 			if(!block.transactions){
