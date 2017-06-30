@@ -242,13 +242,18 @@ NodeManager.prototype.onRebuildBlockchain = function(blocksToRemove, state, cb) 
 
 //
 NodeManager.prototype.performSPVFix = function (cb) {
+	console.log(' >>>>>>>>>>>>>>>>>>>> In performSPVFix ');
 	var fixedAccounts = [];
 	library.db.query('select address, "publicKey", balance from mem_accounts').then(function(rows){
 		async.eachSeries(rows, function(row, eachCb){
+			console.log('>>>>>>>>>>>>>>>>>>>> row ', row);
 			var publicKey=row.publicKey;
+
 			//checking if publicKey is blank, if blank then publicKey.toString("hex") throws error toString of undefined
-			if(publicKey != ""){
+			if((publicKey != undefined && publicKey != null){
+				console.log('>>>>>>>>>>>>>>>>>>>> before toString');
 				publicKey=publicKey.toString("hex");
+				console.log('>>>>>>>>>>>>>>>>>>>> after toString', publicKey);
 			}
 			var receivedSQL='select sum(amount) as total, count(amount) as count from transactions where amount > 0 and "recipientId" = \''+row.address+'\';'
 			var spentSQL='select sum(amount+fee) as total, count(amount) as count from transactions where "senderPublicKey" = \'\\x'+publicKey+'\';'
@@ -261,7 +266,7 @@ NodeManager.prototype.performSPVFix = function (cb) {
 					});
 				}
 			};
-			if(publicKey != ""){
+			if((publicKey != undefined && publicKey != null){
 				series.spent = function(cb){
 					library.db.query(spentSQL).then(function(rows){
 						cb(null, rows[0]);
@@ -275,19 +280,7 @@ NodeManager.prototype.performSPVFix = function (cb) {
 			}
 
 			async.series(series, function(err, result){
-				// if(publicKey){
-				// 	result.balance = parseInt(result.received.total||0) - parseInt(result.spent.total||0) + parseInt(result.rewards.total||0);
-				// }
-				// else {
-				// 	result.balance = parseInt(result.received.total||0);
-				// }
-				//
-				// if(result.balance != row.balance){
-				// 	fixedAccounts.push(row);
-				// 	var diff = result.balance - row.balance;
-				// 	library.db.none("update mem_accounts set balance = balance + "+diff+", u_balance = u_balance + "+diff+" where address = '"+row.address+"';");
-				// }
-				if(publicKey != ""){
+				if((publicKey != undefined && publicKey != null){
 					var receivedTotal, spentTotal, rewardsTotal, balance;
 					var zero = new bigdecimal.BigDecimal('0.0000000000');
 
