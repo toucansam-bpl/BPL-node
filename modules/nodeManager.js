@@ -242,18 +242,13 @@ NodeManager.prototype.onRebuildBlockchain = function(blocksToRemove, state, cb) 
 
 //
 NodeManager.prototype.performSPVFix = function (cb) {
-	console.log(' >>>>>>>>>>>>>>>>>>>> In performSPVFix ');
 	var fixedAccounts = [];
 	library.db.query('select address, "publicKey", balance from mem_accounts').then(function(rows){
 		async.eachSeries(rows, function(row, eachCb){
-			console.log('>>>>>>>>>>>>>>>>>>>> row ', row);
 			var publicKey=row.publicKey;
 
-			//checking if publicKey is blank, if blank then publicKey.toString("hex") throws error toString of undefined
-			if(publicKey != undefined && publicKey != null){
-				console.log('>>>>>>>>>>>>>>>>>>>> before toString');
+			if(publicKey){
 				publicKey=publicKey.toString("hex");
-				console.log('>>>>>>>>>>>>>>>>>>>> after toString', publicKey);
 			}
 			var receivedSQL='select sum(amount) as total, count(amount) as count from transactions where amount > 0 and "recipientId" = \''+row.address+'\';'
 			var spentSQL='select sum(amount+fee) as total, count(amount) as count from transactions where "senderPublicKey" = \'\\x'+publicKey+'\';'
@@ -266,7 +261,7 @@ NodeManager.prototype.performSPVFix = function (cb) {
 					});
 				}
 			};
-			if(publicKey != undefined && publicKey != null){
+			if(publicKey){
 				series.spent = function(cb){
 					library.db.query(spentSQL).then(function(rows){
 						cb(null, rows[0]);
@@ -280,28 +275,31 @@ NodeManager.prototype.performSPVFix = function (cb) {
 			}
 
 			async.series(series, function(err, result){
-				if(publicKey != undefined && publicKey != null){
-					var receivedTotal, spentTotal, rewardsTotal, balance;
+				var receivedTotal, spentTotal, rewardsTotal, balance;
+				if(publicKey){
 					var zero = new bigdecimal.BigDecimal('0.0000000000');
 
 					if(result.received.total != undefined)
-					  receivedTotal = new bigdecimal.BigDecimal(''+result.received.total);
+					 	receivedTotal = new bigdecimal.BigDecimal(''+result.received.total);
 					else
 						receivedTotal = zero;
 
 					if(result.spent.total != undefined)
-					  spentTotal = new bigdecimal.BigDecimal(''+result.spent.total);
+					  	spentTotal = new bigdecimal.BigDecimal(''+result.spent.total);
 					else
 						spentTotal = zero;
 
 					if(result.rewards.total != undefined)
-					  rewardsTotal = new bigdecimal.BigDecimal(''+result.rewards.total);
+					  	rewardsTotal = new bigdecimal.BigDecimal(''+result.rewards.total);
 					else
 						rewardsTotal = zero;
-
 					result.balance = receivedTotal.subtract(spentTotal).add(rewardsTotal).toString();
 				}
 				else {
+					if(result.received.total != undefined)
+					 	receivedTotal = new bigdecimal.BigDecimal(''+result.received.total);
+					else
+						receivedTotal = zero;
 					result.balance = receivedTotal.toString();
 				}
 
