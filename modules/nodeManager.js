@@ -250,7 +250,7 @@ NodeManager.prototype.performSPVFix = function (cb) {
 			var publicKey=row.publicKey;
 
 			//checking if publicKey is blank, if blank then publicKey.toString("hex") throws error toString of undefined
-			if((publicKey != undefined && publicKey != null){
+			if(publicKey != undefined && publicKey != null){
 				console.log('>>>>>>>>>>>>>>>>>>>> before toString');
 				publicKey=publicKey.toString("hex");
 				console.log('>>>>>>>>>>>>>>>>>>>> after toString', publicKey);
@@ -266,7 +266,7 @@ NodeManager.prototype.performSPVFix = function (cb) {
 					});
 				}
 			};
-			if((publicKey != undefined && publicKey != null){
+			if(publicKey != undefined && publicKey != null){
 				series.spent = function(cb){
 					library.db.query(spentSQL).then(function(rows){
 						cb(null, rows[0]);
@@ -280,7 +280,7 @@ NodeManager.prototype.performSPVFix = function (cb) {
 			}
 
 			async.series(series, function(err, result){
-				if((publicKey != undefined && publicKey != null){
+				if(publicKey != undefined && publicKey != null){
 					var receivedTotal, spentTotal, rewardsTotal, balance;
 					var zero = new bigdecimal.BigDecimal('0.0000000000');
 
