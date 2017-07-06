@@ -1,160 +1,230 @@
-# BlockPool
-
-BlockPool is a next generation crypto-currency and decentralized application platform, written entirely in JavaScript. For more information please refer to our website: https://blockpool.io.
-
-The Token Exchange Campaign is up at https://blockpool.io/tec.html
-
-This version is still alpha, use at your own risks
-
-## Install, Upgrade etc...
-You need to provision a linux (ubuntu tested) server (digital ocean, vultur or other).
-
-For developers, please read below in section "Developer Installation"
-
-## Details
-
-This is a fork from Lisk with the following features:
-- Removed sidechains (deprecated in favor of our BIT API)
-- Removed custom node version
-- Removed UI for stability and security reasons
-- Changed some constants (block rewards, blocktime etc...)
-- Added simple PBFT before forging new block
-- Ditch addresses from the protocol in favor of bitcoin like system, enabling HD Wallet as for BIP32
-- Completely rewritten node management using a single NodeManager and messaging system
-- Completely rewritten round management (removed mem_round, reward block fees to forger)
-- Added 64 bytes vendorField as first iteration of smart bridge
-- Made peers management entirely in-memory for efficiency
-- Strengthened the transaction management and broadcast (reject often, reject soon)
-- Rearchitect with relay nodes and forging nodes
-- Nodes broadcast only block headers.
-
-### Planned features:
-- Simple blockchain validation for SPV and use in lite clients
-- Protocol improvements (uncle forging, voting weights).
-- Remove unsecured API
-- Routing tables
-
-### Performance
-- stable on testnet at 5tx/s
-- pushed to 10tx/s on devnet
+Detailed steps for setting up BPL node on Linux, Windows and Debian
 
 
-## Developer Installation
+Linux/Ubuntu (We have tested with Ubuntu v16.0.4)
 
-Install essentials:
-
-```
+Developer Installation
+Install essentials
 sudo apt-get update
 sudo apt-get install -y curl build-essential python git
-```
 
-Install PostgreSQL (min version: 9.5.2)
-
-```
-sudo apt-get install -y postgresql postgresql-contrib
-sudo -u postgres createuser --createdb --password $USER
-createdb bpl_test
-```
-
-Install Node.js (tested with version 6.9.2, but any recent LTS release should do):
-
-```
+Install Node.js (min version: 6.9.2)
 sudo apt-get install -y nodejs
+sudo apt-get install -y npm
 sudo npm install -g n
 sudo n 6.9.2
-```
 
-Install grunt-cli (globally):
-
-```
+Install grunt-cli (globally)
 sudo npm install grunt-cli -g
-```
 
-Clone this repository
-```
-git clone https://github.com/blockpool-io/BPL-node.git
+Install PostgreSQL (min version: 9.5.2)
+sudo apt-get install -y postgresql postgresql-contrib
+sudo -u postgres createuser --createdb --password $USER
+createdb ‘Database Name’  (this should match with the database name from config file)
+
+Clone BPL Node repository
+git clone https://github.com/blockpool-io/BPL-node.git   (make sure you have git installed)
 cd BPL-node
-```
+git checkout testnet
 
-Install node modules:
-```
+Install node modules
+sudo apt-get install -y libpq-dev
 npm install libpq secp256k1
 npm install
-```
 
-## Launch
-To launch BPL on testnet:
-```
-createdb BPL_testnet
-node run start:testnet
-```
+Add configurations for your node
+	Change the following in config.testnet.json :
+“address“: “set your IP”
+“database”: “set database name”
+“user”: “set database user”
+“password”: “set database password”
+“list”: [
+	{
+		“ip”: “set your IP address”
+		“port”: “set the port on which your node will be running”
+	},
+{
+		“ip”: “Set seed node IP address”
+		“port”: “set the port on which seed node will be running”
+	}
+]
 
-To launch BPL on devtnet:
-```
-createdb BPL_devnet
-node run start:devnet
-```
-
-To launch BPL on mainnet (when launched):
-```
-createdb ark_mainnet
-node run start:mainnet
-```
-
-**NOTE:** The **port**, **address**, **genesis block** and **config-path** can be overridden by providing the relevant command switch:
-```
-node app.js -p [port] -a [address] -c [config-path] -g [genesisBlock-path]
-```
-This allow you to run several different networks, or your own private chain
+Launch BPL node
+To launch BPL node on testnet:
+npm run start:bpltestnet
 
 
-## Launch your own private or public chain
-Generate a genesisBlock.json + a default config.json containing all passphrases of genesis delegates
-```
-node tasks/createGenesisBlock.js
-```
-You can find generated files in tasks/
-- genesisBlock.json
-- config.json
-- delegatesPassphrases.json (containing details about the genesis delegates)
-- genesisPassphrase.json (containing the details of account having all premined arks)
-
-Obviously you can hack away tasks/createGenesisBlock.js for your own custom use.
-
-You can the start with your own chain on a single node (all delegates will forge on your single node) using:
-```
-createdb BPL_newtest
-npm run start:newtest
-```
-
-Then you can distribute the config.json (without the delegates secrets inside, and with custom peers settings) to peers to let them join your chain
 
 
-## Tests
-Load git submodule [BPL-js](https://github.com/blockpool-io/BPL-js):
-```
-git submodule init
-git submodule update
-```
 
-You should run using test configurations
 
-```
-npm run start:test
-```
 
-Run the test suite:
 
-```
-npm test
-```
 
-Run individual tests:
 
-```
-npm test -- test/api/accounts.js
-npm test -- test/api/transactions.js
-```
+
+
+
+
+
+
+
+
+
+Windows 7
+
+Developer Installation
+Install essentials
+ Python(min version 2.7.0) URL -  https://www.python.org/downloads/ 
+ Visual Studio c++ 2010 express
+
+Install Node.js (min version 6.9.2)
+ URL - https://nodejs.org/en/download/
+
+ Install PostgreSQL (min version 5.5.2)
+ URL -  http://www.postgresql.org/download/windows/
+Add following environment variable:
+PATH as C:\Program Files\PostgreSQL\9.5\bin 
+(Windows Start -> Right click on Computer → Advanced System settings → Environment variables)
+Modify the file ‘pg_hba’, present at the location  C:\Program Files\PostgreSQL\9.5\data\pg_hba
+Replace ‘md5’ with ‘trust’  under ‘METHOD’ column
+
+
+Fig. Change to be done in the file ‘pg_hba’
+
+Restart psql:
+My Computer → Manage → Services and Application → Services → Restart postgres service
+Alter postgres user:
+psql -U postgres
+alter user postgres with password 'User Password'
+Create database:
+Create database ‘Database Name’ Name’  (this should match with the database name from config file)
+
+
+Clone repository
+git clone https://github.com/blockpool-io/BPL-node.git (make sure you have git installed)
+cd BPL-node
+git checkout testnet
+
+
+Install node modules
+npm install --global --production windows-build-tools 
+npm install libpq secp256k1
+npm install
+
+Add configurations for your node
+	Change the following in config.private.json:
+“address“: “set your IP”
+“database”: “set database name”
+“user”: “set database user”
+“password”: “set database password”
+“list”: [
+	{
+		“ip”: “set your IP address”
+		“port”: “set the port on which your node will be running”
+},
+{
+//For 5 Windows nodes, seed IP is already configured in the shared 5 files so no need of adding this entry
+		“ip”: “Set seed node IP address”
+		“port”: “set the port on which seed node will be running”
+}
+]
+
+
+Launch BPL node
+To launch BPL on testnet:  
+npm run start:bpltestnet
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Debian- (We have tested with Jessie 8.7)
+
+Developer Installation
+Install essentials
+sudo apt-get update
+sudo apt-get install -y curl build-essential python git
+
+Install Node.js (min version: 6.9.2)
+sudo apt-get install -y nodejs
+sudo apt-get intsall -y npm
+sudo npm install -g n
+sudo n 6.9.2
+
+Install grunt-cli (globally)
+sudo npm install grunt-cli -g
+
+Install PostgreSQL (min version: 9.5.2)
+  Since Debian 8.8/8.8 installs psql 9.4.12 , we will need to add the repository manually to install psql 9.5:
+wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | sudo apt-key add -
+sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" >> /etc/apt/sources.list.d/pgdg.list'
+sudo apt-get update
+sudo apt-get install -y postgresql-9.5
+sudo -u postgres createuser –createdb $USER
+createdb ‘Database Name’  (this should match with the database name from config file)
+
+
+Clone BPL Node repository
+If git is not found, following adds the repository manually:
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys E1DD270288B4E6030699E45FA1715D88E1DF1F24
+sudo su -c "echo 'deb http://ppa.launchpad.net/git-core/ppa/ubuntu trusty main' > /etc/apt/sources.list.d/git.list"
+sudo apt-get -y update
+sudo apt-get install -y git
+
+git clone https://github.com/blockpool-io/BPL-node.git   (make sure you have git installed)
+cd BPL-node
+git checkout testnet
+
+Install node modules
+sudo apt-get install libpq-dev
+npm install libpq secp256k1
+npm install
+
+
+Add configurations for your node
+	Change the following in config.private.json:
+“address“: “set your IP”
+“database”: “set database name”
+“user”: “set database user”
+“password”: “set database password”
+“list”: [
+	{
+		“ip”: “set your IP address”
+		“port”: “set the port on which your node will be running”
+	},
+{
+		“ip”: “Set seed node IP address”
+		“port”: “set the port on which seed node will be running”
+	}
+]
+
+
+Launch BPL node
+To launch BPL node on testnet:
+npm run start:bpltestnet
+
 
 **NOTE:** The master passphrase for this test genesis block is as follows:
 
