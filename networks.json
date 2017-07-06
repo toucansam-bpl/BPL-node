@@ -13,6 +13,20 @@
       "explorer":"http://52.66.184.223:4005"
     }
   },
+  "BPL-testnet": {
+    "messagePrefix": "BPL message:\n",
+    "bip32": {
+      "public": 46090600,
+      "private": 46089520
+    },
+    "pubKeyHash": 25,
+    "wif": 170,
+    "client": {
+      "token":"BLOCKPOOL",
+      "symbol":"β",
+      "explorer":"http://52.66.184.223:4005"
+    }
+  },
   "bitcoin": {
     "messagePrefix": "Bitcoin message:\n",
     "bip32": {
