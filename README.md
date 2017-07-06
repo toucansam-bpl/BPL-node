@@ -3,36 +3,53 @@ Detailed steps for setting up BPL node on Linux, Windows and Debian
 
 Linux/Ubuntu (We have tested with Ubuntu v16.0.4)
 
+
 Developer Installation
+
+
 Install essentials
+
+
 sudo apt-get update
 sudo apt-get install -y curl build-essential python git
 
 Install Node.js (min version: 6.9.2)
+
 sudo apt-get install -y nodejs
 sudo apt-get install -y npm
 sudo npm install -g n
 sudo n 6.9.2
 
+
 Install grunt-cli (globally)
+
 sudo npm install grunt-cli -g
 
+
 Install PostgreSQL (min version: 9.5.2)
+
+
 sudo apt-get install -y postgresql postgresql-contrib
 sudo -u postgres createuser --createdb --password $USER
 createdb ‘Database Name’  (this should match with the database name from config file)
 
 Clone BPL Node repository
+
+
 git clone https://github.com/blockpool-io/BPL-node.git   (make sure you have git installed)
 cd BPL-node
 git checkout testnet
 
 Install node modules
+
+
 sudo apt-get install -y libpq-dev
 npm install libpq secp256k1
 npm install
 
 Add configurations for your node
+
+
 	Change the following in config.testnet.json :
 “address“: “set your IP”
 “database”: “set database name”
@@ -50,24 +67,9 @@ Add configurations for your node
 ]
 
 Launch BPL node
+
 To launch BPL node on testnet:
 npm run start:bpltestnet
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -75,6 +77,7 @@ Windows 7
 
 Developer Installation
 Install essentials
+
  Python(min version 2.7.0) URL -  https://www.python.org/downloads/ 
  Visual Studio c++ 2010 express
 
@@ -134,28 +137,6 @@ Add configurations for your node
 Launch BPL node
 To launch BPL on testnet:  
 npm run start:bpltestnet
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
