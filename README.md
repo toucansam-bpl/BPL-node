@@ -33,7 +33,7 @@ sudo npm install grunt-cli -g
 
 ```
 sudo apt-get install -y postgresql postgresql-contrib
-sudo -u postgres createuser --createdb --password $USER
+sudo -u -P postgres createuser --createdb --password $USER
 createdb ‘Database Name’  (this should match with the database name from config file)
 ```
 
