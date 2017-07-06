@@ -1,7 +1,7 @@
 # Detailed steps for setting up BPL node on Linux, Windows and Debian
 
 
-# Linux/Ubuntu (We have tested with Ubuntu v16.0.4)
+**Linux/Ubuntu (We have tested with Ubuntu v16.0.4)**
 
 
 # Developer Installation
