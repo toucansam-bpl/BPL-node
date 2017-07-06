@@ -29,6 +29,7 @@ var constants = require('../helpers/constants.js');
 var slots = require('../helpers/slots.js');
 var sql = require('../sql/rounds.js');
 var crypto = require('crypto');
+var bigdecimal = require("bigdecimal");
 
 // managing globals
 var modules, library, self;
@@ -78,11 +79,23 @@ Rounds.prototype.tick = function(block, cb){
 	}
 
 	else{
+		var down = bigdecimal.RoundingMode.DOWN();
+		var reward;
+		if(block.reward == '0.0000000000')
+			reward = new bigdecimal.BigDecimal('0.0000000000');
+		else
+			reward = new bigdecimal.BigDecimal(''+block.reward);
+		var totalFee = new bigdecimal.BigDecimal(''+block.totalFee);
+		var result = reward.add(totalFee);
+		result = result.setScale(10, down);
+
+		result = (result.toString() == '0E-10' ? '0.0000000000' : result.toString());
+
 		// give block rewards + fees to the block forger
 		modules.accounts.mergeAccountAndGet({
 			publicKey: block.generatorPublicKey,
-			balance: block.reward + block.totalFee,
-			u_balance: block.reward + block.totalFee,
+			balance: result,
+			u_balance: result,
 			fees: block.totalFee,
 			rewards: block.reward,
 			producedblocks: 1,
@@ -120,11 +133,24 @@ Rounds.prototype.backwardTick = function(block, cb){
 		}
 		else{
 			var round = __private.current;
+
+			var down = bigdecimal.RoundingMode.DOWN();
+			var reward;
+			if(block.reward == '0.0000000000')
+				reward = new bigdecimal.BigDecimal('0.0000000000');
+			else
+				reward = new bigdecimal.BigDecimal(''+block.reward);
+			var totalFee = new bigdecimal.BigDecimal(''+block.totalFee);
+			var result = reward.add(totalFee);
+			result = result.setScale(10, down);
+
+			result = (result.toString() == '0E-10' ? '0.0000000000' : result.toString());
+
 			// remove block rewards + fees from the block forger
 			modules.accounts.mergeAccountAndGet({
 				publicKey: block.generatorPublicKey,
-				balance: -(block.reward + block.totalFee),
-				u_balance: -(block.reward + block.totalFee),
+				balance: -(result),
+				u_balance: -(result),
 				fees: -block.totalFee,
 				rewards: -block.reward,
 				producedblocks: -1,

@@ -159,7 +159,6 @@ Blockchain.prototype.isForked = function(block){
 
 // Check if block is already in blockchain (ie same id) or already found as orphaned
 Blockchain.prototype.isPresent = function(block){
-
 	return (__private.blockchain[block.height] && __private.blockchain[block.height].id == block.id) || __private.orphanedBlocks[block.id];
 }
 
@@ -346,7 +345,8 @@ Blockchain.prototype.onBlockReceived = function(block, peer) {
 
 	if(self.isOrphaned(block)){
 		__private.orphanedBlocks[block.id]=block;
-		block.orphaned=true;
+		// if the forger has a clock drift over a block time, just ignore it
+		block.orphaned = block.height==__private.lastBlock.height;
 		library.logger.info("Orphaned block received", {id: block.id, height:block.height, peer:peer.string});
 		return;
 	}
@@ -491,7 +491,7 @@ __private.timestampState = function (lastReceipt) {
 		__private.lastReceipt.rebuild = __private.lastReceipt.secondsAgo > 200;
 	}
 
-	if(__private.lastBlock.height < 52){
+	if(__private.lastBlock.height < 202){
 		__private.lastReceipt.rebuild = false;
 	}
 

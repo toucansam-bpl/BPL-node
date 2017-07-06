@@ -1,7 +1,7 @@
 {
-  "port": 4002,
+  "port": 4000,
   "address": "0.0.0.0",
-  "version": "1.1.0",
+  "version": "0.3.0",
   "fileLogLevel": "info",
   "logFileName": "logs/ark.log",
   "consoleLogLevel": "debug",
@@ -9,9 +9,9 @@
   "db": {
     "host": "localhost",
     "port": 5432,
-    "database": "ark_devnet",
-    "user": null,
-    "password": "password",
+    "database": "dbName",
+    "user": "dbUser",
+    "password": "dbPassword",
     "poolSize": 20,
     "poolIdleTimeout": 30000,
     "reapIntervalMillis": 1000,
@@ -34,27 +34,11 @@
     }
   },
   "peers": {
-    "minimumNetworkReach": 10,
+    "minimumNetworkReach": 1,
     "list": [
       {
-        "ip": "167.114.29.51",
-        "port": 4002
-      },
-      {
-        "ip": "167.114.29.52",
-        "port": 4002
-      },
-      {
-        "ip": "167.114.29.53",
-        "port": 4002
-      },
-      {
-        "ip": "167.114.29.54",
-        "port": 4002
-      },
-      {
-        "ip": "167.114.29.55",
-        "port": 4002
+        "ip": "0.0.0.0",
+        "port": 4000
       }
     ],
     "blackList": [],
@@ -92,6 +76,6 @@
       "cert": "./ssl/ark.crt"
     }
   },
-  "network": "devnet",
-  "nethash": "578e820911f24e039733b45e4882b73e301f813a0d2c31330dafda84534ffa23"
+  "network": "BPL-devnet",
+  "nethash": "1a418de02c68c4353d932a9568be28be20b7b9a86fcf9b653482b4f3f42a6302"
 }

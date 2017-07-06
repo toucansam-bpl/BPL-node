@@ -4,6 +4,7 @@ var async = require('async');
 var schema = require('../schema/nodeManager.js');
 var sql = require('../sql/nodeManager.js');
 var os = require('os');
+var bigdecimal = require("bigdecimal");
 
 var self, library, modules;
 
@@ -28,8 +29,6 @@ function NodeManager (cb, scope) {
 	}
 	return cb(null, self);
 }
-
-
 
 //
 //__EVENT__ `onBind`
@@ -156,7 +155,7 @@ NodeManager.prototype.onBlocksReceived = function(blocks, peer, cb) {
 
 		var currentBlock;
 		async.eachSeries(blocks, function (block, eachSeriesCb) {
-			block.reward = parseInt(block.reward);
+			block.reward = (block.reward ==  '0.0000000000' ? block.reward : new bigdecimal.BigDecimal(''+block.reward).toString());
 			block.totalAmount = parseInt(block.totalAmount);
 			block.totalFee = parseInt(block.totalFee);
 			block.verified = false;
@@ -210,7 +209,7 @@ NodeManager.prototype.onRebuildBlockchain = function(blocksToRemove, state, cb) 
 				else if(network.height > lastBlock.height){
 					library.logger.info("Observed network height is higher", {network: network.height, node:lastBlock.height});
 					library.logger.info("Rebuilding from network");
-					if(network.height - lastBlock.height > 51){
+					if(network.height - lastBlock.height > 201){
 						blocksToRemove = 200;
 					}
 					return modules.blocks.removeSomeBlocks(blocksToRemove, mSequence);
@@ -247,6 +246,7 @@ NodeManager.prototype.performSPVFix = function (cb) {
 	library.db.query('select address, "publicKey", balance from mem_accounts').then(function(rows){
 		async.eachSeries(rows, function(row, eachCb){
 			var publicKey=row.publicKey;
+
 			if(publicKey){
 				publicKey=publicKey.toString("hex");
 			}
@@ -261,7 +261,6 @@ NodeManager.prototype.performSPVFix = function (cb) {
 					});
 				}
 			};
-
 			if(publicKey){
 				series.spent = function(cb){
 					library.db.query(spentSQL).then(function(rows){
@@ -276,16 +275,41 @@ NodeManager.prototype.performSPVFix = function (cb) {
 			}
 
 			async.series(series, function(err, result){
+				var receivedTotal, spentTotal, rewardsTotal, balance;
 				if(publicKey){
-					result.balance = parseInt(result.received.total||0) - parseInt(result.spent.total||0) + parseInt(result.rewards.total||0);
+					var zero = new bigdecimal.BigDecimal('0.0000000000');
+
+					if(result.received.total != undefined)
+					 	receivedTotal = new bigdecimal.BigDecimal(''+result.received.total);
+					else
+						receivedTotal = zero;
+
+					if(result.spent.total != undefined)
+					  	spentTotal = new bigdecimal.BigDecimal(''+result.spent.total);
+					else
+						spentTotal = zero;
+
+					if(result.rewards.total != undefined)
+					  	rewardsTotal = new bigdecimal.BigDecimal(''+result.rewards.total);
+					else
+						rewardsTotal = zero;
+					result.balance = receivedTotal.subtract(spentTotal).add(rewardsTotal).toString();
 				}
 				else {
-					result.balance = parseInt(result.received.total||0);
+					if(result.received.total != undefined)
+					 	receivedTotal = new bigdecimal.BigDecimal(''+result.received.total);
+					else
+						receivedTotal = zero;
+					result.balance = receivedTotal.toString();
 				}
 
+				result.balance = (result.balance == '0E-10' ? '0.0000000000' : result.balance);
 				if(result.balance != row.balance){
 					fixedAccounts.push(row);
-					var diff = result.balance - row.balance;
+					var resultBalance = new bigdecimal.BigDecimal(''+result.balance);
+					var rowBalance = new bigdecimal.BigDecimal(''+row.balance);
+					var diff = resultBalance.subtract(rowBalance).toString();
+					diff = (diff == '0E-10' ? '0.0000000000' : diff);
 					library.db.none("update mem_accounts set balance = balance + "+diff+", u_balance = u_balance + "+diff+" where address = '"+row.address+"';");
 				}
 				return eachCb();
@@ -303,12 +327,28 @@ NodeManager.prototype.performSPVFix = function (cb) {
 //
 NodeManager.prototype.fixDatabase = function(cb){
 	async.series([
-		function(eachCb){
-			modules.transactionPool.undoUnconfirmedList([], eachCb);
+		function(seriesCb){
+			modules.transactionPool.undoUnconfirmedList([], seriesCb);
 		},
 		modules.loader.resetMemAccounts,
 		self.performSPVFix
 	], cb);
+}
+
+
+//
+//__API__ `SPVRebuild`
+
+//TODO: NOT READY, DO NOT USE
+NodeManager.prototype.SPVRebuild = function(cb){
+	library.managementSequence.add(function(mSequence){
+		async.series([
+			modules.loader.cleanMemAccount,
+			modules.loader.rebuildBalance,
+			modules.loader.rebuildVotes,
+			modules.rounds.rebuildMemDelegates
+		], mSequence);
+	}, cb);
 }
 
 
@@ -339,13 +379,13 @@ __private.prepareBlock = function(block, peer, cb){
 			// lets download the missing ones from the peer that sent the block.
 			else{
 				modules.transport.requestFromPeer(peer, {
-					 method: 'GET',
+					method: 'GET',
 					api: '/transactionsFromIds?blockid=' + block.id + "&ids='"+missingTransactionIds.join(",")+"'"
 				}, function (err, res) {
-					library.logger.debug("called "+res.peer.ip+":"+res.peer.port+"/peer/transactionsFromIds");
+					library.logger.debug("called "+peer.ip+":"+peer.port+"/peer/transactionsFromIds");
 					 if (err) {
 						 library.logger.debug('Cannot get transactions for block', block.id);
-						 return cb && cb(null, block);
+						 return cb && cb(err, block);
 					 }
 
 					 var receivedTransactions = res.body.transactions;
@@ -442,6 +482,10 @@ NodeManager.prototype.onBlockReceived = function(block, peer, cb) {
 			if(block.orphaned){
 				// this lastBlock is processed because of managementSequence.
 				var lastBlock = modules.blockchain.getLastBlock();
+				if(lastBlock.height > block.height){
+					library.logger.info("Orphaned block arrived over one block time too late, block disregarded", {id: block.id, height:block.height, publicKey:block.generatorPublicKey});
+					return mSequence(null, block);
+				}
 				// all right we are at the beginning of a fork, let's swap asap if needed
 				if(lastBlock && block.timestamp < lastBlock.timestamp){
 					// lowest timestamp win: likely more spread
@@ -551,8 +595,8 @@ NodeManager.prototype.onTransactionsReceived = function(transactions, source, cb
 		if(source.toLowerCase() == "api"){
 			transactions.forEach(function(tx){
 				tx.id = library.logic.transaction.getId(tx);
-				tx.broadcast = true;
 				tx.hop = 0;
+				library.bus.message('broadcastTransaction', tx);
 			});
 
 			library.bus.message("addTransactionsToPool", transactions, mSequence);
@@ -568,23 +612,20 @@ NodeManager.prototype.onTransactionsReceived = function(transactions, source, cb
 			}
 
 			var skimmedtransactions = [];
-			async.eachSeries(transactions, function (transaction, cb) {
+			async.eachSeries(transactions, function (transaction, eachCb) {
 				try {
 					transaction = library.logic.transaction.objectNormalize(transaction);
 					transaction.id = library.logic.transaction.getId(transaction);
 				} catch (e) {
-					return cb(e);
+					return eachCb(e);
 				}
 
 				if(!library.logic.transaction.verifyFee(transaction)){
-					return cb("Transaction fee is too low");
+					return eachCb("Transaction fee is too low");
 				}
 
-				library.db.query(sql.getTransactionId, { id: transaction.id }).then(function (rows) {
-					if (rows.length > 0) {
-						library.logger.debug('Transaction ID is already in blockchain', transaction.id);
-					}
-					else{ // we only broadcast tx with known hop.
+				modules.transactions.verify(transaction, function(err){
+					if(!err){
 						transaction.broadcast = false;
 						if(transaction.hop){
 							transaction.hop = parseInt(transaction.hop);
@@ -598,8 +639,12 @@ NodeManager.prototype.onTransactionsReceived = function(transactions, source, cb
 							transaction.broadcast = true;
 						}
 						skimmedtransactions.push(transaction);
+						if(transaction.broadcast) {
+							transaction.broadcast = false;
+							library.bus.message('broadcastTransaction', transaction);
+						}
 					}
-					return cb();
+					return eachCb(err);
 				});
 			}, function (err) {
 				if(err){

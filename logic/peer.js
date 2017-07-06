@@ -28,7 +28,7 @@ Peer.bind = function (scope) {
 
 // single Peer object
 function Peer(ip, port, version, os){
-	this.ip = ip;
+	this.ip = ip.trim();
 	this.port = port;
 	this.version = version;
 	this.os = os;
@@ -131,6 +131,7 @@ Peer.prototype.fetchStatus = function(cb){
 			if(!check.verified){
 				that.status="FORK";
 				that.counterror++;
+				console.log(res.body);
 				library.logger.trace(that + " sent header", res.body.header);
 				library.logger.debug(that + " header errors", check.errors);
 				return cb && cb('Received invalid block header from peer '+that, res);
@@ -210,8 +211,7 @@ Peer.prototype.request = function(api, options, cb){
 			if(!report){
 				that.status = "EAPI";
 				that.counterror++;
-				console.log(options.method +":"+apihandle);
-				console.log(Object.keys(res.body));
+				library.logger.debug(options.method +":"+apihandle, res.body);
 				return cb("Returned data does not match API requirement for " + options.method +":"+apihandle);
 			}
 

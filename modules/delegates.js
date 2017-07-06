@@ -6,7 +6,6 @@ var bignum = require('../helpers/bignum.js');
 var BlockReward = require('../logic/blockReward.js');
 var checkIpInList = require('../helpers/checkIpInList.js');
 var constants = require('../helpers/constants.js');
-var crypto = require('crypto');
 var extend = require('extend');
 var MilestoneBlocks = require('../helpers/milestoneBlocks.js');
 var OrderBy = require('../helpers/orderBy.js');
@@ -15,6 +14,7 @@ var schema = require('../schema/delegates.js');
 var slots = require('../helpers/slots.js');
 var sql = require('../sql/delegates.js');
 var transactionTypes = require('../helpers/transactionTypes.js');
+var bigdecimal = require("bigdecimal");
 
 // Private fields
 var modules, library, self, __private = {}, shared = {};
@@ -102,7 +102,7 @@ __private.attachApi = function () {
 				return res.json({success: false, error: 'Access denied'});
 			}
 
-			var keypair = library.ed.makeKeypair(crypto.createHash('sha256').update(req.body.secret, 'utf8').digest());
+			var keypair = library.crypto.makeKeypair(crypto.createHash('sha256').update(req.body.secret, 'utf8').digest());
 
 			if (req.body.publicKey) {
 				if (keypair.publicKey.toString('hex') !== req.body.publicKey) {
@@ -141,7 +141,7 @@ __private.attachApi = function () {
 				return res.json({success: false, error: 'Access denied'});
 			}
 
-			var keypair = library.ed.makeKeypair(crypto.createHash('sha256').update(req.body.secret, 'utf8').digest());
+			var keypair = library.crypto.makeKeypair(crypto.createHash('sha256').update(req.body.secret, 'utf8').digest());
 
 			if (req.body.publicKey) {
 				if (keypair.publicKey.toString('hex') !== req.body.publicKey) {
@@ -445,7 +445,7 @@ __private.loadMyDelegates = function (cb) {
 	}
 
 	async.eachSeries(secrets, function (secret, seriesCb) {
-		var keypair = library.ed.makeKeypair(secret);
+		var keypair = library.crypto.makeKeypair(secret);
 
 		// already loaded? Do nothing
 		if(__private.keypairs[keypair.publicKey.toString('hex')]){
@@ -514,34 +514,42 @@ Delegates.prototype.getDelegates = function (query, cb) {
 		var length = Math.min(limit, count);
 		var realLimit = Math.min(offset + limit, count);
 
-		var lastBlock   = modules.blockchain.getLastBlock(),
-		    totalSupply = __private.blockReward.calcSupply(lastBlock.height);
+		var lastBlock   = modules.blockchain.getLastBlock();
+		var totalSupply = 0;
 
-		for (var i = 0; i < delegates.length; i++) {
-			delegates[i].rate = i + 1;
-			delegates[i].approval = (delegates[i].vote / totalSupply) * 100;
-			delegates[i].approval = Math.round(delegates[i].approval * 1e2) / 1e2;
+		//get total supply in the Blockchain
+		__private.blockReward.calcSupply(lastBlock.height, function(error, supply) {
+			if(!error) {
+				totalSupply = supply;
+			}
 
-			var percent = 100 - (delegates[i].missedblocks / ((delegates[i].producedblocks + delegates[i].missedblocks) / 100));
-			percent = Math.abs(percent) || 0;
+			for (var i = 0; i < delegates.length; i++) {
+				delegates[i].rate = i + 1;
+				delegates[i].approval = (delegates[i].vote / totalSupply) * 100;
+				delegates[i].approval = Math.round(delegates[i].approval * 1e2) / 1e2;
 
-			var outsider = i + 1 > slots.delegates;
-			delegates[i].productivity = (!outsider) ? Math.round(percent * 1e2) / 1e2 : 0;
-		}
+				var percent = 100 - (delegates[i].missedblocks / ((delegates[i].producedblocks + delegates[i].missedblocks) / 100));
+				percent = Math.abs(percent) || 0;
 
-		var orderBy = OrderBy(query.orderBy, {quoteField: false});
+				var outsider = i + 1 > slots.delegates;
+				delegates[i].productivity = (!outsider) ? Math.round(percent * 1e2) / 1e2 : 0;
+			}
 
-		if (orderBy.error) {
-			return cb(orderBy.error);
-		}
+			var orderBy = OrderBy(query.orderBy, {quoteField: false});
 
-		return cb(null, {
-			delegates: delegates,
-			sortField: orderBy.sortField,
-			sortMethod: orderBy.sortMethod,
-			count: count,
-			offset: offset,
-			limit: realLimit
+			if (orderBy.error) {
+				return cb(orderBy.error);
+			}
+
+			return cb(null, {
+				delegates: delegates,
+				sortField: orderBy.sortField,
+				sortMethod: orderBy.sortMethod,
+				count: count,
+				offset: offset,
+				limit: realLimit
+			});
+
 		});
 	});
 };
@@ -925,7 +933,12 @@ shared.getForgedByAccount = function (req, cb) {
 			if (err || !account) {
 				return cb(err || 'Account not found');
 			}
-			var forged = bignum(account.fees).plus(bignum(account.rewards)).toString();
+			var down = bigdecimal.RoundingMode.DOWN();
+			var big_reward = new bigdecimal.BigDecimal(''+account.rewards);
+			var big_fees = new bigdecimal.BigDecimal(''+account.fees);
+			var forged = big_fees.add(big_reward);
+			forged = forged.setScale(10, down);
+			forged = (forged.toString() == '0E-10'? '0.0000000000' : forged.toString());
 			return cb(null, {fees: account.fees, rewards: account.rewards, forged: forged});
 		});
 	});
@@ -937,7 +950,7 @@ shared.addDelegate = function (req, cb) {
 			return cb(err[0].message);
 		}
 
-		var keypair = library.ed.makeKeypair(req.body.secret);
+		var keypair = library.crypto.makeKeypair(req.body.secret);
 
 		if (req.body.publicKey) {
 			if (keypair.publicKey.toString('hex') !== req.body.publicKey) {
@@ -984,7 +997,7 @@ shared.addDelegate = function (req, cb) {
 						var secondKeypair = null;
 
 						if (requester.secondSignature) {
-							secondKeypair = library.ed.makeKeypair(req.body.secondSecret);
+							secondKeypair = library.crypto.makeKeypair(req.body.secondSecret);
 						}
 
 						var transaction;
@@ -1022,7 +1035,7 @@ shared.addDelegate = function (req, cb) {
 					var secondKeypair = null;
 
 					if (account.secondSignature) {
-						secondKeypair = library.ed.makeKeypair(req.body.secondSecret);
+						secondKeypair = library.crypto.makeKeypair(req.body.secondSecret);
 					}
 
 					var transaction;

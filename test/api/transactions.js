@@ -15,7 +15,7 @@ function putTransaction (params, done) {
 	node.put('/api/transactions', params, done);
 }
 
-function sendArk (account, done) {
+function sendBpl(account, done) {
 	var randomArk = node.randomArk();
 	var expectedFee = node.expectedFee(randomArk);
 
@@ -41,13 +41,13 @@ function sendArk (account, done) {
 
 before(function (done) {
 	setTimeout(function () {
-		sendArk(account, done);
+		sendBpl(account, done);
 	}, 2000);
 });
 
 before(function (done) {
 	setTimeout(function () {
-		sendArk(account2, done);
+		sendBpl(account2, done);
 	}, 2000);
 });
 

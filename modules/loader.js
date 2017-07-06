@@ -49,7 +49,8 @@ __private.attachApi = function () {
 
 	router.map(shared, {
 		'get /status': 'status',
-		'get /status/sync': 'sync'
+		'get /status/sync': 'sync',
+		'get /autoconfigure': 'autoconfigure'
 	});
 
 	library.network.app.use('/api/loader', router);
@@ -565,6 +566,64 @@ Loader.prototype.resetMemAccounts = function(cb){
 	}).catch(cb);
 };
 
+//
+//__API__ `cleanMemAccounts`
+
+//
+Loader.prototype.cleanMemAccounts = function(cb){
+	library.db.none(sql.cleanMemAccounts).then(function(){
+		return cb();
+	}).catch(cb);
+};
+
+//
+//__API__ `rebuildBalance`
+
+//
+Loader.prototype.rebuildBalance = function(cb){
+	var accounts = {};
+	var addressesSQL='select distinct("recipientId") as address from transactions group by "recipientId"'
+	var publicKeysSQL='select distinct("senderPublicKey") as publicKey from transactions group by "senderPublicKey"';
+	async.series([
+		function(seriesCb){
+			library.db.query(addressesSQL).then(function(addresses){
+				addresses.forEach(function(address){
+					accounts[address] = {address: address};
+				});
+				return seriesCb();
+			}).catch(seriesCb);
+		},
+		function(seriesCb){
+			library.db.query(publicKeysSQL).then(function(pks){
+				pks.forEach(function(pk){
+					accounts[arkjs.crypto.getAddress(address)].publicKey = pk;
+				});
+				return seriesCb();
+			}).catch(seriesCb);
+		},
+		function(seriesCb){
+			for(var address in accounts){
+				var account = accounts[address];
+				if(account.publicKey){
+
+				}
+			}
+		}
+	],function(error){
+
+	});
+};
+
+//
+//__API__ `rebuildVotes`
+
+//
+Loader.prototype.rebuildVotes = function(cb){
+	library.db.none(sql.rebuildVotes).then(function(){
+		return cb();
+	}).catch(cb);
+};
+
 
 // get the smallest block timestamp at the higjest height from network
 //
@@ -600,7 +659,7 @@ Loader.prototype.getNetworkSmallestBlock = function(){
 Loader.prototype.getNetwork = function (force, cb) {
 	// If __private.network.height is not so far (i.e. 1 round) from current node height, just return cached __private.network.
 	// If node is forging, do it more often (every block?)
-	var distance = modules.delegates.isActiveDelegate() ? 2 : 51;
+	var distance = modules.delegates.isActiveDelegate() ? 2 : 201;
 
 	if (!force && __private.network.height > 0 && Math.abs(__private.network.height - modules.blocks.getLastBlock().height) < distance) {
 		return cb(null, __private.network);
@@ -734,6 +793,18 @@ shared.sync = function (req, cb) {
 		blocks: __private.blocksToSync,
 		height: modules.blocks.getLastBlock().height,
 		id: modules.blocks.getLastBlock().id
+	});
+};
+
+shared.autoconfigure = function (req, cb) {
+	return cb(null, {
+		network: {
+	    "nethash": library.config.nethash,
+	    "token": library.config.network.client.token,
+	    "symbol": library.config.network.client.symbol,
+	    "explorer": library.config.network.client.explorer,
+	    "version": library.config.network.pubKeyHash
+		}
 	});
 };
 
