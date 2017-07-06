@@ -4,10 +4,10 @@
 **Linux/Ubuntu (We have tested with Ubuntu v16.0.4)**
 
 
-** Developer Installation
+**Developer Installation**
 
 
-** Install essentials
+**Install essentials**
 
 ```
 sudo apt-get update
