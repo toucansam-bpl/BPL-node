@@ -14,7 +14,7 @@ sudo apt-get update
 sudo apt-get install -y curl build-essential python git
 ```
 
-** Install Node.js (min version: 6.9.2)
+**Install Node.js (min version: 6.9.2)
 
 ```
 sudo apt-get install -y nodejs
@@ -23,13 +23,13 @@ sudo npm install -g n
 sudo n 6.9.2
 ```
 
-** Install grunt-cli (globally)
+**Install grunt-cli (globally)
 
 ```
 sudo npm install grunt-cli -g
 ```
 
-** Install PostgreSQL (min version: 9.5.2)
+**Install PostgreSQL (min version: 9.5.2)
 
 ```
 sudo apt-get install -y postgresql postgresql-contrib
@@ -37,7 +37,7 @@ sudo -u postgres createuser --createdb --password $USER
 createdb ‘Database Name’  (this should match with the database name from config file)
 ```
 
-** Clone BPL Node repository
+**Clone BPL Node repository
 
 ```
 git clone https://github.com/blockpool-io/BPL-node.git   (make sure you have git installed)
@@ -45,7 +45,7 @@ cd BPL-node
 git checkout testnet
 ```
 
-** Install node modules
+**Install node modules
 
 ```
 sudo apt-get install -y libpq-dev
@@ -53,7 +53,7 @@ npm install libpq secp256k1
 npm install
 ```
 
-** Add configurations for your node
+**Add configurations for your node
 
 ```
 	Change the following in config.testnet.json :
@@ -73,7 +73,7 @@ npm install
 ]
 ```
 
-** Launch BPL node
+**Launch BPL node
 
 ```
 To launch BPL node on testnet:
@@ -83,8 +83,8 @@ npm run start:bpltestnet
 
 # Windows 7
 
-** Developer Installation
-** Install essentials
+**Developer Installation**
+**Install essentials**
 
 ```
  Python(min version 2.7.0) URL -  https://www.python.org/downloads/ 
@@ -99,7 +99,7 @@ Install Node.js (min version 6.9.2)
  URL -  http://www.postgresql.org/download/windows/
 ```
 
-# Add following environment variable:
+**Add following environment variable:**
 
 ```
 PATH as C:\Program Files\PostgreSQL\9.5\bin 
@@ -109,7 +109,7 @@ Replace ‘md5’ with ‘trust’  under ‘METHOD’ column
 ```
 
 
-# Restart psql:
+**Restart psql:**
 
 ```
 My Computer → Manage → Services and Application → Services → Restart postgres service
@@ -120,7 +120,7 @@ Create database:
 Create database ‘Database Name’ Name’  (this should match with the database name from config file)
 ```
 
-# Clone repository
+**Clone repository**
 
 ```
 git clone https://github.com/blockpool-io/BPL-node.git (make sure you have git installed)
@@ -128,7 +128,7 @@ cd BPL-node
 git checkout testnet
 ```
 
-# Install node modules
+**Install node modules**
 
 ```
 npm install --global --production windows-build-tools 
@@ -136,7 +136,7 @@ npm install libpq secp256k1
 npm install
 ```
 
-# Add configurations for your node
+**Add configurations for your node**
 
 ```
 Change the following in config.private.json:
@@ -157,8 +157,8 @@ Change the following in config.private.json:
 ]
 ```
 
-# Launch BPL node
-# To launch BPL on testnet:  
+**Launch BPL node**
+**To launch BPL on testnet:**
 
 ```
 npm run start:bpltestnet
@@ -168,15 +168,15 @@ npm run start:bpltestnet
 
 # Debian- (We have tested with Jessie 8.7)
 
-# Developer Installation
-# Install essentials
+**Developer Installation**
+**Install essentials**
 
 ```
 sudo apt-get update
 sudo apt-get install -y curl build-essential python git
 ```
 
-# Install Node.js (min version: 6.9.2)
+**Install Node.js (min version: 6.9.2)**
 
 ```
 sudo apt-get install -y nodejs
@@ -185,14 +185,14 @@ sudo npm install -g n
 sudo n 6.9.2
 ```
 
-# Install grunt-cli (globally)
+**Install grunt-cli (globally)**
 
 ```
 sudo npm install grunt-cli -g
 ```
 
-# Install PostgreSQL (min version: 9.5.2)
-# Since Debian 8.8/8.8 installs psql 9.4.12 , we will need to add the repository manually to install psql 9.5:
+**Install PostgreSQL (min version: 9.5.2)**
+**Since Debian 8.8/8.8 installs psql 9.4.12 , we will need to add the repository manually to install psql 9.5:**
 
 ```
 wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | sudo apt-key add -
@@ -203,7 +203,7 @@ sudo -u postgres createuser –createdb $USER
 createdb ‘Database Name’  (this should match with the database name from config file)
 ```
 
-# Clone BPL Node repository
+**Clone BPL Node repository**
 
 ```
 If git is not found, following adds the repository manually:
@@ -217,7 +217,7 @@ cd BPL-node
 git checkout testnet
 ```
 
-# Install node modules
+**Install node modules**
 
 ```
 sudo apt-get install libpq-dev
@@ -225,8 +225,8 @@ npm install libpq secp256k1
 npm install
 ```
 
-# Add configurations for your node
-# Change the following in config.private.json:
+**Add configurations for your node**
+**Change the following in config.private.json:**
 
 ```
 “address“: “set your IP”
@@ -245,8 +245,8 @@ npm install
 ]
 ```
 
-# Launch BPL node
-# To launch BPL node on testnet:
+**Launch BPL node**
+**To launch BPL node on testnet:**
 
 ```
 npm run start:bpltestnet
