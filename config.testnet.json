@@ -72,8 +72,8 @@
     "options": {
       "port": 443,
       "address": "0.0.0.0",
-      "key": "./ssl/ark.key",
-      "cert": "./ssl/ark.crt"
+      "key": "./ssl/bpl.key",
+      "cert": "./ssl/bpl.crt"
     }
   },
   "network": "BPL-testnet",
