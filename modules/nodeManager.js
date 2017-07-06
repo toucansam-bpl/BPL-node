@@ -155,7 +155,7 @@ NodeManager.prototype.onBlocksReceived = function(blocks, peer, cb) {
 
 		var currentBlock;
 		async.eachSeries(blocks, function (block, eachSeriesCb) {
-			block.reward = (block.reward !=  0.0000000000 ? new bigdecimal.BigDecimal(''+block.reward).toString() : block.reward);
+			block.reward = (block.reward ==  '0.0000000000' ? block.reward : new bigdecimal.BigDecimal(''+block.reward).toString());
 			block.totalAmount = parseInt(block.totalAmount);
 			block.totalFee = parseInt(block.totalFee);
 			block.verified = false;
@@ -209,7 +209,7 @@ NodeManager.prototype.onRebuildBlockchain = function(blocksToRemove, state, cb) 
 				else if(network.height > lastBlock.height){
 					library.logger.info("Observed network height is higher", {network: network.height, node:lastBlock.height});
 					library.logger.info("Rebuilding from network");
-					if(network.height - lastBlock.height > 51){
+					if(network.height - lastBlock.height > 201){
 						blocksToRemove = 200;
 					}
 					return modules.blocks.removeSomeBlocks(blocksToRemove, mSequence);
@@ -246,6 +246,7 @@ NodeManager.prototype.performSPVFix = function (cb) {
 	library.db.query('select address, "publicKey", balance from mem_accounts').then(function(rows){
 		async.eachSeries(rows, function(row, eachCb){
 			var publicKey=row.publicKey;
+
 			if(publicKey){
 				publicKey=publicKey.toString("hex");
 			}
@@ -274,48 +275,41 @@ NodeManager.prototype.performSPVFix = function (cb) {
 			}
 
 			async.series(series, function(err, result){
-				// if(publicKey){
-				// 	result.balance = parseInt(result.received.total||0) - parseInt(result.spent.total||0) + parseInt(result.rewards.total||0);
-				// }
-				// else {
-				// 	result.balance = parseInt(result.received.total||0);
-				// }
-				//
-				// if(result.balance != row.balance){
-				// 	fixedAccounts.push(row);
-				// 	var diff = result.balance - row.balance;
-				// 	library.db.none("update mem_accounts set balance = balance + "+diff+", u_balance = u_balance + "+diff+" where address = '"+row.address+"';");
-				// }
+				var receivedTotal, spentTotal, rewardsTotal, balance;
 				if(publicKey){
-					var receivedTotal, spentTotal, rewardsTotal, balance;
-					var zero = new bigdecimal.BigDecimal('0');
+					var zero = new bigdecimal.BigDecimal('0.0000000000');
 
 					if(result.received.total != undefined)
-					  receivedTotal = new bigdecimal.BigDecimal(''+result.received.total);
+					 	receivedTotal = new bigdecimal.BigDecimal(''+result.received.total);
 					else
 						receivedTotal = zero;
 
 					if(result.spent.total != undefined)
-					  spentTotal = new bigdecimal.BigDecimal(''+result.spent.total);
+					  	spentTotal = new bigdecimal.BigDecimal(''+result.spent.total);
 					else
 						spentTotal = zero;
 
 					if(result.rewards.total != undefined)
-					  rewardsTotal = new bigdecimal.BigDecimal(''+result.rewards.total);
+					  	rewardsTotal = new bigdecimal.BigDecimal(''+result.rewards.total);
 					else
 						rewardsTotal = zero;
-
 					result.balance = receivedTotal.subtract(spentTotal).add(rewardsTotal).toString();
 				}
 				else {
+					if(result.received.total != undefined)
+					 	receivedTotal = new bigdecimal.BigDecimal(''+result.received.total);
+					else
+						receivedTotal = zero;
 					result.balance = receivedTotal.toString();
 				}
 
+				result.balance = (result.balance == '0E-10' ? '0.0000000000' : result.balance);
 				if(result.balance != row.balance){
 					fixedAccounts.push(row);
 					var resultBalance = new bigdecimal.BigDecimal(''+result.balance);
 					var rowBalance = new bigdecimal.BigDecimal(''+row.balance);
 					var diff = resultBalance.subtract(rowBalance).toString();
+					diff = (diff == '0E-10' ? '0.0000000000' : diff);
 					library.db.none("update mem_accounts set balance = balance + "+diff+", u_balance = u_balance + "+diff+" where address = '"+row.address+"';");
 				}
 				return eachCb();

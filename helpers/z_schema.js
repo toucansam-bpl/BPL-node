@@ -90,7 +90,7 @@ function schema(network){
   });
 
   this.z_schema.registerFormat('delegatesList', function (obj) {
-    obj.limit = 51;
+    obj.limit = 201;
     return true;
   });
 

@@ -933,11 +933,13 @@ shared.getForgedByAccount = function (req, cb) {
 			if (err || !account) {
 				return cb(err || 'Account not found');
 			}
-
+			var down = bigdecimal.RoundingMode.DOWN();
 			var big_reward = new bigdecimal.BigDecimal(''+account.rewards);
 			var big_fees = new bigdecimal.BigDecimal(''+account.fees);
-			var forged = big_fees.add(big_reward).toString();
-			return cb(null, {fees: account.fees, rewards: account.rewards, forged: forged.toString()});
+			var forged = big_fees.add(big_reward);
+			forged = forged.setScale(10, down);
+			forged = (forged.toString() == '0E-10'? '0.0000000000' : forged.toString());
+			return cb(null, {fees: account.fees, rewards: account.rewards, forged: forged});
 		});
 	});
 };

@@ -9,9 +9,9 @@
   "db": {
     "host": "localhost",
     "port": 5432,
-    "database": "bpl_devnet",
-    "user": "ubuntu",
-    "password": "blockpool123",
+    "database": "dbName",
+    "user": "dbUser",
+    "password": "dbPassword",
     "poolSize": 20,
     "poolIdleTimeout": 30000,
     "reapIntervalMillis": 1000,
@@ -37,7 +37,7 @@
     "minimumNetworkReach": 1,
     "list": [
       {
-        "ip": "52.66.184.223",
+        "ip": "0.0.0.0",
         "port": 4000
       }
     ],
@@ -77,5 +77,5 @@
     }
   },
   "network": "BPL-devnet",
-  "nethash": "22b09a9066001b37c7d77b435e0f201c2f8ccc9fb24bd2c282c98256335c47a9"
+  "nethash": "1a418de02c68c4353d932a9568be28be20b7b9a86fcf9b653482b4f3f42a6302"
 }

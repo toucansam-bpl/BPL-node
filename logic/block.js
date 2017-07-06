@@ -241,7 +241,7 @@ Block.prototype.dbSave = function (block, cb) {
 			numberOfTransactions: block.numberOfTransactions,
 			totalAmount: block.totalAmount,
 			totalFee: block.totalFee,
-			reward: block.reward || 0,
+			reward: block.reward || 0.0000000000,
 			payloadLength: block.payloadLength,
 			payloadHash: payloadHash,
 			generatorPublicKey: generatorPublicKey,
@@ -409,6 +409,7 @@ Block.prototype.dbRead = function (raw) {
 	if (!raw.b_id) {
 		return null;
 	} else {
+		var reward = (raw.b_reward == '0.0000000000'? raw.b_reward : new bigdecimal.BigDecimal(''+raw.b_reward).toString());
 		var block = {
 			id: raw.b_id,
 			version: parseInt(raw.b_version),
@@ -418,7 +419,7 @@ Block.prototype.dbRead = function (raw) {
 			numberOfTransactions: parseInt(raw.b_numberOfTransactions),
 			totalAmount: parseInt(raw.b_totalAmount),
 			totalFee: parseInt(raw.b_totalFee),
-			reward: new bigdecimal.BigDecimal(''+raw.b_reward).toString(),// parseInt(raw.b_reward),
+			reward: reward,
 			payloadLength: parseInt(raw.b_payloadLength),
 			payloadHash: raw.b_payloadHash,
 			generatorPublicKey: raw.b_generatorPublicKey,
