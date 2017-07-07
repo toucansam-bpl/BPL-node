@@ -1,3 +1,3 @@
 [submodule "test/bpl-js"]
 	path = test/bpl-js
-	url = https://github.com/blockpool-io/BPL-js
+	url = https://github.com/blockpool-io/BPL-js/tree/testnet
