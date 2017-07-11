@@ -124,7 +124,7 @@
   "forging": {
     "coldstart": 6,
     "force": true,
-    "secret": ["volcano spy often print security ivory pencil indoor gather season trophy order"],
+    "secret": [],
     "access": {
       "whiteList": [
         "127.0.0.1"
