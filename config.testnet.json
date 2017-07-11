@@ -3,7 +3,7 @@
   "address": "0.0.0.0",
   "version": "0.3.0",
   "fileLogLevel": "info",
-  "logFileName": "logs/ark.log",
+  "logFileName": "logs/bpl.log",
   "consoleLogLevel": "debug",
   "trustProxy": false,
   "db": {
@@ -36,7 +36,7 @@
   "peers": {
     "minimumNetworkReach": 1,
     "list": [
-     {
+      {
         "ip": "54.249.68.234",
         "port": 4000
 }
@@ -140,8 +140,8 @@
     "options": {
       "port": 443,
       "address": "0.0.0.0",
-      "key": "./ssl/ark.key",
-      "cert": "./ssl/ark.crt"
+      "key": "./ssl/bpl.key",
+      "cert": "./ssl/bpl.crt"
     }
   },
   "network": "BPL-testnet",

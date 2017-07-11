@@ -15,7 +15,7 @@ function postTransaction (transaction, done) {
 	});
 }
 
-function sendArk (params, done) {
+function sendBpl (params, done) {
 	var transaction = node.ark.transaction.createTransaction(params.recipientId, params.amount, null, params.secret);
 
 	postTransaction(transaction, function (err, res) {

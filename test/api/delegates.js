@@ -8,7 +8,7 @@ function openAccount (params, done) {
 	});
 }
 
-function sendArk (params, done) {
+function sendBpl (params, done) {
 	node.put('/api/transactions/', params, function (err, res) {
 		done(err, res);
 	});
@@ -81,7 +81,7 @@ describe('PUT /api/accounts/delegates with funds', function () {
 	var account = node.randomAccount();
 
 	before(function (done) {
-		sendArk({
+		sendBpl({
 			secret: node.gAccount.password,
 			amount: node.Ark,
 			recipientId: account.address
@@ -267,7 +267,7 @@ describe('PUT /api/delegates with funds', function () {
 	});
 
 	beforeEach(function (done) {
-		sendArk({
+		sendBpl({
 			secret: node.gAccount.password,
 			amount: node.Ark,
 			recipientId: account.address
@@ -652,7 +652,7 @@ describe('GET /api/delegates/voters', function () {
 	var account = node.randomAccount();
 
 	before(function (done) {
-		sendArk({
+		sendBpl({
 			secret: node.gAccount.password,
 			amount: node.Ark,
 			recipientId: account.address
