@@ -16,12 +16,12 @@ function putTransaction (params, done) {
 }
 
 function sendBpl(account, done) {
-	var randomArk = node.randomArk();
-	var expectedFee = node.expectedFee(randomArk);
+	var randomBpl = node.randomBpl();
+	var expectedFee = node.expectedFee(randomBpl);
 
 	putTransaction({
 		secret: node.gAccount.password,
-		amount: randomArk,
+		amount: randomBpl,
 		recipientId: account.address
 	}, function (err, res) {
 		node.expect(res.body).to.have.property('success').to.be.ok;
@@ -29,9 +29,9 @@ function sendBpl(account, done) {
 		transactionList.push({
 			'sender': node.gAccount.address,
 			'recipient': account.address,
-			'grossSent': (randomArk + expectedFee) / node.normalizer,
+			'grossSent': (randomBpl + expectedFee) / node.normalizer,
 			'fee': expectedFee / node.normalizer,
-			'netSent': randomArk / node.normalizer,
+			'netSent': randomBpl / node.normalizer,
 			'txId': res.body.transactionId,
 			'type': node.txTypes.SEND
 		});

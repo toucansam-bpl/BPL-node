@@ -7,7 +7,7 @@ var checkIpInList = require('./helpers/checkIpInList.js');
 var extend = require('extend');
 var fs = require('fs');
 var genesisblock = require('./genesisBlock.json');
-var arkjs = require('arkjs');
+var bpljs = require('bpljs');
 var https = require('https');
 var Logger = require('./logger.js');
 var packageJson = require('./package.json');
@@ -104,7 +104,7 @@ if(appConfig.network){
 }
 
 else {
-	appConfig.network = networks.ark;
+	appConfig.network = networks.bpl;
 }
 
 if(appConfig.modules){
@@ -613,8 +613,8 @@ function startInteractiveMode(scope){
 			var self = this;
 	    var passphrase = require("bip39").generateMnemonic();
 			self.log("Seed    - private:",passphrase);
-			self.log("WIF     - private:",require("arkjs").crypto.getKeys(passphrase).toWIF());
-			self.log("Address - public :",require("arkjs").crypto.getAddress(require("arkjs").crypto.getKeys(passphrase).publicKey));
+			self.log("WIF     - private:",require("bpljs").crypto.getKeys(passphrase).toWIF());
+			self.log("Address - public :",require("bpljs").crypto.getAddress(require("bpljs").crypto.getKeys(passphrase).publicKey));
 			callback();
 	  });
 	var account=null;
@@ -689,9 +689,9 @@ function startInteractiveMode(scope){
 
 	  });
 
-	vorpal.history('ark-node');
+	vorpal.history('bpl-node');
 
 	vorpal
-	  .delimiter('ark-node>')
+	  .delimiter('bpl-node>')
 	  .show();
 }

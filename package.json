@@ -1,5 +1,5 @@
 {
-  "name": "ark-node",
+  "name": "bpl-node",
   "version": "0.2.0",
   "private": true,
   "scripts": {
@@ -15,6 +15,7 @@
   },
   "author": "Boris Povod <boris@crypti.me>, Pavel Nekrasov <landgraf.paul@gmail.com>, Oliver Beddows <oliver@lisk.io>, FX Thoorens <fx.thoorens@ark.io>",
   "dependencies": {
+    "bpljs":"github:blockpool-io/BPL-js#testnet",
     "arkjs": "github:arkecosystem/ark-js#mainnet",
     "async": "=2.0.1",
     "bigdecimal": "^0.6.1",
