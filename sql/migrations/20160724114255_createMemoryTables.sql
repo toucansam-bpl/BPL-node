@@ -14,8 +14,8 @@ CREATE TABLE IF NOT EXISTS "mem_accounts"(
   "address" VARCHAR(36) NOT NULL UNIQUE PRIMARY KEY,
   "publicKey" BYTEA,
   "secondPublicKey" BYTEA,
-  "balance" BIGINT DEFAULT 0,
-  "u_balance" BIGINT DEFAULT 0,
+  "balance" NUMERIC(30,10) DEFAULT 0,
+  "u_balance" NUMERIC(30,10) DEFAULT 0,
   "vote" BIGINT DEFAULT 0,
   "rate" BIGINT DEFAULT 0,
   "delegates" TEXT,
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS "mem_accounts"(
   "producedblocks" int DEFAULT 0,
   "missedblocks" int DEFAULT 0,
   "fees" BIGINT DEFAULT 0,
-  "rewards" BIGINT DEFAULT 0,
+  "rewards" NUMERIC(30,10) DEFAULT 0,
   "virgin" SMALLINT DEFAULT 1
 );
 

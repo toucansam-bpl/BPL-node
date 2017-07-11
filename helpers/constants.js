@@ -1,12 +1,12 @@
 'use strict';
 
 module.exports = {
-	activeDelegates: 51,
+	activeDelegates: 201, //changed from 51 to 201
 	maximumVotes: 1,
 	addressLength: 208,
 	blockHeaderLength: 248,
 	confirmationLength: 77,
-	epochTime: new Date(Date.UTC(2016, 4, 24, 17, 0, 0, 0)),
+	epochTime: new Date(Date.UTC(2017, 2, 21, 13, 0, 0, 0)),
 	fees:{
 		send: 10000000,
 		vote: 100000000,
@@ -25,22 +25,23 @@ module.exports = {
 	maxPayloadLength: 2 * 1024 * 1024,
 	maxRequests: 10000 * 12,
 	maxSignaturesLength: 196 * 256,
-	maxTxsPerBlock: 200,
-	blocktime: 8,
+	maxTxsPerBlock: 50,
+	blocktime: 15, //changed from 8 to 15
 	numberLength: 100000000,
 	requestLength: 104,
 	rewards: {
 		milestones: [
-			200000000, // Initial Reward
-			200000000, // Milestone 1
-			200000000, // Milestone 2
-			200000000, // Milestone 3
-			200000000  // Milestone 4
+			5, // Initial Reward
+			4, // Milestone 1
+			3, // Milestone 2
+			2, // Milestone 3
+			1, // Milestone 4
+			0  // Milestone 5
 		],
-		offset: 10800,   // Start rewards at block, ie 24 hours after net start
-		distance: 3000000, // Distance between each milestone
+		offset: 40320,   // Start rewards at block, ie 7 days after net start
+		distance: 2102400, // Distance between each milestone
 	},
 	signatureLength: 196,
-	totalAmount: 12500000000000000,
+	totalAmount: 2500000000000000, // changed from 12500000000000000 to 2500000000000000
 	unconfirmedTransactionTimeOut: 10800 // 1080 blocks
 };

@@ -252,8 +252,6 @@ npm install
 npm run start:bpltestnet
 ```
 
-# Seed node IP is: 54.249.68.234:4000
-
 **NOTE:** The master passphrase for this test genesis block is as follows:
 
 ```

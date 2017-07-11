@@ -85,8 +85,7 @@ function Account (scope, cb) {
 			filter: {
 				required: true,
 				type: 'string',
-				minLength: 1,
-				maxLength: 35
+				format: 'address'
 			},
 			conv: String,
 			immutable: true
@@ -115,7 +114,7 @@ function Account (scope, cb) {
 		},
 		{
 			name: 'balance',
-			type: 'BigInt',
+			type: 'Number',
 			filter: {
 				required: true,
 				type: 'integer',
@@ -123,11 +122,10 @@ function Account (scope, cb) {
 				maximum: constants.totalAmount
 			},
 			conv: Number,
-			expression: '("balance")::bigint'
 		},
 		{
 			name: 'u_balance',
-			type: 'BigInt',
+			type: 'Number',
 			filter: {
 				required: true,
 				type: 'integer',
@@ -135,7 +133,6 @@ function Account (scope, cb) {
 				maximum: constants.totalAMount
 			},
 			conv: Number,
-			expression: '("u_balance")::bigint'
 		},
 		{
 			name: 'vote',
@@ -292,12 +289,11 @@ function Account (scope, cb) {
 		},
 		{
 			name: 'rewards',
-			type: 'BigInt',
+			type: 'Number',
 			filter: {
 				type: 'integer'
 			},
 			conv: Number,
-			expression: '("rewards")::bigint'
 		},
 		{
 			name: 'virgin',
@@ -352,7 +348,7 @@ function Account (scope, cb) {
 		}
 	}.bind(this));
 
-	return setImmediate(cb, null, this);
+	return cb(null, this);
 }
 
 //
@@ -363,10 +359,10 @@ Account.prototype.createTables = function (cb) {
 	// var sql = new pgp.QueryFile(path.join('sql', 'memoryTables.sql'), {minify: true});
 	//
 	// db.query(sql).then(function () {
-	// 	return setImmediate(cb);
+	// 	return cb();
 	// }).catch(function (err) {
 	// 	library.logger.error("stack", err.stack);
-	// 	return setImmediate(cb, 'Account#createTables error');
+	// 	return cb('Account#createTables error');
 	// });
 	return cb();
 };
@@ -392,10 +388,10 @@ Account.prototype.removeTables = function (cb) {
 	});
 
 	db.query(sqles.join('')).then(function () {
-		return setImmediate(cb);
+		return cb();
 	}).catch(function (err) {
 		library.logger.error("stack", err.stack);
-		return setImmediate(cb, 'Account#removeTables error');
+		return cb('Account#removeTables error');
 	});
 };
 
@@ -469,7 +465,7 @@ Account.prototype.get = function (filter, fields, cb) {
 	}
 
 	this.getAll(filter, fields, function (err, data) {
-		return setImmediate(cb, err, data && data.length ? data[0] : null);
+		return cb(err, data && data.length ? data[0] : null);
 	});
 };
 
@@ -525,10 +521,10 @@ Account.prototype.getAll = function (filter, fields, cb) {
 	});
 
 	db.query(sql.query, sql.values).then(function (rows) {
-		return setImmediate(cb, null, rows);
+		return cb(null, rows);
 	}).catch(function (err) {
 		library.logger.error("stack", err.stack);
-		return setImmediate(cb, 'Account#getAll error');
+		return cb('Account#getAll error');
 	});
 };
 
@@ -551,26 +547,22 @@ Account.prototype.set = function (address, fields, cb) {
 	});
 
 	db.none(sql.query, sql.values).then(function () {
-		return setImmediate(cb);
+		return cb();
 	}).catch(function (err) {
 		library.logger.error("stack", err.stack);
-		return setImmediate(cb, 'Account#set error');
+		return cb('Account#set error');
 	});
 };
 
 
-//TODO: to simplify with the new delegate listing algo
 //
 //__API__ `merge`
 
 //
 Account.prototype.merge = function (address, diff, cb) {
 	var update = {}, remove = {}, insert = {}, insert_object = {}, remove_object = {}, round = [];
-
 	// Verify public key
 	this.verifyPublicKey(diff.publicKey);
-
-
 	this.editable.forEach(function (value) {
 		var val, i;
 
@@ -581,12 +573,37 @@ Account.prototype.merge = function (address, diff, cb) {
 					update[value] = trueValue;
 					break;
 				case Number:
+					//For big decimal precise calculations handling rewards, balance and u_balance as strings
+					if(value === 'balance' || value === 'u_balance' || value === 'rewards') {
+						if((diff[value] !== undefined) && (typeof(diff[value]) === 'string')) {
+							//if negative value
+							if(diff[value][0] === '-') {
+								update.$dec = update.$dec || {};
+								update.$dec[value] = trueValue.substring(1, trueValue.length);
+								// If decrementing u_balance on account
+								if (update.$dec.u_balance) {
+									// Remove virginity and ensure marked columns become immutable
+									update.virgin = 0;
+								}
+							} else {
+								//if positive value
+								update.$inc = update.$inc || {};
+								update.$inc[value] = trueValue;
+							}
+
+						}
+					}
+
 					if (isNaN(trueValue) || trueValue === Infinity) {
-						return setImmediate(cb, 'Encountered unsane number: ' + trueValue);
+						console.log('TrueValue is not a number');
+						return cb('Encountered unsane number: ' + trueValue);
 					}
 					else if (Math.abs(trueValue) === trueValue && trueValue !== 0) {
 						update.$inc = update.$inc || {};
-						update.$inc[value] = Math.floor(trueValue);
+						if(value === 'balance' || value === 'u_balance' || value === 'rewards') {
+							update.$inc[value] = trueValue;						}
+						else
+							update.$inc[value] = Math.floor(trueValue);
 					}
 					else if (trueValue < 0) {
 						update.$dec = update.$dec || {};
@@ -713,10 +730,10 @@ Account.prototype.merge = function (address, diff, cb) {
 
 	function done (err) {
 		if (cb.length !== 2) {
-			return setImmediate(cb, err);
+			return cb(err);
 		} else {
 			if (err) {
-				return setImmediate(cb, err);
+				return cb(err);
 			}
 			self.get({address: address}, cb);
 		}
@@ -755,10 +772,10 @@ Account.prototype.remove = function (address, cb) {
 		}
 	});
 	db.none(sql.query, sql.values).then(function () {
-		return setImmediate(cb, null, address);
+		return cb(null, address);
 	}).catch(function (err) {
 		library.logger.error("stack", err.stack);
-		return setImmediate(cb, 'Account#remove error');
+		return cb('Account#remove error');
 	});
 };
 
