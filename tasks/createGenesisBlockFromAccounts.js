@@ -1,7 +1,7 @@
 var moment = require('moment');
 var fs = require('fs');
 var path = require('path');
-var arkjs = require('arkjs');
+var bpljs = require('bpljs');
 var crypto = require('crypto');
 var bip39 = require('bip39');
 var ByteBuffer = require('bytebuffer');
@@ -17,13 +17,13 @@ var config = {
     "address": "0.0.0.0",
     "version": "0.2.1",
     "fileLogLevel": "info",
-    "logFileName": "logs/ark.log",
+    "logFileName": "logs/bpl.log",
     "consoleLogLevel": "debug",
     "trustProxy": false,
     "db": {
         "host": "localhost",
         "port": 5432,
-        "database": "ark_testnet",
+        "database": "bpl_testnet",
         "user": null,
         "password": "password",
         "poolSize": 20,
@@ -81,8 +81,8 @@ var config = {
         "options": {
             "port": 443,
             "address": "0.0.0.0",
-            "key": "./ssl/ark.key",
-            "cert": "./ssl/ark.crt"
+            "key": "./ssl/bpl.key",
+            "cert": "./ssl/bpl.crt"
         }
     }
 };
@@ -183,7 +183,7 @@ create = function (data) {
 
 	for (var i = 0; i < transactions.length; i++) {
 		var transaction = transactions[i];
-		var bytes = arkjs.crypto.getBytes(transaction);
+		var bytes = bpljs.crypto.getBytes(transaction);
 
 		size += bytes.length;
 
@@ -233,12 +233,12 @@ var premine = {
   passphrase: bip39.generateMnemonic()
 };
 
-premine.publicKey = arkjs.crypto.getKeys(premine.passphrase).publicKey;
-premine.address = arkjs.crypto.getAddress(premine.publicKey);
+premine.publicKey = bpljs.crypto.getKeys(premine.passphrase).publicKey;
+premine.address = bpljs.crypto.getAddress(premine.publicKey);
 
-genesis.publicKey = arkjs.crypto.getKeys(genesis.passphrase).publicKey;
-genesis.address = arkjs.crypto.getAddress(genesis.publicKey);
-genesis.wif = arkjs.crypto.getKeys(genesis.passphrase).toWIF();
+genesis.publicKey = bpljs.crypto.getKeys(genesis.passphrase).publicKey;
+genesis.address = bpljs.crypto.getAddress(genesis.publicKey);
+genesis.wif = bpljs.crypto.getKeys(genesis.passphrase).toWIF();
 
 var totalbalance = genesis.balance;
 var numvote = 0;
@@ -246,27 +246,27 @@ var numvote = 0;
 for(var i in accounts){
   var account = accounts[i];
 
-  //send ark to account
-	var premineTx = arkjs.transaction.createTransaction(account.address, account.balance, null, premine.passphrase);
+  //send bpl to account
+	var premineTx = bpljs.transaction.createTransaction(account.address, account.balance, null, premine.passphrase);
 
   delete premineTx.asset;
 	premineTx.fee = 0;
 	premineTx.timestamp = 0;
 	premineTx.senderId = premine.address;
-	premineTx.signature = arkjs.crypto.sign(premineTx,arkjs.crypto.getKeys(premine.passphrase));
-	premineTx.id = arkjs.crypto.getId(premineTx);
+	premineTx.signature = bpljs.crypto.sign(premineTx,bpljs.crypto.getKeys(premine.passphrase));
+	premineTx.id = bpljs.crypto.getId(premineTx);
 	transactions.push(premineTx);
   totalbalance = totalbalance - account.balance;
 
   if(account.username){
     // create delegate
-    var createDelegateTx = arkjs.delegate.createDelegate("dummy", account.username);
+    var createDelegateTx = bpljs.delegate.createDelegate("dummy", account.username);
     createDelegateTx.fee = 0;
     createDelegateTx.timestamp = 0;
     createDelegateTx.senderId = account.address;
     createDelegateTx.senderPublicKey = account.publicKey;
     createDelegateTx.asset.delegate.publicKey = account.publicKey;
-    createDelegateTx.id = arkjs.crypto.getId(createDelegateTx);
+    createDelegateTx.id = bpljs.crypto.getId(createDelegateTx);
     //don't have passphrase so no verify
     createDelegateTx.signature="";
     transactions.push(createDelegateTx);
@@ -276,12 +276,12 @@ for(var i in accounts){
       console.log("Voting for " + account.username);
       console.log(totalbalance);
     	//vote for genesis_ accounts
-    	var voteTransaction = arkjs.vote.createVote(genesis.passphrase,["+"+account.publicKey]);
+    	var voteTransaction = bpljs.vote.createVote(genesis.passphrase,["+"+account.publicKey]);
     	voteTransaction.fee = 0;
     	voteTransaction.timestamp = 0;
       voteTransaction.senderId = genesis.address;
-    	voteTransaction.signature = arkjs.crypto.sign(voteTransaction,arkjs.crypto.getKeys(genesis.passphrase));
-    	voteTransaction.id = arkjs.crypto.getId(voteTransaction);
+    	voteTransaction.signature = bpljs.crypto.sign(voteTransaction,bpljs.crypto.getKeys(genesis.passphrase));
+    	voteTransaction.id = bpljs.crypto.getId(voteTransaction);
 
     	transactions.push(voteTransaction);
     }
@@ -292,7 +292,7 @@ for(var i in accounts){
 console.log(totalbalance);
 
 var genesisBlock = create({
-  keypair: arkjs.crypto.getKeys(genesis.passphrase),
+  keypair: bpljs.crypto.getKeys(genesis.passphrase),
   transactions:transactions,
   timestamp:0
 });

@@ -2,10 +2,10 @@
 
 <html>
 <head>
-  <title>Ark</title>
+  <title>BPL</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
-  <link rel="stylesheet" media="all" href="arkio.css" />
+  <link rel="stylesheet" media="all" href="bplio.css" />
 </head>
 <body>
   
@@ -116,16 +116,11 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              <h1 id="ark">Ark</h1>
-<p>Ark is a next generation crypto-currency and decentralized application platform, written entirely in JavaScript. For more information please refer to our website: <a href="https://ark.io/">https://ark.io/</a>.</p>
-<p>The Token Exchange Campaign is up at <a href="https://tec.ark.io">https://tec.ark.io</a></p>
+              <h1 id="bpl">Bpl</h1>
+<p>Bpl is a next generation crypto-currency and decentralized application platform, written entirely in JavaScript. For more information please refer to our website: <a href="https://blockpool.io/">https://blockpool.io/</a>.</p>
 <p>This version is still alpha, use at your own risks</p>
 <h2 id="install-upgrade-etc-">Install, Upgrade etc…</h2>
 <p>You need to provision a linux (ubuntu tested) server (digital ocean, vultur or other).</p>
-<p>Then use the excellent ark-commander script</p>
-<pre><code>cd
-wget https://ark.io/ARKcommander.sh
-bash ARKcommander.sh
 </code></pre><p>For developers, please read below in section “Developer Installation”</p>
 <h2 id="details">Details</h2>
 <p>This is a fork from Lisk with the following features:</p>
@@ -164,7 +159,7 @@ sudo apt-get install -y curl build-essential python git
 </code></pre><p>Install PostgreSQL (min version: 9.5.2)</p>
 <pre><code>sudo apt-get install -y postgresql postgresql-contrib
 sudo -u postgres createuser --createdb --password $USER
-createdb ark_test
+createdb bpl_test
 </code></pre><p>Install Node.js (tested with version 6.9.2, but any recent LTS release should do):</p>
 <pre><code>sudo apt-get install -y nodejs
 sudo npm install -g n
@@ -172,20 +167,20 @@ sudo n 6.9.2
 </code></pre><p>Install grunt-cli (globally):</p>
 <pre><code>sudo npm install grunt-cli -g
 </code></pre><p>Clone this repository</p>
-<pre><code>git clone https://github.com/arkecosytem/ark-node.git
-cd ark-node
+<pre><code>git clone https://github.com/blockpool.io/BPL-node.git
+cd BPL-node
 </code></pre><p>Install node modules:</p>
 <pre><code>npm install libpq secp256k1
 npm install
 </code></pre><h2 id="launch">Launch</h2>
-<p>To launch Ark on testnet:</p>
-<pre><code>createdb ark_testnet
+<p>To launch Bpl on testnet:</p>
+<pre><code>createdb bpl_testnet
 node run start:testnet
-</code></pre><p>To launch Ark on devtnet:</p>
-<pre><code>createdb ark_devnet
+</code></pre><p>To launch Bpl on devtnet:</p>
+<pre><code>createdb bpl_devnet
 node run start:devnet
-</code></pre><p>To launch Ark on mainnet (when launched):</p>
-<pre><code>createdb ark_mainnet
+</code></pre><p>To launch Bpl on mainnet (when launched):</p>
+<pre><code>createdb bpl_mainnet
 node run start:mainnet
 </code></pre><p><strong>NOTE:</strong> The <strong>port</strong>, <strong>address</strong>, <strong>genesis block</strong> and <strong>config-path</strong> can be overridden by providing the relevant command switch:</p>
 <pre><code>node app.js -p [port] -a [address] -c [config-path] -g [genesisBlock-path]
@@ -202,11 +197,11 @@ node run start:mainnet
 </ul>
 <p>Obviously you can hack away tasks/createGenesisBlock.js for your own custom use.</p>
 <p>You can the start with your own chain on a single node (all delegates will forge on your single node) using:</p>
-<pre><code>createdb ark_newtest
+<pre><code>createdb bpl_newtest
 npm run start:newtest
 </code></pre><p>Then you can distribute the config.json (without the delegates secrets inside, and with custom peers settings) to peers to let them join your chain</p>
 <h2 id="tests">Tests</h2>
-<p>Load git submodule <a href="https://github.com/arkecosystem/ark-js">ark-js</a>:</p>
+<p>Load git submodule <a href="https://github.com/blockpool.io/BPL-js">BPL-js</a>:</p>
 <pre><code>git submodule init
 git submodule update
 </code></pre><p>You should run using test configurations</p>
@@ -228,7 +223,7 @@ npm test -- test/api/transactions.js
 </ul>
 <h2 id="license">License</h2>
 <p>The MIT License (MIT)</p>
-<p>Copyright (c) 2016 Ark
+<p>Copyright (c) 2016 Bpl
 Copyright (c) 2016 Lisk
 Copyright (c) 2014-2015 Crypti</p>
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:  </p>

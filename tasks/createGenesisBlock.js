@@ -1,7 +1,7 @@
 var moment = require('moment');
 var fs = require('fs');
 var path = require('path');
-var arkjs = require('arkjs');
+var bpljs = require('bpljs');
 var crypto = require('crypto');
 var bip39 = require('bip39');
 var ByteBuffer = require('bytebuffer');
@@ -1024,7 +1024,7 @@ var config = {
     "address": "127.0.0.1",
     "version": "0.3.0",
     "fileLogLevel": "info",
-    "logFileName": "logs/ark.log",
+    "logFileName": "logs/bpl.log",
     "consoleLogLevel": "debug",
     "trustProxy": false,
     "db": {
@@ -1092,16 +1092,16 @@ var config = {
         "options": {
             "port": 443,
             "address": "0.0.0.0",
-            "key": "./ssl/ark.key",
-            "cert": "./ssl/ark.crt"
+            "key": "./ssl/bpl.key",
+            "cert": "./ssl/bpl.crt"
         }
     },
     "network":"BPL-testnet"
 };
 
 //sets the networkVersion
-//setting the network version inside node_modules/arkjs/lib/transactions/crypto.js
-arkjs.crypto.setNetworkVersion(networks[config.network].pubKeyHash);
+//setting the network version inside node_modules/bpljs/lib/transactions/crypto.js
+bpljs.crypto.setNetworkVersion(networks[config.network].pubKeyHash);
 //console.log(networks[config.network]);
 sign = function (block, keypair) {
 	var hash = getHash(block);
@@ -1199,7 +1199,7 @@ create = function (data) {
 
 	for (var i = 0; i < transactions.length; i++) {
 		var transaction = transactions[i];
-		var bytes = arkjs.crypto.getBytes(transaction);
+		var bytes = bpljs.crypto.getBytes(transaction);
 
 		size += bytes.length;
 
@@ -1249,20 +1249,20 @@ var premine = {
   passphrase: bip39.generateMnemonic()
 }
 
-premine.publicKey = arkjs.crypto.getKeys(premine.passphrase).publicKey;
-premine.address = arkjs.crypto.getAddress(premine.publicKey, networks[config.network].pubKeyHash);
+premine.publicKey = bpljs.crypto.getKeys(premine.passphrase).publicKey;
+premine.address = bpljs.crypto.getAddress(premine.publicKey, networks[config.network].pubKeyHash);
 
-genesis.publicKey = arkjs.crypto.getKeys(genesis.passphrase).publicKey;
-genesis.address = arkjs.crypto.getAddress(genesis.publicKey, networks[config.network].pubKeyHash);
-genesis.wif = arkjs.crypto.getKeys(genesis.passphrase).toWIF();
+genesis.publicKey = bpljs.crypto.getKeys(genesis.passphrase).publicKey;
+genesis.address = bpljs.crypto.getAddress(genesis.publicKey, networks[config.network].pubKeyHash);
+genesis.wif = bpljs.crypto.getKeys(genesis.passphrase).toWIF();
 
-var premineTx = arkjs.transaction.createTransaction(genesis.address,genesis.balance,null, premine.passphrase)
+var premineTx = bpljs.transaction.createTransaction(genesis.address,genesis.balance,null, premine.passphrase)
 
 premineTx.fee = 0;
 premineTx.timestamp = 0;
 premineTx.senderId = premine.address;
-premineTx.signature = arkjs.crypto.sign(premineTx,arkjs.crypto.getKeys(genesis.passphrase));
-premineTx.id = arkjs.crypto.getId(premineTx);
+premineTx.signature = bpljs.crypto.sign(premineTx,bpljs.crypto.getKeys(genesis.passphrase));
+premineTx.id = bpljs.crypto.getId(premineTx);
 
 transactions.push(premineTx);
 
@@ -1272,16 +1272,16 @@ for(var i=1; i<202; i++){ //201 delegates
     'username': "genesis_"+i
   };
 
-  var createDelegateTx = arkjs.delegate.createDelegate(delegate.passphrase, delegate.username);
+  var createDelegateTx = bpljs.delegate.createDelegate(delegate.passphrase, delegate.username);
   createDelegateTx.fee = 0;
   createDelegateTx.timestamp = 0;
   createDelegateTx.senderId = genesis.address;
-  createDelegateTx.signature = arkjs.crypto.sign(createDelegateTx,arkjs.crypto.getKeys(delegate.passphrase));
-  createDelegateTx.id = arkjs.crypto.getId(createDelegateTx);
+  createDelegateTx.signature = bpljs.crypto.sign(createDelegateTx,bpljs.crypto.getKeys(delegate.passphrase));
+  createDelegateTx.id = bpljs.crypto.getId(createDelegateTx);
 
 
   delegate.publicKey = createDelegateTx.senderPublicKey;
-  delegate.address = arkjs.crypto.getAddress(createDelegateTx.senderPublicKey, networks[config.network].pubKeyHash);
+  delegate.address = bpljs.crypto.getAddress(createDelegateTx.senderPublicKey, networks[config.network].pubKeyHash);
 
   transactions.push(createDelegateTx);
 
@@ -1289,7 +1289,7 @@ for(var i=1; i<202; i++){ //201 delegates
 }
 
 var genesisBlock = create({
-  keypair: arkjs.crypto.getKeys(genesis.passphrase),
+  keypair: bpljs.crypto.getKeys(genesis.passphrase),
   transactions:transactions,
   timestamp:0
 });
