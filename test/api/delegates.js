@@ -40,7 +40,7 @@ describe('PUT /api/accounts/delegates without funds', function () {
 			delegates: ['+' + node.eAccount.publicKey]
 		}, function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.not.ok;
-			node.expect(res.body).to.have.property('error').to.match(/Account does not have enough ARK: [a-zA-Z0-9]+ balance: 0/);
+			node.expect(res.body).to.have.property('error').to.match(/Account does not have enough BPL: [a-zA-Z0-9]+ balance: 0/);
 			done();
 		});
 	});
@@ -51,7 +51,7 @@ describe('PUT /api/accounts/delegates without funds', function () {
 			delegates: ['-' + node.eAccount.publicKey]
 		}, function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.not.ok;
-			node.expect(res.body).to.have.property('error').to.match(/Account does not have enough ARK: [a-zA-Z0-9]+ balance: 0/);
+			node.expect(res.body).to.have.property('error').to.match(/Account does not have enough BPL: [a-zA-Z0-9]+ balance: 0/);
 			done();
 		});
 	});
@@ -71,7 +71,7 @@ describe('PUT /api/delegates without funds', function () {
 			username: account.username
 		}, function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.not.ok;
-			node.expect(res.body).to.have.property('error').to.match(/Account does not have enough ARK: [a-zA-Z0-9]+ balance: 0/);
+			node.expect(res.body).to.have.property('error').to.match(/Account does not have enough BPL: [a-zA-Z0-9]+ balance: 0/);
 			done();
 		});
 	});
@@ -83,7 +83,7 @@ describe('PUT /api/accounts/delegates with funds', function () {
 	before(function (done) {
 		sendBpl({
 			secret: node.gAccount.password,
-			amount: node.Ark,
+			amount: node.Bpl,
 			recipientId: account.address
 		}, function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.ok;
@@ -269,7 +269,7 @@ describe('PUT /api/delegates with funds', function () {
 	beforeEach(function (done) {
 		sendBpl({
 			secret: node.gAccount.password,
-			amount: node.Ark,
+			amount: node.Bpl,
 			recipientId: account.address
 		}, function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.ok;
@@ -384,7 +384,7 @@ describe('GET /api/delegates', function () {
 		node.get('/api/delegates', function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.ok;
 			node.expect(res.body).to.have.property('delegates').that.is.an('array');
-			node.expect(res.body.delegates).to.have.lengthOf(51);
+			node.expect(res.body.delegates).to.have.lengthOf(201);
 			node.expect(res.body.delegates[0]).to.have.property('username');
 			node.expect(res.body.delegates[0]).to.have.property('address');
 			node.expect(res.body.delegates[0]).to.have.property('publicKey');
@@ -440,25 +440,25 @@ describe('GET /api/delegates', function () {
 		});
 	});
 
-	it('using limit == 51 should be ok', function (done) {
-		var limit = 51;
+	it('using limit == 201 should be ok', function (done) {
+		var limit = 201;
 		var params = 'limit=' + limit;
 
 		node.get('/api/delegates?' + params, function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.ok;
 			node.expect(res.body).to.have.property('delegates').that.is.an('array');
-			node.expect(res.body.delegates).to.have.lengthOf(51);
+			node.expect(res.body.delegates).to.have.lengthOf(201);
 			done();
 		});
 	});
 
-	it('using limit > 51 should fail', function (done) {
-		var limit = 52;
+	it('using limit > 201 should fail', function (done) {
+		var limit = 202;
 		var params = 'limit=' + limit;
 
 		node.get('/api/delegates?' + params, function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.not.ok;
-			node.expect(res.body).to.have.property('error').to.equal('Value 52 is greater than maximum 51');
+			node.expect(res.body).to.have.property('error').to.equal('Value 202 is greater than maximum 201');
 			done();
 		});
 	});
@@ -481,7 +481,7 @@ describe('GET /api/delegates', function () {
 		node.get('/api/delegates?' + params, function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.ok;
 			node.expect(res.body).to.have.property('delegates').that.is.an('array');
-			node.expect(res.body.delegates).to.have.lengthOf(51);
+			node.expect(res.body.delegates).to.have.lengthOf(201);
 			done();
 		});
 	});
@@ -515,7 +515,7 @@ describe('GET /api/delegates', function () {
 		node.get('/api/delegates?' + params, function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.ok;
 			node.expect(res.body).to.have.property('delegates').that.is.an('array');
-			node.expect(res.body.delegates).to.have.lengthOf(51);
+			node.expect(res.body.delegates).to.have.lengthOf(201);
 			done();
 		});
 	});
@@ -527,7 +527,7 @@ describe('GET /api/delegates', function () {
 		node.get('/api/delegates?' + params, function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.ok;
 			node.expect(res.body).to.have.property('delegates').that.is.an('array');
-			node.expect(res.body.delegates).to.have.lengthOf(51);
+			node.expect(res.body.delegates).to.have.lengthOf(201);
 			done();
 		});
 	});
@@ -539,7 +539,7 @@ describe('GET /api/delegates', function () {
 		node.get('/api/delegates?' + params, function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.ok;
 			node.expect(res.body).to.have.property('delegates').that.is.an('array');
-			node.expect(res.body.delegates).to.have.lengthOf(51);
+			node.expect(res.body.delegates).to.have.lengthOf(201);
 			for (var i = 0; i < res.body.delegates.length; i++) {
 				if (res.body.delegates[i + 1] != null) {
 					node.expect(res.body.delegates[i].rate).to.be.at.below(res.body.delegates[i + 1].rate);
@@ -556,7 +556,7 @@ describe('GET /api/delegates', function () {
 		node.get('/api/delegates?' + params, function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.ok;
 			node.expect(res.body).to.have.property('delegates').that.is.an('array');
-			node.expect(res.body.delegates).to.have.lengthOf(51);
+			node.expect(res.body.delegates).to.have.lengthOf(201);
 			for (var i = 0; i < res.body.delegates.length; i++) {
 				if (res.body.delegates[i + 1] != null) {
 					node.expect(res.body.delegates[i].rate).to.be.at.above(res.body.delegates[i + 1].rate);
@@ -573,7 +573,7 @@ describe('GET /api/delegates', function () {
 		node.get('/api/delegates?' + params, function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.ok;
 			node.expect(res.body).to.have.property('delegates').that.is.an('array');
-			node.expect(res.body.delegates).to.have.lengthOf(51);
+			node.expect(res.body.delegates).to.have.lengthOf(201);
 			for (var i = 0; i < res.body.delegates.length; i++) {
 				if (res.body.delegates[i + 1] != null) {
 					node.expect(res.body.delegates[i].vote).to.be.at.most(res.body.delegates[i + 1].vote);
@@ -590,7 +590,7 @@ describe('GET /api/delegates', function () {
 		node.get('/api/delegates?' + params, function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.ok;
 			node.expect(res.body).to.have.property('delegates').that.is.an('array');
-			node.expect(res.body.delegates).to.have.lengthOf(51);
+			node.expect(res.body.delegates).to.have.lengthOf(201);
 			for (var i = 0; i < res.body.delegates.length; i++) {
 				if (res.body.delegates[i + 1] != null) {
 					node.expect(res.body.delegates[i].vote).to.be.at.least(res.body.delegates[i + 1].vote);
@@ -607,7 +607,7 @@ describe('GET /api/delegates', function () {
 		node.get('/api/delegates?' + params, function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.ok;
 			node.expect(res.body).to.have.property('delegates').that.is.an('array');
-			node.expect(res.body.delegates).to.have.lengthOf(51);
+			node.expect(res.body.delegates).to.have.lengthOf(201);
 			done();
 		});
 	});
@@ -619,7 +619,7 @@ describe('GET /api/delegates', function () {
 		node.get('/api/delegates?' + params, function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.ok;
 			node.expect(res.body).to.have.property('delegates').that.is.an('array');
-			node.expect(res.body.delegates).to.have.lengthOf(51);
+			node.expect(res.body.delegates).to.have.lengthOf(201);
 			done();
 		});
 	});
@@ -631,7 +631,7 @@ describe('GET /api/delegates', function () {
 		node.get('/api/delegates?' + params, function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.ok;
 			node.expect(res.body).to.have.property('delegates').that.is.an('array');
-			node.expect(res.body.delegates).to.have.lengthOf(51);
+			node.expect(res.body.delegates).to.have.lengthOf(201);
 			done();
 		});
 	});
@@ -642,7 +642,7 @@ describe('GET /api/delegates/count', function () {
 	it('should be ok', function (done) {
 		node.get('/api/delegates/count', function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.ok;
-			node.expect(res.body).to.have.property('count').to.be.at.least(51);
+			node.expect(res.body).to.have.property('count').to.be.at.least(201);
 			done();
 		});
 	});
@@ -654,7 +654,7 @@ describe('GET /api/delegates/voters', function () {
 	before(function (done) {
 		sendBpl({
 			secret: node.gAccount.password,
-			amount: node.Ark,
+			amount: node.Bpl,
 			recipientId: account.address
 		}, function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.ok;
@@ -790,8 +790,8 @@ describe('GET /api/delegates/search', function () {
 		});
 	});
 
-	it('using critera == "genesis_51" should return 1 delegate', function (done) {
-		var q = 'genesis_51';
+	it('using critera == "genesis_201" should return 1 delegate', function (done) {
+		var q = 'genesis_201';
 
 		node.get('/api/delegates/search?q=' + q, function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.ok;
@@ -801,8 +801,8 @@ describe('GET /api/delegates/search', function () {
 		});
 	});
 
-	it('using critera == "genesis_51" should have all properties', function (done) {
-		var q = 'genesis_51';
+	it('using critera == "genesis_201" should have all properties', function (done) {
+		var q = 'genesis_201';
 
 		node.get('/api/delegates/search?q=' + q, function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.ok;
@@ -824,7 +824,7 @@ describe('GET /api/delegates/search', function () {
 		node.get('/api/delegates/search?q=' + q, function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.ok;
 			node.expect(res.body).to.have.property('delegates').that.is.an('array');
-			node.expect(res.body.delegates).to.have.length(51);
+			node.expect(res.body.delegates).to.have.length(201);
 			done();
 		});
 	});
@@ -892,7 +892,7 @@ describe('GET /api/delegates/search', function () {
 		node.get('/api/delegates/search?q=' + q + '&limit=' + limit, function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.ok;
 			node.expect(res.body).to.have.property('delegates').that.is.an('array');
-			node.expect(res.body.delegates).to.have.length(51);
+			node.expect(res.body.delegates).to.have.length(201);
 			done();
 		});
 	});
@@ -924,7 +924,7 @@ describe('GET /api/delegates/search', function () {
 		node.get('/api/delegates/search?q=' + q, function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.ok;
 			node.expect(res.body).to.have.property('delegates').that.is.an('array');
-			node.expect(res.body.delegates).to.have.length(51);
+			node.expect(res.body.delegates).to.have.length(201);
 			node.expect(res.body.delegates[0]).to.have.property('username');
 			node.expect(res.body.delegates[0].username).to.equal('genesis_1');
 			node.expect(res.body.delegates[24]).to.have.property('username');
@@ -939,7 +939,7 @@ describe('GET /api/delegates/search', function () {
 		node.get('/api/delegates/search?q=' + q + '&orderBy=username:asc', function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.ok;
 			node.expect(res.body).to.have.property('delegates').that.is.an('array');
-			node.expect(res.body.delegates).to.have.length(51);
+			node.expect(res.body.delegates).to.have.length(201);
 			node.expect(res.body.delegates[0]).to.have.property('username');
 			node.expect(res.body.delegates[0].username).to.equal('genesis_1');
 			node.expect(res.body.delegates[24]).to.have.property('username');
@@ -954,7 +954,7 @@ describe('GET /api/delegates/search', function () {
 		node.get('/api/delegates/search?q=' + q + '&orderBy=username:desc', function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.ok;
 			node.expect(res.body).to.have.property('delegates').that.is.an('array');
-			node.expect(res.body.delegates).to.have.length(51);
+			node.expect(res.body.delegates).to.have.length(201);
 			node.expect(res.body.delegates[0]).to.have.property('username');
 			node.expect(res.body.delegates[0].username).to.equal('genesis_9');
 			node.expect(res.body.delegates[24]).to.have.property('username');

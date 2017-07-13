@@ -19,12 +19,12 @@ function putDelegate (params, done) {
 }
 
 function sendBpl (account, done) {
-	var randomArk = node.randomArk();
-	var expectedFee = node.expectedFee(randomArk);
+	var randomBpl = node.randomBpl();
+	var expectedFee = node.expectedFee(randomBpl);
 
 	putTransaction({
 		secret: node.gAccount.password,
-		amount: randomArk,
+		amount: randomBpl,
 		recipientId: account.address
 	}, function (err, res) {
 		node.expect(res.body).to.have.property('success').to.be.ok;
@@ -66,7 +66,7 @@ describe('PUT /api/signatures', function () {
 
 		putSignature(validParams, function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.not.ok;
-			node.expect(res.body).to.have.property('error').to.match(/Account does not have enough ARK: [a-zA-Z0-9]+ balance: 0/);
+			node.expect(res.body).to.have.property('error').to.match(/Account does not have enough BPL: [a-zA-Z0-9]+ balance: 0/);
 			done();
 		});
 	});
@@ -76,7 +76,7 @@ describe('PUT /api/signatures', function () {
 
 		putSignature(validParams, function (err, res) {
 			node.expect(res.body).to.have.property('success').to.be.not.ok;
-			node.expect(res.body).to.have.property('error').to.match(/Account does not have enough ARK: [a-zA-Z0-9]+ balance: 0/);
+			node.expect(res.body).to.have.property('error').to.match(/Account does not have enough BPL: [a-zA-Z0-9]+ balance: 0/);
 			done();
 		});
 	});

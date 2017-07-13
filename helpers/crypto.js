@@ -1,6 +1,6 @@
 'use strict';
 
-var arkjs = require('arkjs');
+var bpljs = require('bpljs');
 
 function Crypto(scope){
 	this.scope = scope;
@@ -8,7 +8,7 @@ function Crypto(scope){
 }
 
 Crypto.prototype.makeKeypair = function (seed) {
-	return arkjs.crypto.getKeys(seed, this.network);
+	return bpljs.crypto.getKeys(seed, this.network);
 };
 
 Crypto.prototype.sign = function (hash, keypair) {
@@ -17,8 +17,8 @@ Crypto.prototype.sign = function (hash, keypair) {
 
 Crypto.prototype.verify = function (hash, signatureBuffer, publicKeyBuffer) {
 	try {
-		var ecsignature = arkjs.ECSignature.fromDER(signatureBuffer);
-		var ecpair = arkjs.ECPair.fromPublicKeyBuffer(publicKeyBuffer, this.network);
+		var ecsignature = bpljs.ECSignature.fromDER(signatureBuffer);
+		var ecpair = bpljs.ECPair.fromPublicKeyBuffer(publicKeyBuffer, this.network);
 		return ecpair.verify(hash, ecsignature);
 	} catch (error){
 		return false;
