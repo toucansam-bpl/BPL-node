@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-	activeDelegates: 201, //changed from 51 to 201
+	activeDelegates: 201,
 	maximumVotes: 1,
 	addressLength: 208,
 	blockHeaderLength: 248,
@@ -31,14 +31,14 @@ module.exports = {
 	requestLength: 104,
 	rewards: {
 		milestones: [
-			5, // Initial Reward
-			4, // Milestone 1
-			3, // Milestone 2
-			2, // Milestone 3
-			1, // Milestone 4
-			0  // Milestone 5
+			'0.000005235866863', // Initial Reward
+			'0.000004154265873015873', // Milestone 1
+			'0.000003115699404761905', // Milestone 2
+			'0.000002077132936507936', // Milestone 3
+			'0.000001038566468253968', // Milestone 4
+			'0.1BPL'  // Milestone 5
 		],
-		offset: 40320,   // Start rewards at block, ie 7 days after net start
+		offset: 17280,   // Start rewards after 3 days
 		distance: 2102400, // Distance between each milestone
 	},
 	signatureLength: 196,
