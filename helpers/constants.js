@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-	activeDelegates: 201,
+	activeDelegates: 5,
 	maximumVotes: 1,
 	addressLength: 208,
 	blockHeaderLength: 248,
@@ -38,8 +38,8 @@ module.exports = {
 			'0.000001038566468253968', // Milestone 4
 			'0.1BPL'  // Milestone 5
 		],
-		offset: 17280,   // Start rewards after 3 days
-		distance: 2102400, // Distance between each milestone
+		offset: 1500,
+		distance: 250,
 	},
 	signatureLength: 196,
 	totalAmount: 2500000000000000, // changed from 12500000000000000 to 2500000000000000
