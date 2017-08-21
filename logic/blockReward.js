@@ -119,7 +119,7 @@ BlockReward.prototype.customCalcReward = function (dependentId, height, cb) {
 													//calculate reward amount based on current milestone percentage
 													var bigDecimalPercent = new bigdecimal.BigDecimal(percent);
 
-													rewardAmount =  votersTotalBalanceInBpl.multiply(bigDecimalPercent);
+													rewardAmount =  votersTotalBalance.multiply(bigDecimalPercent);
      											rewardAmount =  rewardAmount.setScale(10, down);
 													rewardAmount = rewardAmount.toString();
 
