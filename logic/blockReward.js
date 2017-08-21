@@ -119,13 +119,8 @@ BlockReward.prototype.customCalcReward = function (dependentId, height, cb) {
 													//calculate reward amount based on current milestone percentage
 													var bigDecimalPercent = new bigdecimal.BigDecimal(percent);
 
-													//while calculating rewards consider BPL values not 10^8 values, hence the conversion.
-													//note: values are stored in the form of 10^8 in the database.
-													var bplMultiplier = new bigdecimal.BigDecimal('100000000.0000000000');
-													var votersTotalBalanceInBpl = votersTotalBalance.divide(bplMultiplier, 10, down);
-													
-													rewardAmount =  votersTotalBalanceInBpl.multiply(bigDecimalPercent);
-													rewardAmount =  rewardAmount.setScale(10, down);
+													rewardAmount = votersTotalBalance.multiply(bigDecimalPercent);
+     											rewardAmount = rewardAmount.setScale(10, down);
 													rewardAmount = rewardAmount.toString();
 
 													if(rewardAmount == '0E-10')
