@@ -10,7 +10,7 @@
     "client": {
       "token":"BLOCKPOOL",
       "symbol":"β",
-      "explorer":"http://52.66.184.223:4005"
+      "explorer":"http://54.199.172.202:4001"
     }
   },
   "BPL-testnet": {
