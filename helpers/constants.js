@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-	activeDelegates: 5,
+	activeDelegates: 31,
 	maximumVotes: 1,
 	addressLength: 208,
 	blockHeaderLength: 248,
@@ -38,8 +38,8 @@ module.exports = {
 			'0.000001038566468253968', // Milestone 4
 			'0.1BPL'  // Milestone 5
 		],
-		offset: 2880, //Reward distribution will start after 12 Hours from the time the network was launched.
-		distance: 480, // After every 2 hours the milestone will change.
+		offset: 1440, //Reward distribution will start after 6 Hours from the time the network was launched.
+		distance: 360, // After every 1.5 hours the milestone will change.
 	},
 	signatureLength: 196,
 	totalAmount: 2500000000000000, // changed from 12500000000000000 to 2500000000000000
