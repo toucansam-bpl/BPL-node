@@ -267,7 +267,11 @@ __private.saveBlock = function (block, cb) {
 			t = __private.promiseTransactions(t, block, promises);
 			t.batch(promises);
 		}).then(function () {
-			library.logger.info('Reward - '+promise.values.reward+' given for forging block - '+promise.values.id);
+			//Storing promise.values.reward in temp so as to convert in BPL format.
+			//Appropriate logging messages.
+			var temp = promise.values.reward;
+			temp /= 100000000;
+			library.logger.info('Reward - '+temp+' BPL given for forging block - '+promise.values.id);
 			return __private.afterSave(block, cb);
 		}).catch(function (err) {
 			library.logger.error("stack", err.stack);
