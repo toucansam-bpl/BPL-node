@@ -9,8 +9,8 @@
   "db": {
     "host": "localhost",
     "port": 5432,
-    "database": "bpl_testnet",
-    "user": null,
+    "database": "dbName",
+    "user": "userName",
     "password": "password",
     "poolSize": 20,
     "poolIdleTimeout": 30000,
@@ -18,7 +18,7 @@
     "logEvents": [
       "error"
     ]
-  },
+},
   "api": {
     "mount": true,
     "access": {
@@ -37,7 +37,7 @@
     "minimumNetworkReach": 1,
     "list": [
       {
-        "ip": "1.1.1.1",
+        "ip": "13.124.137.65",
         "port": 4000
       },
       {
