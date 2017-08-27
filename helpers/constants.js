@@ -31,17 +31,17 @@ module.exports = {
 	requestLength: 104,
 	rewards: {
 		milestones: [
-			'0.000005235866863', // Initial Reward
+			'0.000005395150484435337', // Initial Reward
 			'0.000004154265873015873', // Milestone 1
-			'0.000003115699404761905', // Milestone 2
-			'0.000002077132936507936', // Milestone 3
-			'0.000001038566468253968', // Milestone 4
+			'0.0000031156994047619045', // Milestone 2
+			'0.0000020771329365079365', // Milestone 3
+			'0.0000010385664682539682', // Milestone 4
 			'0.1BPL'  // Milestone 5
 		],
-		offset: 17280,   // Start rewards after 3 days
-		distance: 2102400, // Distance between each milestone
+		offset: 80640,   // Start rewards after 14 days
+		distance: 2102400, // 1 year distance between each milestone
 	},
 	signatureLength: 196,
-	totalAmount: 2500000000000000, // changed from 12500000000000000 to 2500000000000000
+	totalAmount: 2500000000000000,
 	unconfirmedTransactionTimeOut: 10800 // 1080 blocks
 };
