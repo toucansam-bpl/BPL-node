@@ -24,8 +24,22 @@
     "client": {
       "token":"BLOCKPOOL",
       "symbol":"β",
-      "explorer":"http://52.66.184.223:4005"
-    }
+      "explorer":"http://52.66.184.223:4010"
+      }
+    },
+    "BPL-mainnet": {
+      "messagePrefix": "BPL message:\n",
+      "bip32": {
+        "public": 46090600,
+        "private": 46089520
+      },
+      "pubKeyHash": 25,
+      "wif": 170,
+      "client": {
+        "token":"BLOCKPOOL",
+        "symbol":"β",
+        "explorer":"http://13.56.163.57:4001"
+      }
   },
   "bitcoin": {
     "messagePrefix": "Bitcoin message:\n",
@@ -38,48 +52,6 @@
     "client": {
       "token":"Bitcoin",
       "symbol":"B"
-    }
-  },
-  "testnet": {
-    "messagePrefix": "TESTNET message:\n",
-    "bip32": {
-      "public": 70617039,
-      "private": 70615956
-    },
-    "pubKeyHash": 65,
-    "wif": 186,
-    "client": {
-      "token":"BLOCKPOOL-TEST",
-      "symbol":"Tβ",
-      "explorer":"http://52.66.184.223:4005"
-    }
-  },
-  "demo": {
-    "messagePrefix": "DEMO message:\n",
-    "bip32": {
-      "public": 70617039,
-      "private": 70615956
-    },
-    "pubKeyHash": 25,
-    "wif": 186,
-    "client": {
-      "token":"BLOCKPOOL-DEMO",
-      "symbol":"Dβ",
-      "explorer":"http://52.66.184.223:4005"
-    }
-  },
-  "devnet": {
-    "messagePrefix": "DEVNET message:\n",
-    "bip32": {
-      "public": 70617039,
-      "private": 70615956
-    },
-    "pubKeyHash": 25,
-    "wif": 187,
-    "client": {
-      "token":"BLOCKPOOL-DEVNET",
-      "symbol":"Dβ",
-      "explorer":"http://52.66.184.223:4005"
     }
   }
 }
