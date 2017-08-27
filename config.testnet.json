@@ -136,9 +136,7 @@
   "forging": {
     "coldstart": 6,
     "force": true,
-    "secret": [
-      "develop frequent biology day science when spend acquire life flame luxury traffic"
-    ],
+    "secret": [],
     "access": {
       "whiteList": [
         "127.0.0.1"
