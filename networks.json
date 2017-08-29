@@ -38,7 +38,7 @@
       "client": {
         "token":"BLOCKPOOL",
         "symbol":"β",
-        "explorer":"http://13.56.163.57:4001"
+        "explorer":"http://13.56.163.57:4002"
       }
   },
   "bitcoin": {
