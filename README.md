@@ -1,6 +1,40 @@
 # Simple Blockpool Node Installation #
 
+Download the Blockpool install script
+
 http://www.blockpool.io/Blockpool_Node/BPL_Node_Install_Script.sh
+
+Open up your terminal
+./BPL_Node_Install_Script.sh
+
+Let the script finish.
+
+**Add configurations for your node**
+
+```
+	Change the following in config.testnet.json :
+“address“: “set your IP”
+“database”: “set database name”
+“user”: “set database user”
+“password”: “set database password”
+“list”: [
+	{
+		“ip”: “set your IP address”
+		“port”: “set the port on which your node will be running”
+	},
+{
+		“ip”: “Set seed node IP address”
+		“port”: “set the port on which seed node will be running”
+	}
+]
+```
+
+**Launch BPL node**
+
+```
+To launch BPL node on testnet:
+npm run start:bpltestnet
+```
 
 # Detailed steps for setting up BPL node on Linux, Windows and Debian
 
