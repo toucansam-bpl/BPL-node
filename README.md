@@ -117,8 +117,8 @@ npm install
 **Launch BPL node**
 
 ```
-To launch BPL node on testnet:
-npm run start:bpltestnet
+To launch BPL node on mainnet:
+npm run start:bplmainnet
 ```
 
 
@@ -180,7 +180,7 @@ npm install
 **Add configurations for your node**
 
 ```
-Change the following in config.private.json:
+Change the following in config.mainnet.json:
 “address“: “set your IP”
 “database”: “set database name”
 “user”: “set database user”
@@ -267,7 +267,7 @@ npm install
 ```
 
 **Add configurations for your node**
-**Change the following in config.private.json:**
+**Change the following in config.mainnet.json:**
 
 ```
 “address“: “set your IP”
