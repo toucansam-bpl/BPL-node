@@ -15,7 +15,7 @@ Let the script finish.
 **Add configurations for your node**
 
 ```
-	Change the following in config.testnet.json :
+	Change the following in config.mainnet.json :
 “address“: “set your IP”
 “database”: “set database name”
 “user”: “set database user”
@@ -35,7 +35,7 @@ Let the script finish.
 **Launch BPL node**
 
 ```
-To launch BPL node on testnet:
+To launch BPL node on mainnet:
 npm run start:bplmainnet
 ```
 
