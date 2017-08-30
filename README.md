@@ -36,7 +36,7 @@ Let the script finish.
 
 ```
 To launch BPL node on testnet:
-npm run start:bpltestnet
+npm run start:bplmainnet
 ```
 
 # Detailed steps for setting up BPL node on Linux, Windows and Debian
