@@ -293,8 +293,6 @@ npm install
 npm run start:bplmainnet
 ```
 
-**NOTE:** The master passphrase for this test genesis block is as follows:
-
 ```
 ,,,,,,,,,,,,
 ```
