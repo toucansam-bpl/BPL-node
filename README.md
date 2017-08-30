@@ -83,7 +83,7 @@ createdb ‘Database Name’  (this should match with the database name from con
 ```
 git clone https://github.com/blockpool-io/BPL-node.git   (make sure you have git installed)
 cd BPL-node
-git checkout testnet
+git checkout bpl-mainnet
 ```
 
 **Install node modules**
@@ -166,7 +166,7 @@ Create database ‘Database Name’ Name’  (this should match with the databas
 ```
 git clone https://github.com/blockpool-io/BPL-node.git (make sure you have git installed)
 cd BPL-node
-git checkout testnet
+git checkout bpl-mainnet
 ```
 
 **Install node modules**
@@ -199,10 +199,10 @@ Change the following in config.private.json:
 ```
 
 **Launch BPL node**
-**To launch BPL on testnet:**
+**To launch BPL on mainnet:**
 
 ```
-npm run start:bpltestnet
+npm run start:bplmainnet
 ```
 
 
@@ -255,7 +255,7 @@ sudo apt-get install -y git
 
 git clone https://github.com/blockpool-io/BPL-node.git   (make sure you have git installed)
 cd BPL-node
-git checkout testnet
+git checkout mainnet
 ```
 
 **Install node modules**
@@ -287,10 +287,10 @@ npm install
 ```
 
 **Launch BPL node**
-**To launch BPL node on testnet:**
+**To launch BPL node on mainnet:**
 
 ```
-npm run start:bpltestnet
+npm run start:bplmainnet
 ```
 
 **NOTE:** The master passphrase for this test genesis block is as follows:
