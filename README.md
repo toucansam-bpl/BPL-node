@@ -97,7 +97,7 @@ npm install
 **Add configurations for your node**
 
 ```
-	Change the following in config.testnet.json :
+	Change the following in config.mainnet.json :
 “address“: “set your IP”
 “database”: “set database name”
 “user”: “set database user”
