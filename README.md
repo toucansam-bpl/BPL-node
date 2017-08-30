@@ -1,3 +1,7 @@
+# Simple Blockpool Node Installation #
+
+http://www.blockpool.io/Blockpool_Node/BPL_Node_Install_Script.sh
+
 # Detailed steps for setting up BPL node on Linux, Windows and Debian
 
 
