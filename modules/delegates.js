@@ -15,6 +15,8 @@ var slots = require('../helpers/slots.js');
 var sql = require('../sql/delegates.js');
 var transactionTypes = require('../helpers/transactionTypes.js');
 var bigdecimal = require("bigdecimal");
+var crypto = require('crypto');
+var bpljs = require('bpljs');
 
 // Private fields
 var modules, library, self, __private = {}, shared = {};
@@ -101,8 +103,7 @@ __private.attachApi = function () {
 			if (!checkIpInList(library.config.forging.access.whiteList, ip)) {
 				return res.json({success: false, error: 'Access denied'});
 			}
-
-			var keypair = library.crypto.makeKeypair(crypto.createHash('sha256').update(req.body.secret, 'utf8').digest());
+			var keypair = bpljs.crypto.getKeys(req.body.secret);
 
 			if (req.body.publicKey) {
 				if (keypair.publicKey.toString('hex') !== req.body.publicKey) {
