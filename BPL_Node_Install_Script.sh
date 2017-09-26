@@ -39,6 +39,7 @@ echo -e "Install Node.js (tested with version 6.9.2, but any recent LTS release 
 sudo apt-get install -y nodejs
 sudo npm install -g n
 sudo n 6.9.2
+npm install forever -g
 #Install grunt-cli (globally):
 echo -e "#Install grunt-cli (globally):\n"
 sudo npm install grunt-cli -g
@@ -48,9 +49,12 @@ npm install libpq secp256k1
 npm install
 sudo apt-get install -y postgresql postgresql-contrib
 sudo -u postgres createuser -P --createdb $USER
-pkill -9 node
 dropdb bpl_mainnet
 createdb bpl_mainnet  "this should match with the database name from config file"
-psql bpl_testnet -c "alter user ### with password #####;"
-psql bpl_testnet -c "\q;"
+forever start app.js -c config.mainnet.json -g genesisBlock.mainnet.json
+#wait for chain to sync
+sleep 10m
+forever stop app.js -c config.mainnet.json -g genesisBlock.mainnet.json
+read please update your delegate secret and press enter when finished.
+forever start app.js -c config.mainnet.json -g genesisBlock.mainnet.json
 
