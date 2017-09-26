@@ -36,7 +36,7 @@ Let the script finish.
 
 ```
 To launch BPL node on mainnet:
-npm run start:bplmainnet
+forever start app.js -c config.mainnet.json -g genesisBlock.mainnet.json
 ```
 
 # Detailed steps for setting up BPL node on Linux, Windows and Debian
@@ -92,6 +92,7 @@ git checkout bpl-mainnet
 sudo apt-get install -y libpq-dev
 npm install libpq secp256k1
 npm install
+npm install forever -g
 ```
 
 **Add configurations for your node**
@@ -118,7 +119,7 @@ npm install
 
 ```
 To launch BPL node on mainnet:
-npm run start:bplmainnet
+forever start app.js -c config.mainnet.json -g genesisBlock.mainnet.json
 ```
 
 
