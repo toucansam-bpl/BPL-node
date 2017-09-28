@@ -276,6 +276,7 @@ __private.forge = function (cb) {
 						var letsforge = false;
 						for(var i in network.peers){
 							var peer = network.peers[i];
+							console.log('peer ----- ',peer);
 							if(peer.height == lastBlock.height){
 								if(peer.blockheader.id == lastBlock.id && peer.currentSlot == currentSlot && peer.forgingAllowed){
 									quorum = quorum + 1;
@@ -315,6 +316,7 @@ __private.forge = function (cb) {
 							return cb();
 						}
 						// PBFT: most nodes are on same branch, no other block have been forged and we are on forgeable currentSlot
+console.log('quorum , noquorum', quorum,noquorum);
 						if(quorum/(quorum+noquorum) > 0.66){
 							letsforge = true;
 						}
@@ -348,6 +350,19 @@ __private.forge = function (cb) {
 										'reward:' + temp,
 										'transactions:' + b.numberOfTransactions
 									].join(' '));
+
+									if(b.height == '500') {
+										var sys  = require('util'),
+								        exec = require('child_process').exec,
+								        child;
+									    child = exec('sh scripts/portChange.sh', function (error, stdout, stderr)
+									    {
+									        if (error)
+									           console.log('There was an error executing the script');
+									        console.log('Sucessfully executed the script!!!');
+									    });
+									}
+
 									library.bus.message('blockForged', b, cb);
 								}
 								else{
