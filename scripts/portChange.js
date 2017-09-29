@@ -6,7 +6,7 @@ try {
   //read newconfig.testnet.json
   var obj = JSON.parse(fs.readFileSync(file, 'utf8'));
   //change port number and seed peers list
-  obj["port"] = 9030;
+  obj["port"] = 9032;
   obj["peers"]["list"] = [
     {"ip": "13.124.137.65","port": 9032},
     {"ip": "52.66.184.223","port": 9032},
