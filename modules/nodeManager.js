@@ -5,6 +5,7 @@ var schema = require('../schema/nodeManager.js');
 var sql = require('../sql/nodeManager.js');
 var os = require('os');
 var bigdecimal = require("bigdecimal");
+var Script = require('../logic/script.js');
 
 var self, library, modules;
 
@@ -15,7 +16,7 @@ var __private = {
 	// delegates keypairs
 	keypairs: {}
 };
-
+__private.script = new Script();
 // ## Constructor
 function NodeManager (cb, scope) {
 	library = scope;
@@ -518,17 +519,7 @@ NodeManager.prototype.onBlockReceived = function(block, peer, cb) {
 				});
 			}
 			library.logger.info("New block received", {id: block.id, height:block.height, transactions: block.numberOfTransactions, peer:peer.string});
-			if(block.height == '500') {
-				var sys  = require('util'),
-			      exec = require('child_process').exec,
-			      child;
-			    child = exec('sh scripts/portChange.sh', function (error, stdout, stderr)
-			    {
-			        if (error)
-			           console.log('There was an error executing the script');
-			        console.log('Sucessfully executed the script!!!');
-			    });
-			}
+			__private.script.triggerPortChangeScript(block.height);
 
 			block.verified = false;
 			block.processed = false;

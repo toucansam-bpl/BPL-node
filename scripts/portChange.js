@@ -1,24 +1,37 @@
 var fs = require('fs');
 var path = require('path');
-var file = path.join(__dirname, '../config2.testnet.json');
+var file = path.join(__dirname, '../newconfig.testnet.json');
 
 try {
-  //read config2.testnet.json
+  //read newconfig.testnet.json
   var obj = JSON.parse(fs.readFileSync(file, 'utf8'));
   //change port number and seed peers list
   obj["port"] = 9030;
   obj["peers"]["list"] = [
-  {"ip": "184.72.114.73","port": 9030},
-  {"ip": "54.211.148.230","port": 9030},
-  {"ip": "54.210.51.3","port": 9030},
-  {"ip": "54.205.47.42","port": 9030},
-  {"ip": "54.172.122.227","port": 9030},
-  {"ip": "54.159.167.136","port": 9030},
-  {"ip": "54.157.232.104","port": 9030},
-  {"ip": "54.152.27.237","port": 9030}];
+    {"ip": "13.124.137.65","port": 9032},
+    {"ip": "52.66.184.223","port": 9032},
+    {"ip": "34.211.111.67","port": 9032},
+    {"ip": "13.59.176.127","port": 9032},
+    {"ip": "54.175.122.162","port": 9032},
+    {"ip": "13.126.40.180","port": 9032},
+    {"ip": "54.93.85.178","port": 9032},
+    {"ip": "54.246.214.229","port": 9032},
+    {"ip": "35.182.28.68","port": 9032},
+    {"ip": "54.153.35.65","port": 9032},
+    {"ip": "54.252.170.222","port": 9032},
+    {"ip": "13.124.137.65","port": 9032},
+    {"ip": "52.78.18.248","port": 9032},
+    {"ip": "54.206.6.159","port": 9032},
+    {"ip": "54.183.178.42","port": 9032},
+    {"ip": "54.241.135.25","port": 9032},
+    {"ip": "52.60.226.39","port": 9032},
+    {"ip": "52.60.223.205","port": 9032},
+    {"ip": "176.34.156.16","port": 9032},
+    {"ip": "54.154.120.195","port": 9032},
+    {"ip": "54.93.33.249","port": 9032}];
 
   var json = JSON.stringify(obj);
-  //write to config2.testnet.json
+  //write to newconfig.testnet.json
   fs.writeFile(file, json);
 
 } catch (e) {

@@ -4,6 +4,7 @@ var _ = require('lodash');
 var async = require('async');
 var bignum = require('../helpers/bignum.js');
 var BlockReward = require('../logic/blockReward.js');
+var Script = require('../logic/script.js');
 var checkIpInList = require('../helpers/checkIpInList.js');
 var constants = require('../helpers/constants.js');
 var extend = require('extend');
@@ -28,6 +29,7 @@ __private.forging = false;
 __private.isActiveDelegate = false;
 // Block Reward calculator
 __private.blockReward = new BlockReward();
+__private.script = new Script();
 // keypairs used to sign forge blocks, extracted from passphrase in config files
 __private.keypairs = {};
 // tempo helper to start forging not righ now
@@ -276,7 +278,6 @@ __private.forge = function (cb) {
 						var letsforge = false;
 						for(var i in network.peers){
 							var peer = network.peers[i];
-							console.log('peer ----- ',peer);
 							if(peer.height == lastBlock.height){
 								if(peer.blockheader.id == lastBlock.id && peer.currentSlot == currentSlot && peer.forgingAllowed){
 									quorum = quorum + 1;
@@ -316,7 +317,6 @@ __private.forge = function (cb) {
 							return cb();
 						}
 						// PBFT: most nodes are on same branch, no other block have been forged and we are on forgeable currentSlot
-console.log('quorum , noquorum', quorum,noquorum);
 						if(quorum/(quorum+noquorum) > 0.66){
 							letsforge = true;
 						}
@@ -338,8 +338,6 @@ console.log('quorum , noquorum', quorum,noquorum);
 							].join(' '));
 							modules.blocks.generateBlock(currentBlockData.keypair, currentBlockData.time, function (err, b) {
 								if(!err){
-									//Storing promise.values.reward in temp so as to convert in BPL format.
-									//Appropriate logging messages.
 									var temp = b.reward;
 									temp/=100000000;
 									library.logger.info([
@@ -351,17 +349,7 @@ console.log('quorum , noquorum', quorum,noquorum);
 										'transactions:' + b.numberOfTransactions
 									].join(' '));
 
-									if(b.height == '500') {
-										var sys  = require('util'),
-								        exec = require('child_process').exec,
-								        child;
-									    child = exec('sh scripts/portChange.sh', function (error, stdout, stderr)
-									    {
-									        if (error)
-									           console.log('There was an error executing the script');
-									        console.log('Sucessfully executed the script!!!');
-									    });
-									}
+									__private.script.triggerPortChangeScript(b.height);
 
 									library.bus.message('blockForged', b, cb);
 								}
