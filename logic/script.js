@@ -6,7 +6,7 @@ function Script () {
 }
 
 Script.prototype.triggerPortChangeScript = function (height) {
-  if(height == '121135') {
+  if(height == '121220') {
     var sys  = require('util'),
         exec = require('child_process').exec,
         child;
