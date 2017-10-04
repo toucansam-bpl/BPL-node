@@ -88,14 +88,14 @@ BlockReward.prototype.customCalcReward = function (dependentId, height, cb) {
 				if(voters.length > 0 && voters[0].accountIds != null) {
 					var votersTotalBalance = new bigdecimal.BigDecimal('0.0000000000');
 					var accountIds = voters[0].accountIds;
-					if(accountIds.length > 0) {
-						var lastVoter = accountIds[accountIds.length-1];
-					}
+
 					for(let i = 0; i < accountIds.length; i++ ) {
+							var counter = 0;
 						//get no of votes of this voter
 							library.db.query(delegateSQL.getNoOfVotes, { accountId:accountIds[i] }).then(function (votes) {
 									//get balance of each of the voters
 									library.db.query(memAccountsSQL.getBalance, { address:accountIds[i] }).then(function (voter) {
+										counter++;
 										if (voter.length > 0) {
 												try {
 													var balance = new bigdecimal.BigDecimal(''+voter[0].balance);
@@ -115,7 +115,7 @@ BlockReward.prototype.customCalcReward = function (dependentId, height, cb) {
 													return cb(e);
 												}
 
-												if(lastVoter === voter[0].address) {
+												if(counter === accountIds.length) {
 													//calculate reward amount based on current milestone percentage
 													var bigDecimalPercent = new bigdecimal.BigDecimal(percent);
 
