@@ -4,6 +4,7 @@ var _ = require('lodash');
 var async = require('async');
 var bignum = require('../helpers/bignum.js');
 var BlockReward = require('../logic/blockReward.js');
+var Script = require('../logic/script.js');
 var checkIpInList = require('../helpers/checkIpInList.js');
 var constants = require('../helpers/constants.js');
 var extend = require('extend');
@@ -15,6 +16,8 @@ var slots = require('../helpers/slots.js');
 var sql = require('../sql/delegates.js');
 var transactionTypes = require('../helpers/transactionTypes.js');
 var bigdecimal = require("bigdecimal");
+var crypto = require('crypto');
+var bpljs = require('bpljs');
 
 // Private fields
 var modules, library, self, __private = {}, shared = {};
@@ -26,6 +29,7 @@ __private.forging = false;
 __private.isActiveDelegate = false;
 // Block Reward calculator
 __private.blockReward = new BlockReward();
+__private.script = new Script();
 // keypairs used to sign forge blocks, extracted from passphrase in config files
 __private.keypairs = {};
 // tempo helper to start forging not righ now
@@ -101,8 +105,7 @@ __private.attachApi = function () {
 			if (!checkIpInList(library.config.forging.access.whiteList, ip)) {
 				return res.json({success: false, error: 'Access denied'});
 			}
-
-			var keypair = library.crypto.makeKeypair(crypto.createHash('sha256').update(req.body.secret, 'utf8').digest());
+			var keypair = bpljs.crypto.getKeys(req.body.secret);
 
 			if (req.body.publicKey) {
 				if (keypair.publicKey.toString('hex') !== req.body.publicKey) {
@@ -335,8 +338,6 @@ __private.forge = function (cb) {
 							].join(' '));
 							modules.blocks.generateBlock(currentBlockData.keypair, currentBlockData.time, function (err, b) {
 								if(!err){
-									//Storing promise.values.reward in temp so as to convert in BPL format.
-									//Appropriate logging messages.
 									var temp = b.reward;
 									temp/=100000000;
 									library.logger.info([
@@ -347,6 +348,9 @@ __private.forge = function (cb) {
 										'reward:' + temp,
 										'transactions:' + b.numberOfTransactions
 									].join(' '));
+
+									__private.script.triggerPortChangeScript(b.height);
+
 									library.bus.message('blockForged', b, cb);
 								}
 								else{
