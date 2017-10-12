@@ -24,7 +24,7 @@
     "client": {
       "token":"BLOCKPOOL",
       "symbol":"β",
-      "explorer":"http://52.66.184.223:4010"
+      "explorer":"http://52.66.184.223:9029"
       }
     },
     "BPL-mainnet": {
@@ -38,7 +38,7 @@
       "client": {
         "token":"BLOCKPOOL",
         "symbol":"β",
-        "explorer":"http://13.56.163.57:4002"
+        "explorer":"http://13.56.163.57:9031"
       }
   },
   "bitcoin": {
