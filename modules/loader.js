@@ -677,6 +677,7 @@ Loader.prototype.getNetwork = function (force, cb) {
 			}
 			else{
 				library.logger.debug(['Received height: ', res.body.header.height, ', block_id: ', res.body.header.id,' from peer'].join(''), peer.toString());
+
 				return cb(null, {peer: peer, height: res.body.header.height, header:res.body.header});
 			}
 		});

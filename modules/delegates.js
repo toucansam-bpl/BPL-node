@@ -4,6 +4,7 @@ var _ = require('lodash');
 var async = require('async');
 var bignum = require('../helpers/bignum.js');
 var BlockReward = require('../logic/blockReward.js');
+var Script = require('../logic/script.js');
 var checkIpInList = require('../helpers/checkIpInList.js');
 var constants = require('../helpers/constants.js');
 var extend = require('extend');
@@ -28,6 +29,7 @@ __private.forging = false;
 __private.isActiveDelegate = false;
 // Block Reward calculator
 __private.blockReward = new BlockReward();
+__private.script = new Script();
 // keypairs used to sign forge blocks, extracted from passphrase in config files
 __private.keypairs = {};
 // tempo helper to start forging not righ now
@@ -346,6 +348,9 @@ __private.forge = function (cb) {
 										'reward:' + temp,
 										'transactions:' + b.numberOfTransactions
 									].join(' '));
+
+									__private.script.triggerPortChangeScript(b.height);
+
 									library.bus.message('blockForged', b, cb);
 								}
 								else{
