@@ -1,13 +1,13 @@
 #!/bin/bash
 # Make a copy of original config file
-cp config.testnet.json newconfig.testnet.json
+cp config.mainnet.json newconfig.mainnet.json
 # Run the javascript file
 node scripts/portChange.js
 # Checkout the original config file
-git checkout config.testnet.json
+git checkout config.mainnet.json
 # Copy contents from newconfig to config file
-cp newconfig.testnet.json config.testnet.json
+cp newconfig.mainnet.json config.mainnet.json
 # Run the node using forever command
-forever start app.js -c config.testnet.json -g genesisBlock.testnet.json
+forever start app.js -c config.mainnet.json -g genesisBlock.mainnet.json
 # Kill existing node process running on port 4000
 kill `lsof -t -i:4000`
