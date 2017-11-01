@@ -9,8 +9,8 @@ var constants = require('./constants.js');
  */
 
 function beginEpochTime () {
-	var d = constants.epochTime;
-
+	//var d = constants.epochTime;
+	var d = new Date(constants.epochTime);
 	return d;
 }
 

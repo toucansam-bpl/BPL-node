@@ -858,7 +858,7 @@ Blocks.prototype.getLastBlock = function () {
 	var lastBlock = modules.blockchain.getLastBlock();
 
 	if (lastBlock) {
-		var epoch = constants.epochTime / 1000;
+		var epoch = new Date(constants.epochTime) / 1000;
 		var lastBlockTime = epoch + lastBlock.timestamp;
 		var currentTime = new Date().getTime() / 1000;
 
@@ -1645,7 +1645,7 @@ shared.getBlocks = function (req, cb) {
 
 shared.getEpoch = function (req, cb) {
 
-	return cb(null, {epoch: constants.epochTime});
+	return cb(null, {epoch: new Date(constants.epochTime)});
 };
 
 shared.getHeight = function (req, cb) {
@@ -1704,7 +1704,7 @@ shared.getStatus = function (req, cb) {
 	var counter = 0;
 
 	var status = {
-		epoch:     constants.epochTime,
+		epoch:     new Date(constants.epochTime),
 		height:    block.height,
 		fee:       library.logic.block.calculateFee(),
 		milestone: __private.blockReward.calcMilestone(block.height),
