@@ -75,6 +75,7 @@ BlockReward.prototype.calcPercentageForMilestone = function (height) {
 // until 1% Annual then switching to a fixed block reward of 0.1 BPL/Block thereafter.
 //
 BlockReward.prototype.customCalcReward = function (dependentId, height, cb) {
+	console.log('');
 	var milestone = this.calcMilestone(height);
 	var zeroReward ="0.0000000000";
 	var down = bigdecimal.RoundingMode.DOWN();
@@ -100,11 +101,10 @@ BlockReward.prototype.customCalcReward = function (dependentId, height, cb) {
 			else
 					this.getProportionalReward(dependentId, cb);
 			}
+			else {
+				return cb(null, zeroReward);
+			}
 		}
-		else {
-			return cb(null, zeroReward);
-		}
-	}
 	else if(constants.rewards.type === "static"){
 		this.getStaticReward(height, cb);
 	}

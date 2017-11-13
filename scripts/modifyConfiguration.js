@@ -112,7 +112,7 @@ if(program.logo) {
 
 //Write to constants.js
 var fs = require('fs');
-fs.writeFile("../helpers/constants.js", "'use strict'; module.exports = "+JSON.stringify(constants)+";", function(err) {
+fs.writeFile("../helpers/constants.json", constants, function(err) {
     if(err) {
         return console.log(err);
     }
