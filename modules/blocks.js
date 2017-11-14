@@ -269,7 +269,7 @@ __private.saveBlock = function (block, cb) {
 		}).then(function () {
 			var temp = promise.values.reward;
 			temp /= 100000000;
-			library.logger.info('Reward - '+temp+' '+library.config.tokenName+' given for forging block - '+promise.values.id);
+			library.logger.info('Reward - '+temp+' '+library.config.tokenShortName+' given for forging block - '+promise.values.id);
 			return __private.afterSave(block, cb);
 		}).catch(function (err) {
 			library.logger.error("stack", err.stack);
