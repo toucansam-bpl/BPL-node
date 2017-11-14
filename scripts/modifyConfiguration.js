@@ -76,14 +76,14 @@ var network = {
 
 program
 	.version(packageJson.version)
-	.option('-ad, --activedelegates <activedelegates>', 'No. of active delegates')
-	.option('-bs, --blocksize <blocksize>', 'Max transactions per block')
-	.option('-bt, --blocktime <blocktime>', 'Block time in seconds')
+	.option('-a, --activedelegates <activedelegates>', 'No. of active delegates')
+	.option('-b, --blocktime <blocktime>', 'Block time in seconds')
 	.option('-d, --distance <distance>', 'Distance between milestones')
 	.option('-l, --logo <logo>', 'Logo string')
 	.option('-m, --milestones [milestones...]', 'Static or proportional reward values')
 	.option('-o, --offset <offset>', 'Reward offset')
-	.option('-rt, --rewardtype <rewardtype>', 'Static or Proportional')
+	.option('-r, --rewardtype <rewardtype>', 'Static or Proportional')
+	.option('-s, --blocksize <blocksize>', 'Max transactions per block')
 	.option('-t, --token <token>', 'Token name')
 	.parse(process.argv)
 
@@ -114,7 +114,7 @@ if(program.rewardtype && program.milestones) {
 		//calculate annual percentage factor
 		for(let i=0; i<milestonesArr.length; i++) {
 			let annualPercent = milestonesArr[i]/(100*12*4*7);
-			let blocksGeneratedPerYear = (60/co"Sidechain message:\n",nstants.blocktime)*60*24*365;
+			let blocksGeneratedPerYear = (60/constants.blocktime)*60*24*365;
 
 			let blocksGeneratedPerDay = 0;
 			if(i===0) {
@@ -140,7 +140,7 @@ if(program.token) {
 
 //Write to constants.json
 var fs = require('fs');
-fs.writeFile("../helpers/constants.json", JSON.stringify(constants), function(err) {
+fs.writeFile("../constants.json", JSON.stringify(constants), function(err) {
     if(err) {
         return console.log(err);
     }

@@ -2,7 +2,7 @@
 
 var async = require('async');
 var bignum = require('../helpers/bignum.js');
-var constants = require('../helpers/constants.js');
+var constants = require('../constants.json');
 var ip = require('ip');
 var Router = require('../helpers/router.js');
 var schema = require('../schema/loader.js');

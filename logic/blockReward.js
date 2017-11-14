@@ -1,6 +1,6 @@
 'use strict';
 
-var constants = require('../helpers/constants.js');
+var constants = require('../constants.json');
 var memAccountsSQL = require('../sql/memAccounts.js');;
 var blocksSQL = require('../sql/blocks.js');
 var delegateSQL = require('../sql/delegates.js');
