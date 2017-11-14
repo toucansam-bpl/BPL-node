@@ -75,39 +75,37 @@ BlockReward.prototype.calcPercentageForMilestone = function (height) {
 // until 1% Annual then switching to a fixed block reward of 0.1 BPL/Block thereafter.
 //
 BlockReward.prototype.customCalcReward = function (dependentId, height, cb) {
-	console.log('');
 	var milestone = this.calcMilestone(height);
 	var zeroReward ="0.0000000000";
 	var down = bigdecimal.RoundingMode.DOWN();
 
-	if(constants.rewards.type === "proportional") {
-		var self = this;
 		var rewardAmount = new bigdecimal.BigDecimal("0.0000000000");
 		if(height >= this.rewardOffset) {
+			if(constants.rewards.type === "proportional") {
 			//last milestone
-			if(milestone === (constants.rewards.milestones.length-1)) {
-				if(constants.rewards.fixLastMilestoneReward === true) {
-					if(constants.rewards.lastMilestoneReward) {
-						var fixedReward = new bigdecimal.BigDecimal(""+constants.rewards.lastMilestoneReward);
-						fixedReward = fixedReward.setScale(10, down);
-						return cb(null, fixedReward.toString());
+				if(milestone === (constants.rewards.milestones.length-1)) {
+					if(constants.rewards.fixLastMilestoneReward === true) {
+						if(constants.rewards.lastMilestoneReward) {
+							var fixedReward = new bigdecimal.BigDecimal(""+constants.rewards.lastMilestoneReward);
+							fixedReward = fixedReward.setScale(10, down);
+							return cb(null, fixedReward.toString());
+						}
+						else
+							return cb(null, zeroReward);
 					}
 					else
-						return cb(null, zeroReward);
+						this.getProportionalReward(dependentId, height, cb);
 				}
 				else
-					this.getProportionalReward(dependentId, cb);
-			}
-			else
-					this.getProportionalReward(dependentId, cb);
+						this.getProportionalReward(dependentId, height, cb);
+				}
+				else if(constants.rewards.type === "static"){
+					this.getStaticReward(height, cb);
+				}
 			}
 			else {
 				return cb(null, zeroReward);
 			}
-		}
-	else if(constants.rewards.type === "static"){
-		this.getStaticReward(height, cb);
-	}
 };
 
 BlockReward.prototype.getStaticReward = function (height, cb) {
@@ -120,11 +118,11 @@ BlockReward.prototype.getStaticReward = function (height, cb) {
 		return cb(null, rewardAmount.toString());
 	}
 }
-BlockReward.prototype.getProportionalReward = function (dependentId, cb) {
+BlockReward.prototype.getProportionalReward = function (dependentId, height, cb) {
 	var zeroReward ='0.0000000000';
 	var down = bigdecimal.RoundingMode.DOWN();
 	//calculate percentage corresponding to milestone
-	var percent = self.calcPercentageForMilestone(height);
+	var percent = this.calcPercentageForMilestone(height);
 
 	//get all voters for delegate using delegateId i.e public key
 	library.db.query(delegateSQL.getVoters, { publicKey: dependentId}).then(function (voters) {
