@@ -84,14 +84,10 @@ BlockReward.prototype.customCalcReward = function (dependentId, height, cb) {
 			if(constants.rewards.type === "proportional") {
 			//last milestone
 				if(milestone === (constants.rewards.milestones.length-1)) {
-					if(constants.rewards.fixLastMilestoneReward === true) {
-						if(constants.rewards.lastMilestoneReward) {
-							var fixedReward = new bigdecimal.BigDecimal(""+constants.rewards.lastMilestoneReward);
-							fixedReward = fixedReward.setScale(10, down);
-							return cb(null, fixedReward.toString());
-						}
-						else
-							return cb(null, zeroReward);
+					if(constants.rewards.fixLastMilestoneReward && constants.rewards.lastMilestoneReward) {
+						var fixedReward = new bigdecimal.BigDecimal(""+constants.rewards.lastMilestoneReward);
+						fixedReward = fixedReward.setScale(10, down);
+						return cb(null, fixedReward.toString());
 					}
 					else
 						this.getProportionalReward(dependentId, height, cb);
@@ -110,14 +106,11 @@ BlockReward.prototype.customCalcReward = function (dependentId, height, cb) {
 
 BlockReward.prototype.getStaticReward = function (height, cb) {
 	var down = bigdecimal.RoundingMode.DOWN();
-	if (height < this.rewardOffset) {
-		return cb(null, zeroReward);
-	} else {
-		var rewardAmount = new bigdecimal.BigDecimal(''+this.milestones[this.calcMilestone(height)]);
-		rewardAmount = rewardAmount.setScale(10, down);
-		return cb(null, rewardAmount.toString());
-	}
+	var rewardAmount = new bigdecimal.BigDecimal(''+this.milestones[this.calcMilestone(height)]);
+	rewardAmount = rewardAmount.setScale(10, down);
+	return cb(null, rewardAmount.toString());
 }
+
 BlockReward.prototype.getProportionalReward = function (dependentId, height, cb) {
 	var zeroReward ='0.0000000000';
 	var down = bigdecimal.RoundingMode.DOWN();
@@ -159,7 +152,7 @@ BlockReward.prototype.getProportionalReward = function (dependentId, height, cb)
 										if(counter === accountIds.length) {
 											//calculate reward amount based on current milestone percentage
 											var bigDecimalPercent = new bigdecimal.BigDecimal(percent);
-
+											var rewardAmount = new bigdecimal.BigDecimal('0.0000000000');
 											rewardAmount =  votersTotalBalance.multiply(bigDecimalPercent);
 											rewardAmount =  rewardAmount.setScale(10, down);
 											rewardAmount = rewardAmount.toString();
