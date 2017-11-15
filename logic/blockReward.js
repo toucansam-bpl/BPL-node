@@ -84,8 +84,8 @@ BlockReward.prototype.customCalcReward = function (dependentId, height, cb) {
 			if(constants.rewards.type === "proportional") {
 			//last milestone
 				if(milestone === (constants.rewards.milestones.length-1)) {
-					if(constants.rewards.fixLastMilestoneReward && constants.rewards.lastMilestoneReward) {
-						var fixedReward = new bigdecimal.BigDecimal(""+constants.rewards.lastMilestoneReward);
+					if(constants.rewards.fixedLastReward) {
+						var fixedReward = new bigdecimal.BigDecimal(""+constants.rewards.fixedLastReward);
 						fixedReward = fixedReward.setScale(10, down);
 						return cb(null, fixedReward.toString());
 					}
@@ -154,6 +154,8 @@ BlockReward.prototype.getProportionalReward = function (dependentId, height, cb)
 											var bigDecimalPercent = new bigdecimal.BigDecimal(percent);
 											var rewardAmount = new bigdecimal.BigDecimal('0.0000000000');
 											rewardAmount =  votersTotalBalance.multiply(bigDecimalPercent);
+											console.log('>>>>> balance * percent = result',votersTotalBalance.toString(),bigDecimalPercent.toString(),rewardAmount.toString());
+
 											rewardAmount =  rewardAmount.setScale(10, down);
 											rewardAmount = rewardAmount.toString();
 

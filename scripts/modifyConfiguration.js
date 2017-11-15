@@ -9,6 +9,7 @@ program
 	.option('-a, --activedelegates <activedelegates>', 'No. of active delegates')
 	.option('-b, --blocktime <blocktime>', 'Block time in seconds')
 	.option('-d, --distance <distance>', 'Distance between milestones')
+	.option('-f, --fixedLastReward <lastMilestoneReward>', 'Last milestone fixed reward')
 	.option('-l, --logo <logo>', 'Logo string')
 	.option('-m, --milestones [milestones...]', 'Static or proportional reward values')
 	.option('-o, --offset <offset>', 'Reward offset')
@@ -18,16 +19,16 @@ program
 	.parse(process.argv)
 
 if(program.activedelegates) {
-	constants.activeDelegates = program.activedelegates;
+	constants.activeDelegates = parseInt(program.activedelegates);
 }
 if(program.blocksize) {
-	constants.maxTxsPerBlock = program.blocksize;
+	constants.maxTxsPerBlock = parseInt(program.blocksize);
 }
 if(program.blocktime) {
-	constants.blocktime = program.blocktime;
+	constants.blocktime = parseInt(program.blocktime);
 }
 if(program.distance) {
-	constants.rewards.distance = program.distance;
+	constants.rewards.distance = parseInt(program.distance);
 }
 let logo = "";
 if(program.logo) {
@@ -42,7 +43,8 @@ if(program.rewardtype && program.milestones) {
 		constants.rewards.milestones = milestonesArr;
 	else if(program.rewardtype.toLowerCase() === 'proportional') {
 		//calculate annual percentage factor
-		for(let i=0; i<milestonesArr.length; i++) {
+		let length = milestonesArr.length;
+		for(let i=0; i<length; i++) {
 			let annualPercent = milestonesArr[i]/(100*12*4*7);
 			let blocksGeneratedPerYear = (60/constants.blocktime)*60*24*365;
 
@@ -58,15 +60,19 @@ if(program.rewardtype && program.milestones) {
 			let result = annualPercent/blocksGeneratedByEachDelegate;
 			milestonesArr[i] = ''+result;
 		}
+		if(program.fixedLastReward) {
+			constants.rewards.fixedLastReward = program.fixedLastReward;
+			milestonesArr[length] = "0";
+		}
 		constants.rewards.milestones = milestonesArr;
 	}
 }
 if(program.offset) {
-	constants.rewards.offset = program.offset;
+	constants.rewards.offset = parseInt(program.offset);
 }
 if(program.token) {
 	networks.sidechain.client.token = program.token;
-	networks.sidechain.messagePrefix =  program.token+ " message:\n"
+	networks.sidechain.messagePrefix =  program.token+ " message:\n";
 }
 
 //Write to constants.json
