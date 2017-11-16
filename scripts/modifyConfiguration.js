@@ -9,7 +9,7 @@ program
 	.option('-a, --activedelegates <activedelegates>', 'No. of active delegates')
 	.option('-b, --blocktime <blocktime>', 'Block time in seconds')
 	.option('-d, --distance <distance>', 'Distance between milestones')
-	.option('-f, --fixedLastReward <lastMilestoneReward>', 'Last milestone fixed reward')
+	.option('-f, --fixedlastreward <lastMilestoneReward>', 'Last milestone fixed reward')
 	.option('-l, --logo <logo>', 'Logo string')
 	.option('-m, --milestones [milestones...]', 'Static or proportional reward values')
 	.option('-o, --offset <offset>', 'Reward offset')
@@ -37,6 +37,7 @@ if(program.logo) {
 if(program.rewardtype && program.milestones) {
 	constants.rewards.type = program.rewardtype;
 	constants.rewards.milestones = JSON.parse(program.milestones);
+	console.log("In modifyConfigurations >>>>>>",program.rewardtype,program.milestones,constants.rewards.type,constants.rewards.milestones);
 
 	let milestonesArr = JSON.parse(program.milestones);
 	if(program.rewardtype.toLowerCase() === 'static')
@@ -60,8 +61,8 @@ if(program.rewardtype && program.milestones) {
 			let result = annualPercent/blocksGeneratedByEachDelegate;
 			milestonesArr[i] = ''+result;
 		}
-		if(program.fixedLastReward) {
-			constants.rewards.fixedLastReward = program.fixedLastReward;
+		if(program.fixedlastreward) {
+			constants.rewards.fixedLastReward = program.fixedlastreward;
 			milestonesArr[length] = "0";
 		}
 		constants.rewards.milestones = milestonesArr;
