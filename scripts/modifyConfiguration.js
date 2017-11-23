@@ -38,7 +38,7 @@ if(program.logo) {
 if(program.rewardtype && program.milestones) {
 	constants.rewards.type = program.rewardtype;
 	constants.rewards.milestones = JSON.parse(program.milestones);
-	var str = constants.rewards.type +" "+ constants.rewards.milestones;
+	var str = constants.rewards.type +" "+typeof(constants.rewards.type)+" "+constants.rewards.milestones +" "+typeof(constants.rewards.milestones);
 	//Write to logo.txt
 	if(str != "") {
 		fs.writeFile("../dump.txt", str, function(err) {
