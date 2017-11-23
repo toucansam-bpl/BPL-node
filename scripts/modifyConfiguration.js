@@ -3,6 +3,7 @@ let program = require('commander');
 let packageJson = require('../package.json');
 let networks = require('../networks.json');
 let constants = require('../constants.json');
+let fs = require('fs');
 
 program
 	.version(packageJson.version)
@@ -37,7 +38,16 @@ if(program.logo) {
 if(program.rewardtype && program.milestones) {
 	constants.rewards.type = program.rewardtype;
 	constants.rewards.milestones = JSON.parse(program.milestones);
-	console.log("In modifyConfigurations >>>>>>",program.rewardtype,program.milestones,constants.rewards.type,constants.rewards.milestones);
+	var str = constants.rewards.type +" "+ constants.rewards.milestones;
+	//Write to logo.txt
+	if(str != "") {
+		fs.writeFile("../dump.txt", str, function(err) {
+		    if(err) {
+		        return console.log(err);
+		    }
+		    console.log("Modified contents of dump.txt!");
+		});
+	}
 
 	let milestonesArr = JSON.parse(program.milestones);
 	if(program.rewardtype.toLowerCase() === 'static')
@@ -77,7 +87,6 @@ if(program.token) {
 }
 
 //Write to constants.json
-var fs = require('fs');
 fs.writeFile("../constants.json", JSON.stringify(constants), function(err) {
     if(err) {
         return console.log(err);
@@ -86,7 +95,6 @@ fs.writeFile("../constants.json", JSON.stringify(constants), function(err) {
 });
 
 //Write to networks.json
-var fs = require('fs');
 fs.writeFile("../networks.json", JSON.stringify(networks), function(err) {
     if(err) {
         return console.log(err);
