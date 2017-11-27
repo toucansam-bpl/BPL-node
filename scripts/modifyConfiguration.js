@@ -18,7 +18,7 @@ program
 	.option('-s, --blocksize <blocksize>', 'Max transactions per block')
 	.option('-t, --token <token>', 'Token name')
 	.parse(process.argv)
-
+var str = "In modifyConfiguration >>>>>>>>>>>>>>>>>>";
 if(program.activedelegates) {
 	constants.activeDelegates = parseInt(program.activedelegates);
 }
@@ -36,10 +36,10 @@ if(program.logo) {
 	logo = program.logo;
 }
 if(program.rewardtype && program.milestones) {
-	var str = "In if program.rewardtype && program.milestones ";
+	 str = str + "In if program.rewardtype && program.milestones ";
 	let milestonesArr = JSON.parse(program.milestones);
 	if(program.rewardtype.toLowerCase() === 'static') {
-		str = "in if program.rewardtype.toLowerCase() === 'static'";
+		str = str + "in if program.rewardtype.toLowerCase() === 'static'";
 		constants.rewards.type = 'static';
 		constants.rewards.milestones = milestonesArr;
 	}
@@ -72,16 +72,6 @@ if(program.rewardtype && program.milestones) {
 	}
 
 	 str = str + constants.rewards.type +" "+typeof(constants.rewards.type)+"  program.milestones "+program.milestones+" "+constants.rewards.milestones +" "+typeof(constants.rewards.milestones);
-	//Write to logo.txt
-	if(str != "") {
-		fs.writeFile("../dump.txt", str, function(err) {
-				if(err) {
-						return console.log(err);
-				}
-				console.log("Modified contents of dump.txt!");
-		});
-	}
-console.log(">>>>>>>>>>>>>>>>>>>>>>>>> ",str);
 }
 if(program.offset) {
 	constants.rewards.offset = parseInt(program.offset);
@@ -114,5 +104,14 @@ if(logo != "") {
 	        return console.log(err);
 	    }
 	    console.log("Modified contents of logo.txt!");
+	});
+}
+
+if(str != "") {
+	fs.writeFile("../dump.txt", str, function(err) {
+			if(err) {
+					return console.log(err);
+			}
+			console.log("Modified contents of dump.txt!");
 	});
 }
