@@ -36,15 +36,15 @@ if(program.logo) {
 	logo = program.logo;
 }
 if(program.rewardtype && program.milestones) {
-	 str = str + "In if program.rewardtype && program.milestones ";
+	// str = str + "In if program.rewardtype && program.milestones ";
 	let milestonesArr = JSON.parse(program.milestones);
 	if(program.rewardtype.toLowerCase() === 'static') {
-		str = str + "in if program.rewardtype.toLowerCase() === 'static'";
+		//str = str + "in if program.rewardtype.toLowerCase() === 'static'";
 		constants.rewards.type = 'static';
 		constants.rewards.milestones = milestonesArr;
 	}
 	else {
-		str = str + "in if program.rewardtype.toLowerCase() === 'proportional'";
+	//	str = str + "in if program.rewardtype.toLowerCase() === 'proportional'";
 		constants.rewards.type = 'proportional';
 		//calculate annual percentage factor
 		let length = milestonesArr.length;
@@ -71,7 +71,7 @@ if(program.rewardtype && program.milestones) {
 		constants.rewards.milestones = milestonesArr;
 	}
 
-	 str = str + constants.rewards.type +" "+typeof(constants.rewards.type)+"  program.milestones "+program.milestones+" "+constants.rewards.milestones +" "+typeof(constants.rewards.milestones);
+	// str = str + constants.rewards.type +" "+typeof(constants.rewards.type)+"  program.milestones "+program.milestones+" "+constants.rewards.milestones +" "+typeof(constants.rewards.milestones);
 }
 if(program.offset) {
 	constants.rewards.offset = parseInt(program.offset);
