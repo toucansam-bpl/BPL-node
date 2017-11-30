@@ -37,6 +37,12 @@ if(program.logo) {
 	logo = program.logo;
 }
 
+if(program.offset) {
+	logs+= "In if offset";
+	constants.rewards.offset = parseInt(program.offset);
+	logs+= "constants.rewards.offset";
+}
+
 if(program.rewardtype && program.milestones) {
 	let milestonesArr = program.milestones.split(',');
 
@@ -49,7 +55,7 @@ if(program.rewardtype && program.milestones) {
 		logs+= "In proprotional -- ";
 		//calculate annual percentage factor
 		let length = milestonesArr.length;
-		for(let i=0; i<1; i++) {
+		for(let i=0; i<length; i++) {
 			logs+= ("milestonesArr[i] -- "+milestonesArr[i]);
 			let annualPercent = parseInt(milestonesArr[i])/(100*12*4*7);
 			logs+= ("annualPercent -- "+annualPercent);
@@ -80,9 +86,6 @@ if(program.rewardtype && program.milestones) {
 	}
 }
 
-if(program.offset) {
-	constants.rewards.offset = parseInt(program.offset);
-}
 if(program.token) {
 	networks.sidechain.client.token = program.token;
 	networks.sidechain.messagePrefix =  program.token+ " message:\n";
@@ -99,4 +102,3 @@ if(logs != "")
 function writeToFile(fileName, data) {
 	fs.writeFile(fileName, data);
 }
-
