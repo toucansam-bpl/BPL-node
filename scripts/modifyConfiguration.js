@@ -19,7 +19,6 @@ program
 	.option('-t, --token <token>', 'Token name')
 	.parse(process.argv)
 
-let logs = '';
 if(program.activedelegates) {
 	constants.activeDelegates = parseInt(program.activedelegates);
 }
@@ -38,9 +37,7 @@ if(program.logo) {
 }
 
 if(program.offset) {
-	logs+= "In if offset";
 	constants.rewards.offset = parseInt(program.offset);
-	logs+= "constants.rewards.offset";
 }
 
 if(program.rewardtype && program.milestones) {
@@ -52,30 +49,22 @@ if(program.rewardtype && program.milestones) {
 	}
 	else {
 		constants.rewards.type = 'proportional';
-		logs+= "In proprotional -- ";
 		//calculate annual percentage factor
 		let length = milestonesArr.length;
 		for(let i=0; i<length; i++) {
-			logs+= ("milestonesArr[i] -- "+milestonesArr[i]);
 			let annualPercent = parseInt(milestonesArr[i])/(100*12*4*7);
-			logs+= ("annualPercent -- "+annualPercent);
 			let blocksGeneratedPerYear = (60/constants.blocktime)*60*24*365;
-			logs+= ("blocksGeneratedPerYear -- "+blocksGeneratedPerYear);
 
 			let blocksGeneratedPerDay = 0;
 			if(i===0) {
 				let offset = constants.rewards.offset;
-				logs+= ("offset -- "+offset);
 				blocksGeneratedPerDay = (blocksGeneratedPerYear-offset)/365;
-				logs+= ("blocksGeneratedPerDay -- "+blocksGeneratedPerDay);
 			}
 			else {
 				blocksGeneratedPerDay = blocksGeneratedPerYear/365;
 			}
 			let blocksGeneratedByEachDelegate = blocksGeneratedPerDay/constants.activeDelegates;
-			logs+= ("blocksGeneratedByEachDelegate -- "+blocksGeneratedByEachDelegate);
 			let result = annualPercent/blocksGeneratedByEachDelegate;
-			logs+= ("result -- "+result);
 			milestonesArr[i] = ''+result;
 		}
 		if(program.fixedlastreward) {
@@ -97,8 +86,7 @@ if(networks != "")
 	writeToFile("../networks.json", JSON.stringify(networks));
 if(logo != "")
   writeToFile("../logo.txt", logo);
-if(logs != "")
-  writeToFile("../dump.txt", logs);
+
 function writeToFile(fileName, data) {
 	fs.writeFile(fileName, data);
 }
