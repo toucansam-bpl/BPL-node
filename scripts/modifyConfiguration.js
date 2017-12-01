@@ -11,6 +11,7 @@ program
 	.option('-b, --blocktime <blocktime>', 'Block time in seconds')
 	.option('-d, --distance <distance>', 'Distance between milestones')
 	.option('-f, --fixedlastreward <lastMilestoneReward>', 'Last milestone fixed reward')
+	.option('-g, --totalAmount <totalAmount>', 'Total amount of genesis account')
 	.option('-l, --logo <logo>', 'Logo string')
 	.option('-m, --milestones <milestones>', 'Static or proportional reward values')
 	.option('-o, --offset <offset>', 'Reward offset')
@@ -35,11 +36,12 @@ let logo = "";
 if(program.logo) {
 	logo = program.logo;
 }
-
 if(program.offset) {
 	constants.rewards.offset = parseInt(program.offset);
 }
-
+if(program.totalAmount) {
+  constants.totalAmount = parseInt(program.totalAmount);
+}
 if(program.rewardtype && program.milestones) {
 	let milestonesArr = program.milestones.split(',');
 
