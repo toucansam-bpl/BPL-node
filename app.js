@@ -19,6 +19,8 @@ var z_schema = require('./helpers/z_schema.js');
 var colors = require('colors');
 var vorpal = require('vorpal')();
 var spawn = require('child_process').spawn;
+let getConfiguration = require('./helpers/configuration.js');
+
 
 process.stdin.resume();
 var versionBuild = fs.readFileSync(path.join(__dirname, 'build'), 'utf8');
@@ -27,6 +29,7 @@ program
 	.version(packageJson.version)
 	.option('-c, --config <path>', 'config file path')
 	.option('-g, --genesis <path>', 'genesis block')
+	.option('-n, --name <name>', 'name of the sidechain')
 	.option('-n, --networks <path>', 'networks definition file')
 	.option('-p, --port <port>', 'listening port number')
 	.option('-a, --address <ip>', 'listening host name or ip')
@@ -34,6 +37,10 @@ program
 	.option('-l, --log <level>', 'log level')
 	.option('-i, --interactive', 'launch cli')
 	.parse(process.argv);
+
+if (program.name) {
+ getConfiguration(program.name);
+}
 
 if (program.config) {
 	appConfig = require(path.resolve(process.cwd(), program.config));
