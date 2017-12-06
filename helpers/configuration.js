@@ -2,9 +2,10 @@
 
 let http = require('http');
 let fs = require('fs');
-//let Logger = require('../logger.js');
+var jsonFormat = require('json-format');
 let constants = require('../constants.json');
 
+//let Logger = require('../logger.js');
 //let logger = new Logger({ echo: appConfig.consoleLogLevel, errorLevel: appConfig.fileLogLevel, filename: appConfig.logFileName });
 
 function getConfiguration (name) {
@@ -38,7 +39,7 @@ function updateConfiguration (data){
 	constants.rewards.fixedLastReward = data.fixedlastreward;
 	constants.totalAmount = data.totalamount;
 
-	writeToFile("./constants.json", JSON.stringify(constants), function (err) {
+	writeToFile("./constants.json", constants, function (err) {
 		if (err) {
       console.log('Failed to update configurations: ',err);
     }
@@ -50,9 +51,8 @@ function updateConfiguration (data){
 	// 	writeToFile("../networks.json", JSON.stringify(networks));
 }
 
-
 function writeToFile (fileName, data, cb) {
-	fs.writeFile(fileName, data, function (err) {
+	fs.writeFile(fileName, jsonFormat(data), function (err) {
 		if (err) {
 			console.log('Failed to write configurations to constants.js: ',err);
 			cb(err);
