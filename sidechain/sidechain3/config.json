@@ -35,16 +35,7 @@
   },
   "peers": {
     "minimumNetworkReach": 1,
-    "list": [
-      {
-        "ip": "13.230.159.34",
-        "port": "4001"
-      },
-      {
-        "ip": "13.115.248.8",
-        "port": "4001"
-      }
-    ],
+    "list": [],
     "blackList": [],
     "options": {
       "limits": {
@@ -82,5 +73,5 @@
   },
   "network": "sidechain",
   "tokenShortName": "sc3",
-  "nethash": "4f1fa49d962a4e0f1b370bffbd54856aff3c7502e26a6ee0ce7ed29b4be17209"
+  "nethash": "8fac442ccad735029af02a679a31c170a2b77d0f4b41d450d9c71b7418e2adb7"
 }
