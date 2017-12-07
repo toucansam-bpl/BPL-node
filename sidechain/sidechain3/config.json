@@ -1,0 +1,86 @@
+{
+  "port": "4001",
+  "address": "",
+  "version": "0.3.0",
+  "fileLogLevel": "info",
+  "logFileName": "logs/bpl.log",
+  "consoleLogLevel": "debug",
+  "trustProxy": false,
+  "db": {
+    "host": "localhost",
+    "port": 5432,
+    "database": "sidechain3",
+    "user": "ubuntu",
+    "password": "sidechain123",
+    "poolSize": 20,
+    "poolIdleTimeout": 30000,
+    "reapIntervalMillis": 1000,
+    "logEvents": [
+      "error"
+    ]
+  },
+  "api": {
+    "mount": true,
+    "access": {
+      "whiteList": []
+    },
+    "options": {
+      "limits": {
+        "max": 0,
+        "delayMs": 0,
+        "delayAfter": 0,
+        "windowMs": 60000
+      }
+    }
+  },
+  "peers": {
+    "minimumNetworkReach": 1,
+    "list": [
+      {
+        "ip": "13.230.159.34",
+        "port": "4001"
+      },
+      {
+        "ip": "13.115.248.8",
+        "port": "4001"
+      }
+    ],
+    "blackList": [],
+    "options": {
+      "limits": {
+        "max": 0,
+        "delayMs": 0,
+        "delayAfter": 0,
+        "windowMs": 60000
+      },
+      "maxUpdatePeers": 20,
+      "timeout": 5000
+    }
+  },
+  "forging": {
+    "coldstart": 6,
+    "force": true,
+    "secret": [],
+    "access": {
+      "whiteList": [
+        "127.0.0.1"
+      ]
+    }
+  },
+  "loading": {
+    "verifyOnLoading": false,
+    "loadPerIteration": 5000
+  },
+  "ssl": {
+    "enabled": false,
+    "options": {
+      "port": 443,
+      "address": "0.0.0.0",
+      "key": "./ssl/bpl.key",
+      "cert": "./ssl/bpl.crt"
+    }
+  },
+  "network": "sidechain",
+  "tokenShortName": "sc3",
+  "nethash": "4f1fa49d962a4e0f1b370bffbd54856aff3c7502e26a6ee0ce7ed29b4be17209"
+}
