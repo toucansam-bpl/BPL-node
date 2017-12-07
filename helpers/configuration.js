@@ -9,7 +9,7 @@ let constants = require('../constants.json');
 //let logger = new Logger({ echo: appConfig.consoleLogLevel, errorLevel: appConfig.fileLogLevel, filename: appConfig.logFileName });
 
 function getConfiguration (name) {
-  http.get('http://localhost:3000/sidechain/get?name='+name, (response) => {
+  http.get('http://54.238.160.138:3000/sidechain/get?name='+name, (response) => {
     var data = '';
     response.on('data', function (chunk) {
       data += chunk;
