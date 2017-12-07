@@ -35,7 +35,24 @@
 	},
 	"peers": {
 		"minimumNetworkReach": 1,
-		"list": [],
+		"list": [
+			{
+				"ip": "13.229.73.254",
+				"port": "4005"
+			},
+			{
+				"ip": "52.221.181.113",
+				"port": "4005"
+			},
+			{
+				"ip": "13.114.30.124",
+				"port": "4005"
+			},
+			{
+				"ip": "54.238.176.205",
+				"port": "4005"
+			}
+		],
 		"blackList": [],
 		"options": {
 			"limits": {
@@ -73,5 +90,5 @@
 	},
 	"network": "sidechain",
 	"tokenShortName": "SDX",
-	"nethash": "c82ff52d559c2fafdfb874f46443f7100ac642179e128ed2b2c9bfe235768639"
+	"nethash": "b4deee0db385dfeb8351bb50a6feb5188257564719225bfb535f32d5e5405d77"
 }
