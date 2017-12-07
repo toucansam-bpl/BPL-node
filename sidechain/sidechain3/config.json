@@ -37,11 +37,11 @@
     "minimumNetworkReach": 1,
     "list": [
       {
-        "ip": "54.199.160.246",
+        "ip": "54.250.186.23",
         "port": "4001"
       },
       {
-        "ip": "54.238.173.61",
+        "ip": "54.249.26.90",
         "port": "4001"
       }
     ],
@@ -82,5 +82,5 @@
   },
   "network": "sidechain",
   "tokenShortName": "sc3",
-  "nethash": "d28517a6865e85421e9920afa50ebfe4e525ef9dc7bb4ed31d4c2ddb30219bc8"
+  "nethash": "80721820302d9523f26eec6004bfd83b73386d79e1939e889d6b8163b8377c81"
 }
