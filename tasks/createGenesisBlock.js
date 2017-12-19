@@ -69,7 +69,7 @@ var config = {
     "address": "138.68.183.82",
     "version": "0.3.0",
     "fileLogLevel": "info",
-    "logFileName": "logs/bpl.log",
+    "logFileName": "logs/wbx.log",
     "consoleLogLevel": "debug",
     "trustProxy": false,
     "db": {
