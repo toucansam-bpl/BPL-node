@@ -1,5 +1,5 @@
 {
-  "activeDelegates": 201,
+  "activeDelegates": 51,
   "maximumVotes": 1,
   "addressLength": 208,
   "blockHeaderLength": 248,
@@ -28,20 +28,15 @@
   "numberLength": 100000000,
   "requestLength": 104,
   "rewards": {
-    "type": "proportional",
+    "type": "static",
     "fixedLastReward": "100000000",
 		"milestones": [
-			"0.000005395150484435337",
-			"0.000004154265873015873",
-			"0.0000031156994047619045",
-			"0.0000020771329365079365",
-			"0.0000010385664682539682",
-			"0"
-		],
-    "offset": 80640,
-    "distance": 2102400
+      "1000000000"
+    ],
+    "offset": 3,
+    "distance": 2
   },
   "signatureLength": 196,
-  "totalAmount": 2500000000000000,
+  "totalAmount": 10000000000000000,
   "unconfirmedTransactionTimeOut": 10800
 }

@@ -19,7 +19,6 @@ var z_schema = require('./helpers/z_schema.js');
 var colors = require('colors');
 var vorpal = require('vorpal')();
 var spawn = require('child_process').spawn;
-let getConfiguration = require('./helpers/configuration.js');
 
 
 process.stdin.resume();
@@ -29,7 +28,6 @@ program
 	.version(packageJson.version)
 	.option('-c, --config <path>', 'config file path')
 	.option('-g, --genesis <path>', 'genesis block')
-	.option('-n, --name <name>', 'name of the sidechain')
 	.option('-n, --networks <path>', 'networks definition file')
 	.option('-p, --port <port>', 'listening port number')
 	.option('-a, --address <ip>', 'listening host name or ip')
@@ -37,10 +35,6 @@ program
 	.option('-l, --log <level>', 'log level')
 	.option('-i, --interactive', 'launch cli')
 	.parse(process.argv);
-
-if (program.name) {
- getConfiguration(program.name);
-}
 
 if (program.config) {
 	appConfig = require(path.resolve(process.cwd(), program.config));
@@ -131,16 +125,36 @@ d.on('error', function (err) {
 d.run(function () {
 	var modules = [];
 	fs = require('fs')
-	let logoStr = '';
+	let logoStr = "\n\
+	BPL BPL BPL BPL BPL          BPL BPL BPL BPL BPL          BPL BPL\n\
+	BPL BPL BPL BPL BPL BPL      BPL BPL BPL BPL BPL BPL      BPL BPL\n\
+	BPL BPL           BPL BPL    BPL BPL           BPL BPL    BPL BPL\n\
+	BPL BPL            BPL BPL   BPL BPL            BPL BPL   BPL BPL\n\
+	BPL BPL             BPL BPL  BPL BPL             BPL BPL  BPL BPL\n\
+	BPL BPL             BPL BPL  BPL BPL             BPL BPL  BPL BPL\n\
+	BPL BPL          BPL BPL     BPL BPL          BPL BPL     BPL BPL\n\
+	BPL BPL BPL BPL BPL          BPL BPL BPL BPL BPL BPL      BPL BPL\n\
+	BPL BPL BPL BPL BPL          BPL BPL BPL BPL BPL          BPL BPL\n\
+	BPL BPL          BPL BPL     BPL BPL                      BPL BPL\n\
+	BPL BPL             BPL BPL  BPL BPL                      BPL BPL\n\
+	BPL BPL             BPL BPL  BPL BPL                      BPL BPL\n\
+	BPL BPL            BPL BPL   BPL BPL                      BPL BPL\n\
+	BPL BPL           BPL BPL    BPL BPL                      BPL BPL\n\
+	BPL BPL BPL BPL BPL BPL      BPL BPL                      BPL BPL BPL BPL BPL BPL\n\
+	BPL BPL BPL BPL BPL          BPL BPL                      BPL BPL BPL BPL BPL BPL\n\
+	\n\n\
+		                     W E L C O M E  A B O A R D !\n\
+	\n\
+	";
 	fs.readFile('logo.txt', 'utf8', function (err,data) {
 	  if (err) {
 	    return console.log(err);
 	  }
-	  console.log(data);
 		logoStr = data;
+		console.log(colors.cyan(""+logoStr));
 	});
 
-	console.log(colors.cyan(""+logoStr));
+
 	async.auto({
 		config: function (cb) {
 			try {

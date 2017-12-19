@@ -54,18 +54,18 @@
       "symbol": "B"
     }
   },
-  "sidechain": {
-    "messagePrefix": "Sidechain message:\n",
+  "WBX-testnet": {
+    "messagePrefix": "WBX message:\n",
     "bip32": {
       "public": 46090600,
       "private": 46089520
     },
-    "pubKeyHash": 25,
+    "pubKeyHash": 73,
     "wif": 170,
     "client": {
-      "token": "Sidechain",
-      "symbol": "β",
-      "explorer": "http://13.56.163.57:9031"
+      "token": "W000BUX",
+      "symbol": "W",
+      "explorer": ""
     }
   }
 }
