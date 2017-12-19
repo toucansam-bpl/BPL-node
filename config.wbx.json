@@ -1,0 +1,118 @@
+{
+  "port": 9032,
+  "address": "165.227.224.102",
+  "version": "0.3.0",
+  "fileLogLevel": "info",
+  "logFileName": "logs/bpl.log",
+  "consoleLogLevel": "debug",
+  "trustProxy": false,
+  "db": {
+    "host": "localhost",
+    "port": 5432,
+    "database": "wbx_testnet",
+    "user": "root",
+    "password": "wooobux@123",
+    "poolSize": 20,
+    "poolIdleTimeout": 30000,
+    "reapIntervalMillis": 1000,
+    "logEvents": [
+      "error"
+    ]
+  },
+  "api": {
+    "mount": true,
+    "access": {
+      "whiteList": []
+    },
+    "options": {
+      "limits": {
+        "max": 0,
+        "delayMs": 0,
+        "delayAfter": 0,
+        "windowMs": 60000
+      }
+    }
+  },
+  "peers": {
+    "minimumNetworkReach": 1,
+    "list": [
+      {},
+      {
+        "ip": "138.68.183.82",
+        "port": 9032
+      },
+      {
+        "ip": "178.62.23.57",
+        "port": 9032
+      },
+      {
+        "ip": "178.62.50.166",
+        "port": 9032
+      },
+      {
+        "ip": "165.227.224.124",
+        "port": 9032
+      },
+      {
+        "ip": "138.68.183.46",
+        "port": 9032
+      },
+      {
+        "ip": "138.68.183.85",
+        "port": 9032
+      },
+      {
+        "ip": "165.227.239.102",
+        "port": 9032
+      },
+      {
+        "ip": "165.227.224.102",
+        "port": 9032
+      }
+    ],
+    "blackList": [],
+    "options": {
+      "limits": {
+        "max": 0,
+        "delayMs": 0,
+        "delayAfter": 0,
+        "windowMs": 60000
+      },
+      "maxUpdatePeers": 20,
+      "timeout": 5000
+    }
+  },
+  "forging": {
+    "coldstart": 6,
+    "force": true,
+    "secret": [
+      "opinion denial auction foster cute glow aim laptop people hawk crumble true",
+      "venue burst myself crunch tornado plug glide brick pulse aware canyon sad",
+      "alarm burden odor document conduct ignore file almost exhibit entry broken chaos",
+      "birth birth tide reform unit faint galaxy echo neutral huge hole nut",
+      "taste science sponsor diamond cricket visual file panel bless mercy million speed",
+      "fall boy present horse ostrich vibrant speed require employ piece film step"
+    ],
+    "access": {
+      "whiteList": [
+        "127.0.0.1"
+      ]
+    }
+  },
+  "loading": {
+    "verifyOnLoading": false,
+    "loadPerIteration": 5000
+  },
+  "ssl": {
+    "enabled": false,
+    "options": {
+      "port": 443,
+      "address": "0.0.0.0",
+      "key": "./ssl/bpl.key",
+      "cert": "./ssl/bpl.crt"
+    }
+  },
+  "network": "WBX-testnet",
+  "tokenShortName": "WBX",
+  "nethash": "62a562c768271a627888d4c81347240dea00ff7a24e7b66fb5d755de6a22a9c0"
+}
