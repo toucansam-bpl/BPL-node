@@ -66,7 +66,7 @@ var seed_peers = [
 //temporarily pre-configured: database, user, password
 var config = {
     "port": 9032,
-    "address": "127.0.0.1",
+    "address": "138.68.183.82",
     "version": "0.3.0",
     "fileLogLevel": "info",
     "logFileName": "logs/bpl.log",
@@ -76,8 +76,8 @@ var config = {
         "host": "localhost",
         "port": 5432,
         "database": "wbx_testnet",
-        "user": "ubuntu",
-        "password": "ubuntu@123",
+        "user": "root",
+        "password": "wooobux@123",
         "poolSize": 20,
         "poolIdleTimeout": 30000,
         "reapIntervalMillis": 1000,
@@ -353,6 +353,9 @@ for(var i=0;i<51;i++){ //WBX 51 delegates
   seed_peers[seed_index].secret.push(delegates[i].passphrase);
 }
 
+seed_peers.forEach(function(peer){
+  config.peers.list.push({ "ip": peer.ip, "port":config.port});
+  });
 /*
 Generates the different config file for all peers that we have added in seed_peers.
 */
@@ -361,10 +364,6 @@ seed_peers.forEach(function(peer){
   config.nethash = genesisBlock.payloadHash;//set the nethash in config file
   //to customize the address and peers list field in config.json file , we have included the below piece of code
   config.address = peer.aws; // setting up Public DNS(IPv4) of AWS in the generated config file, to avoid manually entering the same.
-  config.peers.list.pop();
-  config.peers.list.pop();
-
-  config.peers.list.push({ "ip": peer.ip, "port":config.port});
   fs.writeFile("private/config_files/config."+config.network+"."+peer.ip+".json", JSON.stringify(config, null, 2));
   });
 
