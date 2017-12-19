@@ -66,7 +66,7 @@ var seed_peers = [
 //temporarily pre-configured: database, user, password
 var config = {
     "port": 9032,
-    "address": "138.68.183.82",
+    "address": "0.0.0.0",
     "version": "0.3.0",
     "fileLogLevel": "info",
     "logFileName": "logs/wbx.log",
@@ -76,8 +76,8 @@ var config = {
         "host": "localhost",
         "port": 5432,
         "database": "wbx_testnet",
-        "user": "root",
-        "password": "wooobux@123",
+        "user": "",
+        "password": "",
         "poolSize": 20,
         "poolIdleTimeout": 30000,
         "reapIntervalMillis": 1000,
