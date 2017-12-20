@@ -1,9 +1,9 @@
 {
   "port": 9032,
-  "address": "165.227.224.102",
+  "address": "0.0.0.0",
   "version": "0.3.0",
   "fileLogLevel": "info",
-  "logFileName": "logs/bpl.log",
+  "logFileName": "logs/wbx.log",
   "consoleLogLevel": "debug",
   "trustProxy": false,
   "db": {
@@ -36,7 +36,6 @@
   "peers": {
     "minimumNetworkReach": 1,
     "list": [
-      {},
       {
         "ip": "138.68.183.82",
         "port": 9032
@@ -85,14 +84,7 @@
   "forging": {
     "coldstart": 6,
     "force": true,
-    "secret": [
-      "opinion denial auction foster cute glow aim laptop people hawk crumble true",
-      "venue burst myself crunch tornado plug glide brick pulse aware canyon sad",
-      "alarm burden odor document conduct ignore file almost exhibit entry broken chaos",
-      "birth birth tide reform unit faint galaxy echo neutral huge hole nut",
-      "taste science sponsor diamond cricket visual file panel bless mercy million speed",
-      "fall boy present horse ostrich vibrant speed require employ piece film step"
-    ],
+    "secret": [],
     "access": {
       "whiteList": [
         "127.0.0.1"
