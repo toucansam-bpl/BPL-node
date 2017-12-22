@@ -4,7 +4,7 @@
   "addressLength": 208,
   "blockHeaderLength": 248,
   "confirmationLength": 77,
-  "epochTime": "2017-03-21T13:00:00.000Z",
+  "epochTime": "2017-12-21T13:00:00.000Z",
   "fees": {
     "send": 10000000,
     "vote": 100000000,
@@ -41,8 +41,8 @@
       "300000000",
       "200000000"
     ],
-    "offset": 3,
-    "distance": 2
+    "offset": 1300,
+    "distance": 1920
   },
   "signatureLength": 196,
   "totalAmount": 10000000000000000,
