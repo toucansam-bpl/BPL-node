@@ -65,7 +65,7 @@
     "client": {
       "token": "WOOOBUX",
       "symbol": "W",
-      "explorer": ""
+      "explorer": "http://165.227.224.102:9033"
     }
   }
 }
