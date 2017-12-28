@@ -20,8 +20,8 @@ var colors = require('colors');
 var vorpal = require('vorpal')();
 var spawn = require('child_process').spawn;
 
-process.stdin.resume();
 
+process.stdin.resume();
 var versionBuild = fs.readFileSync(path.join(__dirname, 'build'), 'utf8');
 
 program
@@ -124,27 +124,37 @@ d.on('error', function (err) {
 
 d.run(function () {
 	var modules = [];
-	console.log(colors.cyan("\n\
-BPL BPL BPL BPL BPL          BPL BPL BPL BPL BPL          BPL BPL\n\
-BPL BPL BPL BPL BPL BPL      BPL BPL BPL BPL BPL BPL      BPL BPL\n\
-BPL BPL           BPL BPL    BPL BPL           BPL BPL    BPL BPL\n\
-BPL BPL            BPL BPL   BPL BPL            BPL BPL   BPL BPL\n\
-BPL BPL             BPL BPL  BPL BPL             BPL BPL  BPL BPL\n\
-BPL BPL             BPL BPL  BPL BPL             BPL BPL  BPL BPL\n\
-BPL BPL          BPL BPL     BPL BPL          BPL BPL     BPL BPL\n\
-BPL BPL BPL BPL BPL          BPL BPL BPL BPL BPL BPL      BPL BPL\n\
-BPL BPL BPL BPL BPL          BPL BPL BPL BPL BPL          BPL BPL\n\
-BPL BPL          BPL BPL     BPL BPL                      BPL BPL\n\
-BPL BPL             BPL BPL  BPL BPL                      BPL BPL\n\
-BPL BPL             BPL BPL  BPL BPL                      BPL BPL\n\
-BPL BPL            BPL BPL   BPL BPL                      BPL BPL\n\
-BPL BPL           BPL BPL    BPL BPL                      BPL BPL\n\
-BPL BPL BPL BPL BPL BPL      BPL BPL                      BPL BPL BPL BPL BPL BPL\n\
-BPL BPL BPL BPL BPL          BPL BPL                      BPL BPL BPL BPL BPL BPL\n\
-\n\n\
-	                     W E L C O M E  A B O A R D !\n\
-\n\
-"));
+	fs = require('fs')
+	let logoStr = "\n\
+	BPL BPL BPL BPL BPL          BPL BPL BPL BPL BPL          BPL BPL\n\
+	BPL BPL BPL BPL BPL BPL      BPL BPL BPL BPL BPL BPL      BPL BPL\n\
+	BPL BPL           BPL BPL    BPL BPL           BPL BPL    BPL BPL\n\
+	BPL BPL            BPL BPL   BPL BPL            BPL BPL   BPL BPL\n\
+	BPL BPL             BPL BPL  BPL BPL             BPL BPL  BPL BPL\n\
+	BPL BPL             BPL BPL  BPL BPL             BPL BPL  BPL BPL\n\
+	BPL BPL          BPL BPL     BPL BPL          BPL BPL     BPL BPL\n\
+	BPL BPL BPL BPL BPL          BPL BPL BPL BPL BPL BPL      BPL BPL\n\
+	BPL BPL BPL BPL BPL          BPL BPL BPL BPL BPL          BPL BPL\n\
+	BPL BPL          BPL BPL     BPL BPL                      BPL BPL\n\
+	BPL BPL             BPL BPL  BPL BPL                      BPL BPL\n\
+	BPL BPL             BPL BPL  BPL BPL                      BPL BPL\n\
+	BPL BPL            BPL BPL   BPL BPL                      BPL BPL\n\
+	BPL BPL           BPL BPL    BPL BPL                      BPL BPL\n\
+	BPL BPL BPL BPL BPL BPL      BPL BPL                      BPL BPL BPL BPL BPL BPL\n\
+	BPL BPL BPL BPL BPL          BPL BPL                      BPL BPL BPL BPL BPL BPL\n\
+	\n\n\
+		                     W E L C O M E  A B O A R D !\n\
+	\n\
+	";
+	fs.readFile('logo.txt', 'utf8', function (err,data) {
+	  if (err) {
+	    return console.log(err);
+	  }
+		logoStr = data;
+		console.log(colors.cyan(""+logoStr));
+	});
+
+
 	async.auto({
 		config: function (cb) {
 			try {
@@ -351,12 +361,12 @@ BPL BPL BPL BPL BPL          BPL BPL                      BPL BPL BPL BPL BPL BP
 			});
 
 			scope.network.server.listen(scope.config.port, scope.config.address, function (err) {
-				scope.logger.info('# BPL node server started on: ' + scope.config.address + ':' + scope.config.port);
+				scope.logger.info('# '+appConfig.tokenShortName+' node server started on: ' + scope.config.address + ':' + scope.config.port);
 
 				if (!err) {
 					if (scope.config.ssl.enabled) {
 						scope.network.https.listen(scope.config.ssl.options.port, scope.config.ssl.options.address, function (err) {
-							scope.logger.info('BPL https started: ' + scope.config.ssl.options.address + ':' + scope.config.ssl.options.port);
+							scope.logger.info(appConfig.tokenShortName+' https started: ' + scope.config.ssl.options.address + ':' + scope.config.ssl.options.port);
 
 							cb(err, scope.network);
 						});
@@ -424,14 +434,15 @@ BPL BPL BPL BPL BPL          BPL BPL                      BPL BPL BPL BPL BPL BP
 					cb(null, scope.schema);
 				},
 				genesisblock: function (cb) {
-					cb(null, {
-						block: genesisblock
-					});
+					cb(null, {block: genesisblock});
+				},
+				config: function (cb) {
+					cb(null, scope.config);
 				},
 				account: ['db', 'bus', 'crypto', 'schema', 'genesisblock', function (scope, cb) {
 					new Account(scope, cb);
 				}],
-				transaction: ['db', 'bus', 'crypto', 'schema', 'genesisblock', 'account', function (scope, cb) {
+				transaction: ['db', 'bus', 'crypto', 'schema', 'genesisblock', 'account', 'config', function (scope, cb) {
 					new Transaction(scope, cb);
 				}],
 				block: ['db', 'bus', 'crypto', 'schema', 'genesisblock', 'account', 'transaction', function (scope, cb) {
