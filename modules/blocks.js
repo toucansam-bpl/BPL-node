@@ -97,6 +97,8 @@ __private.attachApi = function () {
 		'get /getEpoch': 'getEpoch',
 		'get /getHeight': 'getHeight',
 		'get /getNethash': 'getNethash',
+		'get /getActiveDelegates': 'getActiveDelegates',
+		'get /getBlockTime': 'getBlockTime',
 		'get /getFee': 'getFee',
 		'get /getFees': 'getFees',
 		'get /getMilestone': 'getMilestone',
@@ -1667,6 +1669,16 @@ shared.getFees = function (req, cb) {
 shared.getNethash = function (req, cb) {
 
 	return cb(null, {nethash: library.config.nethash});
+};
+//Addition of blocktime and active delegates
+shared.getActiveDelegates = function (req, cb) {
+
+	return cb(null, {activeDelegates: constants.activeDelegates});
+};
+
+shared.getBlockTime = function (req, cb) {
+
+	return cb(null, {blockTime: constants.blocktime});
 };
 
 shared.getMilestone = function (req, cb) {
