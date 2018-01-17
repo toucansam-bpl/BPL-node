@@ -9,9 +9,9 @@
   "db": {
     "host": "localhost",
     "port": 5432,
-    "database": "dbName",
-    "user": "dbUser",
-    "password": "dbPassword",
+    "database": "bpl_wbx",
+    "user": null,
+    "password": "Password",
     "poolSize": 20,
     "poolIdleTimeout": 30000,
     "reapIntervalMillis": 1000,
