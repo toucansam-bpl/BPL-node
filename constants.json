@@ -1,5 +1,5 @@
 {
-  "activeDelegates": 51,
+  "activeDelegates": 4,
   "maximumVotes": 1,
   "addressLength": 208,
   "blockHeaderLength": 248,
@@ -46,5 +46,6 @@
   },
   "signatureLength": 196,
   "totalAmount": 10000000000000000,
-  "unconfirmedTransactionTimeOut": 10800
+  "unconfirmedTransactionTimeOut": 10800,
+  "networkVersion": 25
 }

@@ -7,7 +7,6 @@ var checkIpInList = require('./helpers/checkIpInList.js');
 var extend = require('extend');
 var fs = require('fs');
 var genesisblock = require('./genesisBlock.json');
-var bpljs = require('bpljs');
 var https = require('https');
 var Logger = require('./logger.js');
 var packageJson = require('./package.json');
@@ -19,7 +18,11 @@ var z_schema = require('./helpers/z_schema.js');
 var colors = require('colors');
 var vorpal = require('vorpal')();
 var spawn = require('child_process').spawn;
-
+var constants = require('./constants.json');
+var Bpljs = require('bpljs');
+var bpljs = new Bpljs({'interval': constants.blocktime,
+	'delegates': constants.activeDelegates,
+	'networkVersion': constants.networkVersion});
 
 process.stdin.resume();
 var versionBuild = fs.readFileSync(path.join(__dirname, 'build'), 'utf8');

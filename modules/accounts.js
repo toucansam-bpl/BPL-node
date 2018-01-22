@@ -2,15 +2,17 @@
 
 var bignum = require('../helpers/bignum.js');
 var BlockReward = require('../logic/blockReward.js');
-var constants = require('../constants.json');
 var crypto = require('crypto');
-var bpljs = require('bpljs');
 var extend = require('extend');
 var Router = require('../helpers/router.js');
 var schema = require('../schema/accounts.js');
 var slots = require('../helpers/slots.js');
 var transactionTypes = require('../helpers/transactionTypes.js');
-
+var constants = require('../constants.json');
+var Bpljs = require('bpljs');
+var bpljs = new Bpljs({'interval': constants.blocktime,
+	'delegates': constants.activeDelegates,
+	'networkVersion': constants.networkVersion});
 // Private fields
 var modules, library, self, __private = {}, shared = {};
 

@@ -1,6 +1,11 @@
 'use strict';
 
-var bpljs = require('bpljs');
+var constants = require('../constants.json');
+var Bpljs = require('bpljs');
+var bpljs = new Bpljs({'interval': constants.blocktime,
+	'delegates': constants.activeDelegates,
+	'networkVersion': constants.networkVersion});
+	
 var network = bpljs.networks.bpl;
 var ed = {};
 

@@ -6,7 +6,6 @@ var bignum = require('../helpers/bignum.js');
 var BlockReward = require('../logic/blockReward.js');
 var Script = require('../logic/script.js');
 var checkIpInList = require('../helpers/checkIpInList.js');
-var constants = require('../constants.json');
 var extend = require('extend');
 var MilestoneBlocks = require('../helpers/milestoneBlocks.js');
 var OrderBy = require('../helpers/orderBy.js');
@@ -17,7 +16,11 @@ var sql = require('../sql/delegates.js');
 var transactionTypes = require('../helpers/transactionTypes.js');
 var bigdecimal = require("bigdecimal");
 var crypto = require('crypto');
-var bpljs = require('bpljs');
+var constants = require('../constants.json');
+var Bpljs = require('bpljs');
+var bpljs = new Bpljs({'interval': constants.blocktime,
+	'delegates': constants.activeDelegates,
+	'networkVersion': constants.networkVersion});
 
 // Private fields
 var modules, library, self, __private = {}, shared = {};

@@ -1,6 +1,10 @@
 'use strict';
 
-var bpljs = require('bpljs');
+var constants = require('../constants.json');
+var Bpljs = require('bpljs');
+var bpljs = new Bpljs({'interval': constants.blocktime,
+	'delegates': constants.activeDelegates,
+	'networkVersion': constants.networkVersion});
 
 function Crypto(scope){
 	this.scope = scope;

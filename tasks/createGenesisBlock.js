@@ -1,72 +1,31 @@
 var moment = require('moment');
 var fs = require('fs');
 var path = require('path');
-var bpljs = require('bpljs');
 var crypto = require('crypto');
 var bip39 = require('bip39');
 var ByteBuffer = require('bytebuffer');
 var bignum = require('../helpers/bignum.js');
 var ed = require('../helpers/ed.js');
 var networks = require('../networks.json');
+var constants = require('../constants.json');
+var Bpljs = require('bpljs');
+var bpljs = new Bpljs({'interval': constants.blocktime,
+	'delegates': constants.activeDelegates,
+	'networkVersion': constants.networkVersion});
 
 //added to get different config files
 var seed_peers = [
-  // {
-  //   "ip": "165.227.224.117",
-  //   "port": 9032,
-  //   "aws": "165.227.224.117"
-  // },
-  // {
-  //   "ip": "165.227.239.66",
-  //   "port": 9032,
-  //   "aws": "165.227.239.66"
-  // },
   {
-    "ip": "138.68.183.82",
+    "ip": "10.0.0.220",
     "port": 9032,
-    "aws": "138.68.183.82"
-  },
-  {
-    "ip": "178.62.23.57",
-    "port": 9032,
-    "aws": "178.62.23.57"
-  },
-  {
-    "ip": "178.62.50.166",
-    "port": 9032,
-    "aws": "178.62.50.166"
-  },
-  {
-    "ip": "165.227.224.124",
-    "port": 9032,
-    "aws": "165.227.224.124"
-  },
-  {
-    "ip": "138.68.183.46",
-    "port": 9032,
-    "aws": "138.68.183.46"
-  },
-  {
-    "ip": "138.68.183.85",
-    "port": 9032,
-    "aws": "138.68.183.85"
-  },
-  {
-    "ip": "165.227.239.102",
-    "port": 9032,
-    "aws": "165.227.239.102"
-  },
-  {
-    "ip": "165.227.224.102",
-    "port": 9032,
-    "aws": "165.227.224.102"
+    "aws": "10.0.0.220"
   }
 ];
 
 //temporarily pre-configured: database, user, password
 var config = {
     "port": 9032,
-    "address": "0.0.0.0",
+    "address": "10.0.0.220",
     "version": "0.3.0",
     "fileLogLevel": "info",
     "logFileName": "logs/wbx.log",
@@ -312,7 +271,7 @@ premineTx.id = bpljs.crypto.getId(premineTx);
 
 transactions.push(premineTx);
 
-for(var i=1; i<52; i++){ //WBX 51 delegates
+for(var i=1; i<5; i++){ //WBX 51 delegates
   var delegate = {
     'passphrase': bip39.generateMnemonic(),
     'username': "genesis_"+i
@@ -340,12 +299,12 @@ var genesisBlock = create({
   timestamp:0
 });
 
-for(var i=0;i<51;i++){ //WBX 51 delegates
+for(var i=0;i<4;i++){ //WBX 51 delegates
 	config.forging.secret.push(delegates[i].passphrase);
 }
 
 /*Splits all delegates accross all seed_peers*/
-for(var i=0;i<51;i++){ //WBX 51 delegates
+for(var i=0;i<4;i++){ //WBX 51 delegates
   var seed_index = i % seed_peers.length;
   if(!seed_peers[seed_index].secret){
     seed_peers[seed_index].secret = [];
