@@ -47,7 +47,7 @@
       "public": 46090600,
       "private": 46089520
     },
-    "pubKeyHash": 110,
+    "pubKeyHash": 1,
     "wif": 1,
     "client": {
       "token":"Bitcoin",
