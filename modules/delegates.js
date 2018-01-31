@@ -17,10 +17,20 @@ var transactionTypes = require('../helpers/transactionTypes.js');
 var bigdecimal = require("bigdecimal");
 var crypto = require('crypto');
 var constants = require('../constants.json');
-var Bpljs = require('bpljs');
-var bpljs = new Bpljs({'interval': constants.blocktime,
-	'delegates': constants.activeDelegates,
-	'networkVersion': constants.networkVersion});
+
+// Bpljs class - passing parameters
+// var bpl = require('bpljs');
+// var bpljs = new bpl.BplClass({'interval': constants.blocktime,
+// 	'delegates': constants.activeDelegates,
+// 	'networkVersion': constants.networkVersion});
+
+// Bpljs class - default parameters
+// var bpl = require('bpljs');
+// var bpljs = new bpl.BplClass();
+
+// Bpljs backward compatibility
+var bpljs = require('bpljs');
+
 
 // Private fields
 var modules, library, self, __private = {}, shared = {};

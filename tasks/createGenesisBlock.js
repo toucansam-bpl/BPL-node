@@ -8,10 +8,18 @@ var bignum = require('../helpers/bignum.js');
 var ed = require('../helpers/ed.js');
 var networks = require('../networks.json');
 var constants = require('../constants.json');
-var Bpljs = require('bpljs');
-var bpljs = new Bpljs({'interval': constants.blocktime,
-	'delegates': constants.activeDelegates,
-	'networkVersion': constants.networkVersion});
+// Bpljs class - passing parameters
+// var bpl = require('bpljs');
+// var bpljs = new bpl.BplClass({'interval': constants.blocktime,
+// 	'delegates': constants.activeDelegates,
+// 	'networkVersion': constants.networkVersion});
+
+// Bpljs class - default parameters
+// var bpl = require('bpljs');
+// var bpljs = new bpl.BplClass();
+
+// Bpljs backward compatibility
+var bpljs = require('bpljs');
 
 //added to get different config files
 var seed_peers = [
