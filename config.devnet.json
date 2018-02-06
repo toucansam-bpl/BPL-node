@@ -1,16 +1,16 @@
 {
-  "port": 4002,
+  "port": 4000,
   "address": "0.0.0.0",
-  "version": "1.1.0",
+  "version": "0.3.0",
   "fileLogLevel": "info",
-  "logFileName": "logs/ark.log",
+  "logFileName": "logs/bpl.log",
   "consoleLogLevel": "debug",
   "trustProxy": false,
   "db": {
     "host": "localhost",
     "port": 5432,
-    "database": "ark_devnet",
-    "user": null,
+    "database": "dbName",
+    "user": "userName",
     "password": "password",
     "poolSize": 20,
     "poolIdleTimeout": 30000,
@@ -34,27 +34,55 @@
     }
   },
   "peers": {
-    "minimumNetworkReach": 10,
+    "minimumNetworkReach": 1,
     "list": [
       {
-        "ip": "167.114.29.51",
-        "port": 4002
+        "ip": "13.113.195.102",
+        "port": 4000
       },
       {
-        "ip": "167.114.29.52",
-        "port": 4002
+        "ip": "54.250.157.118",
+        "port": 4000
       },
       {
-        "ip": "167.114.29.53",
-        "port": 4002
+        "ip": "54.250.145.100",
+        "port": 4000
       },
       {
-        "ip": "167.114.29.54",
-        "port": 4002
+        "ip": "13.115.247.36",
+        "port": 4000
       },
       {
-        "ip": "167.114.29.55",
-        "port": 4002
+        "ip": "54.238.196.5",
+        "port": 4000
+      },
+      {
+        "ip": "54.238.255.226",
+        "port": 4000
+      },
+      {
+        "ip": "54.249.117.29",
+        "port": 4000
+      },
+      {
+        "ip": "54.199.210.80",
+        "port": 4000
+      },
+      {
+        "ip": "54.238.155.152",
+        "port": 4000
+      },
+      {
+        "ip": "13.113.195.102",
+        "port": 4000
+      },
+      {
+        "ip": "13.114.30.146",
+        "port": 4000
+      },
+      {
+        "ip": "54.249.68.34",
+        "port": 4000
       }
     ],
     "blackList": [],
@@ -88,10 +116,10 @@
     "options": {
       "port": 443,
       "address": "0.0.0.0",
-      "key": "./ssl/ark.key",
-      "cert": "./ssl/ark.crt"
+      "key": "./ssl/bpl.key",
+      "cert": "./ssl/bpl.crt"
     }
   },
-  "network": "devnet",
-  "nethash": "578e820911f24e039733b45e4882b73e301f813a0d2c31330dafda84534ffa23"
+  "network": "BPL-devnet",
+  "nethash": "022293302aa4c24a98f1007645afe2d8b98f34e2c6fbf367c78d0bd389c6264f"
 }
