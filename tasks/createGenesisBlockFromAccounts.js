@@ -1,14 +1,25 @@
 var moment = require('moment');
 var fs = require('fs');
 var path = require('path');
-var bpljs = require('bpljs');
 var crypto = require('crypto');
 var bip39 = require('bip39');
 var ByteBuffer = require('bytebuffer');
 var bignum = require('../helpers/bignum.js');
 var ed = require('../helpers/ed.js');
-
 var accounts = require('../tasks/accounts.js').accounts;
+var constants = require('../constants.json');
+// Bpljs class - passing parameters
+// var bpl = require('bpljs');
+// var bpljs = new bpl.BplClass({'interval': constants.blocktime,
+// 	'delegates': constants.activeDelegates,
+// 	'networkVersion': constants.networkVersion});
+
+// Bpljs class - default parameters
+// var bpl = require('bpljs');
+// var bpljs = new bpl.BplClass();
+
+// Bpljs backward compatibility
+var bpljs = require('bpljs');
 
 //var genesisVote = JSON.parse(fs.readFileSync('./tasks/genesisPassphrase.json'));
 
