@@ -1,17 +1,6 @@
 'use strict';
 
 var constants = require('../constants.json');
-// Bpljs class - passing parameters
-// var bpl = require('bpljs');
-// var bpljs = new bpl.BplClass({'interval': constants.blocktime,
-// 	'delegates': constants.activeDelegates,
-// 	'networkVersion': constants.networkVersion});
-
-// Bpljs class - default parameters
-// var bpl = require('bpljs');
-// var bpljs = new bpl.BplClass();
-
-// Bpljs backward compatibility
 var bpljs = require('bpljs');
 
 
