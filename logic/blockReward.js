@@ -154,8 +154,6 @@ BlockReward.prototype.getProportionalReward = function (dependentId, height, cb)
 											var bigDecimalPercent = new bigdecimal.BigDecimal(percent);
 											var rewardAmount = new bigdecimal.BigDecimal('0.0000000000');
 											rewardAmount =  votersTotalBalance.multiply(bigDecimalPercent);
-											console.log('>>>>> balance * percent = result',votersTotalBalance.toString(),bigDecimalPercent.toString(),rewardAmount.toString());
-
 											rewardAmount =  rewardAmount.setScale(10, down);
 											rewardAmount = rewardAmount.toString();
 
