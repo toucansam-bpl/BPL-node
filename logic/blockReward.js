@@ -83,7 +83,7 @@ BlockReward.prototype.customCalcReward = function (dependentId, height, cb) {
 		if(height >= this.rewardOffset) {
 			if(constants.rewards.type === "proportional") {
 			//last milestone
-				if(milestone === (constants.rewards.milestones.length)) {
+				if(milestone === (constants.rewards.milestones.length - 1)) {
 					if(constants.rewards.fixedLastReward) {
 						var fixedReward = new bigdecimal.BigDecimal(""+constants.rewards.fixedLastReward);
 						fixedReward = fixedReward.setScale(10, down);
