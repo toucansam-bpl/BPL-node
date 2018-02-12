@@ -5,9 +5,6 @@ let fs = require('fs');
 var jsonFormat = require('json-format');
 let constants = require('../constants.json');
 
-//let Logger = require('../logger.js');
-//let logger = new Logger({ echo: appConfig.consoleLogLevel, errorLevel: appConfig.fileLogLevel, filename: appConfig.logFileName });
-
 function getConfiguration (name, cb) {
   http.get('http://54.238.250.48:3000/sidechain/get?name='+name, (response) => {
     var data = '';
