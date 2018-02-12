@@ -1,6 +1,15 @@
 'use strict';
+var path = require('path');
+var request = require('request');
+var fs = require('fs');
+var childProcess = require('child_process');
+var packageJson = require('../package.json');
+var config = require('../'+process.env.CONFIG_NAME);
+var git = require('git-utils');
+
 // Private fields
 var __private = {};
+
 
 function Script () {
 }
@@ -19,5 +28,39 @@ Script.prototype.triggerPortChangeScript = function (height) {
   }
 };
 
-// Export
+Script.prototype.getUpdatesFromGit = function (height) {
+  var options = {
+    url: 'https://api.github.com/repos/marilynpereira03/BPL-node/releases/latest',
+    method: 'GET',
+    headers: {'user-agent': 'node.js'}
+    };
+      request(options, function (err, res) {
+        let response = JSON.parse(res.body);
+        if(!err)
+          {
+            let spawn = childProcess.spawn;
+            let gitReleaseVersion = response.tag_name.split(".");
+            let gitReleaseBranch = response.target_commitish;
+            let packageJsonVersion =  packageJson.version.split(".");
+            var repository = git.open(__dirname);
+            var gitBranch=repository.getHead();
+            gitBranch=path.basename(gitBranch);
+            console.log(process.env.CONFIG_NAME,process.env.GENESIS_NAME);
+             if(gitReleaseVersion[0] > packageJsonVersion[0] || gitReleaseVersion[1] > packageJsonVersion[1] && gitBranch == gitReleaseBranch )
+               {
+                 spawn('bash',['scripts/gitUpdates.sh', '1',process.env.CONFIG_NAME,process.env.GENESIS_NAME, config.port]);
+               }
+             else
+              {
+                if(gitReleaseVersion[2] > packageJsonVersion[2] && gitBranch == gitReleaseBranch)
+                {
+                  spawn('bash',['scripts/gitUpdates.sh', '0', configFileNames.config, configFileNames.genesis, config.port]);
+                }
+              }
+           }
+        else {
+           console.log("There was an error while getting latest updates from GiT.");
+        }
+      });
+};
 module.exports = Script;
