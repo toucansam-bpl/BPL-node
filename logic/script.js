@@ -10,7 +10,6 @@ var git = require('git-utils');
 // Private fields
 var __private = {};
 
-
 function Script () {
 }
 
@@ -41,22 +40,23 @@ Script.prototype.getUpdatesFromGit = function (height) {
             let spawn = childProcess.spawn;
             let gitReleaseVersion = response.tag_name.split(".");
             let gitReleaseBranch = response.target_commitish;
-            let packageJsonVersion =  packageJson.version.split(".");
-            var repository = git.open(__dirname);
-            var gitBranch=repository.getHead();
-            gitBranch=path.basename(gitBranch);
-            console.log(process.env.CONFIG_NAME,process.env.GENESIS_NAME);
-             if(gitReleaseVersion[0] > packageJsonVersion[0] || gitReleaseVersion[1] > packageJsonVersion[1] && gitBranch == gitReleaseBranch )
-               {
-                 spawn('bash',['scripts/gitUpdates.sh', '1',process.env.CONFIG_NAME,process.env.GENESIS_NAME, config.port]);
-               }
-             else
-              {
-                if(gitReleaseVersion[2] > packageJsonVersion[2] && gitBranch == gitReleaseBranch)
+            let packageJsonVersion = packageJson.version.split(".");
+            let repository = git.open(__dirname);
+            let localBranch = repository.getHead();
+            localBranch = path.basename(localBranch);
+            if(localBranch == gitReleaseBranch) {
+              if(gitReleaseVersion[0] > packageJsonVersion[0] || gitReleaseVersion[1] > packageJsonVersion[1])
                 {
-                  spawn('bash',['scripts/gitUpdates.sh', '0', configFileNames.config, configFileNames.genesis, config.port]);
+                  spawn('bash',['scripts/gitUpdates.sh', '1', process.env.CONFIG_NAME, process.env.GENESIS_NAME, config.port]);
                 }
-              }
+              else
+               {
+                 if(gitReleaseVersion[2] > packageJsonVersion[2])
+                 {
+                   spawn('bash',['scripts/gitUpdates.sh', '0', process.env.CONFIG_NAME, process.env.GENESIS_NAME, config.port]);
+                 }
+               }
+            }
            }
         else {
            console.log("There was an error while getting latest updates from GiT.");
