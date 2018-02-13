@@ -12,7 +12,6 @@ mv genesisBlock.backup.json $genesis
 forever stop `lsof -t -i:$4`
 if [[ $1 -eq 1 ]]
   then
-     npm install libpq secp256k1 >> npmlog.txt
-     npm install >> npmlog.txt
+     npm install
 fi
 forever start app.js -c $config -g $genesis
