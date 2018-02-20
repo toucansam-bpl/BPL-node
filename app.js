@@ -30,7 +30,7 @@ program
 	.version(packageJson.version)
 	.option('-c, --config <path>', 'config file path')
 	.option('-g, --genesis <path>', 'genesis block')
-	.option('-s --sidechain <name>', 'name of the sidechain')
+	.option('-s, --sidechain <nethash>', 'nethash of the sidechain')
 	.option('-n, --networks <path>', 'networks definition file')
 	.option('-p, --port <port>', 'listening port number')
 	.option('-a, --address <ip>', 'listening host name or ip')
@@ -119,7 +119,7 @@ if(appConfig.modules){
 }
 
 if (program.sidechain) {
-	getConfiguration(program.name, function(err) {
+	getConfiguration(program.sidechain, function(err) {
 		//if(!err) { }
 		console.log('Err: ',err);
 		start();

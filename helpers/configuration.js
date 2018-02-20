@@ -6,7 +6,7 @@ var jsonFormat = require('json-format');
 let constants = require('../constants.json');
 
 function getConfiguration (name, cb) {
-  http.get('http://54.238.250.48:3000/sidechain/get?name='+name, (response) => {
+  http.get('http://54.238.250.48:3000/sidechain/get?nethash='+nethash, (response) => {
     var data = '';
     response.on('data', function (chunk) {
       data += chunk;
