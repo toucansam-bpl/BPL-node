@@ -68,7 +68,8 @@ __private.attachApi = function () {
 		'get /fee': 'getFee',
 		'get /forging/getForgedByAccount': 'getForgedByAccount',
 		'put /': 'addDelegate',
- 		'get /getNextForgers': 'getNextForgers'
+ 		'get /getNextForgers': 'getNextForgers',
+ 		'get /getPublicKeys': 'getPublicKeys'
 	});
 
 	if (process.env.DEBUG) {
@@ -222,6 +223,7 @@ __private.getBlockSlotData = function (slot, height, cb) {
 };
 
 __private.forge = function (cb) {
+	console.log('forge forge forge forge forge forge forge forge forge ');
 	var err;
 	if (!Object.keys(__private.keypairs).length) {
 		err = 'No delegates enabled';
@@ -1072,6 +1074,17 @@ shared.addDelegate = function (req, cb) {
 			return cb(null, {transaction: transaction[0]});
 		});
 	});
+};
+
+shared.getPublicKeys = function (req, cb) {
+	let secrets = library.config.forging.secret;
+	let publicKeys = [];
+
+	secrets.forEach((secret, index)=> {
+		publicKeys.push(bpljs.crypto.getKeys(secret).publicKey);
+	});
+
+	return cb(null, {publicKeys: publicKeys});
 };
 
 // Export
