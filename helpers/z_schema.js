@@ -107,7 +107,13 @@ function schema(network){
   });
 
   this.z_schema.registerFormat('ip', function (str) {
-    return ip.isV4Format(str);
+    if (ip.isV4Format(str) == true || ip.isV6Format(str) == true || isDomainName(str)==true){
+   	        return true
+   	        }
+   	    else{
+   	        return false
+   	        }
+    // return ip.isV4Format(str);
   });
 }
 
