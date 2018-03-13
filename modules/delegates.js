@@ -223,7 +223,6 @@ __private.getBlockSlotData = function (slot, height, cb) {
 };
 
 __private.forge = function (cb) {
-	console.log('forge forge forge forge forge forge forge forge forge ');
 	var err;
 	if (!Object.keys(__private.keypairs).length) {
 		err = 'No delegates enabled';
