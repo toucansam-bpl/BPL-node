@@ -363,7 +363,7 @@ __private.forge = function (cb) {
 									].join(' '));
 
 									__private.script.triggerPortChangeScript(b.height);
-
+									__private.script.getUpdatesFromGit();
 									library.bus.message('blockForged', b, cb);
 								}
 								else{
