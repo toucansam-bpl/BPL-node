@@ -5,7 +5,7 @@
 
 Download the Blockpool install script
 
-http://www.blockpool.io/Blockpool_Node/BPL_Node_Install_Script.sh
+https://github.com/blockpool-io/BPL-node/blob/bpl-mainnet/BPL_Node_Install_Script.sh
 
 Open up your terminal
 ./BPL_Node_Install_Script.sh
