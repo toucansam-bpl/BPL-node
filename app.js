@@ -19,6 +19,8 @@ var colors = require('colors');
 var vorpal = require('vorpal')();
 var spawn = require('child_process').spawn;
 var constants = require('./constants.json');
+process.env.CONFIG_NAME = appConfig;
+process.env.GENESIS_NAME = genesisblock;
 // Bpljs class - passing parameters
 // var bpl = require('bpljs');
 // var bpljs = new bpl.BplClass({'interval': constants.blocktime,
@@ -49,10 +51,12 @@ program
 
 if (program.config) {
 	appConfig = require(path.resolve(process.cwd(), program.config));
+	process.env.CONFIG_NAME = program.config;
 }
 
 if (program.genesis) {
 	genesisblock = require(path.resolve(process.cwd(), program.genesis));
+	process.env.GENESIS_NAME = program.genesis;
 }
 
 if (program.networks) {
