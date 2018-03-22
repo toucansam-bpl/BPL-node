@@ -319,7 +319,7 @@ __private.generateDelegateList = function (round, cb) {
 			if(reliableActiveDelegates.length === constants.activeDelegates) {
 				return callback({"data": reliableActiveDelegates});
 			}
-				library.db.query(sql.getMissedBlocks, { publicKey: delegate.publicKey,
+				library.db.query(sql.getMissedBlocksCount, { publicKey: delegate.publicKey,
 						upperLimit: upperLimit,
 						lowerLimit: lowerLimit}).then(function(rows) {
 							if(rows[0] && rows[0].sum < constants.reliability.maxMissedBlocks) {
