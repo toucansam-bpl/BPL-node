@@ -50,8 +50,9 @@ var __private = {
 	collectedfees: {},
 
 	// current round
-	current: 1
+	current: 1,
 
+	firstRoundCounter: 0
 };
 
 
@@ -184,19 +185,19 @@ __private.changeRoundForward = function(block, cb){
 			return cb(err, block);
 		}
 		else {
-			__private.generateDelegateList(nextround, function(err, fullactivedelegates){
+			__private.updateActiveDelegatesStats(function(err){
 				if(err){
 					return cb(err, block);
 				}
 				else {
-					__private.collectedfees[nextround] = 0;
-					__private.forgers[nextround] = [];
-					__private.activedelegates[nextround] = fullactivedelegates.map(function(ad){return ad.publicKey});
-					__private.updateActiveDelegatesStats(function(err){
+					__private.generateDelegateList(nextround, function(err, fullactivedelegates){
 						if(err){
 							return cb(err, block);
 						}
-						else{
+						else {
+							__private.collectedfees[nextround] = 0;
+							__private.forgers[nextround] = [];
+							__private.activedelegates[nextround] = fullactivedelegates.map(function(ad){return ad.publicKey});
 							__private.saveActiveDelegatesOnDatabase(fullactivedelegates, nextround, function(err){
 								if(err){
 									return cb(err, block);
@@ -208,6 +209,7 @@ __private.changeRoundForward = function(block, cb){
 								}
 							});
 						}
+
 					});
 				}
 			});
@@ -285,7 +287,13 @@ __private.updateActiveDelegatesStats = function(cb){
 };
 
 __private.saveActiveDelegatesOnDatabase = function(fullactivedelegates, round, cb){
-	library.db.none(sql.saveActiveDelegates(fullactivedelegates), {round: round}).then(cb).catch(cb);
+	if(round == 1) {
+		__private.firstRoundCounter++;
+		if(__private.firstRoundCounter < 2)
+			library.db.none(sql.saveActiveDelegates(fullactivedelegates), {round: round}).then(cb).catch(cb);
+	}
+	else
+	 	library.db.none(sql.saveActiveDelegates(fullactivedelegates), {round: round}).then(cb).catch(cb);
 };
 
 __private.updateTotalVotesOnDatabase = function(cb){
@@ -293,7 +301,7 @@ __private.updateTotalVotesOnDatabase = function(cb){
 };
 
 __private.updateActiveDelegatesStatsOnDatabase = function(forgerStats, round, cb){
-	library.db.none(sql.updateActiveDelegatesStats(forgerStats), {round: round}).then(cb).catch(cb);
+	library.db.none(sql.updateActiveDelegatesStats(forgerStats), {round: round}).then(cb).catch(cb);1
 };
 
 // generate the list of active delegates of the round
@@ -303,11 +311,42 @@ __private.generateDelegateList = function (round, cb) {
 		if (err) {
 			return cb(err);
 		}
-		modules.delegates.updateActiveDelegate(activedelegates);
 
-		return cb(null, __private.randomizeDelegateList(activedelegates, round));
+		let reliableActiveDelegates = [];
+		async.eachSeries(activedelegates, function (delegate, callback){
+			if(reliableActiveDelegates.length === constants.activeDelegates) {
+				return callback({"data": reliableActiveDelegates});
+			}
+				self.isDelegateReliable(delegate, round, function(res) {
+					if(res) {
+						reliableActiveDelegates.push(delegate);
+					}
+					return callback();
+				});
+		}, function(err) {
+					modules.delegates.updateActiveDelegate(reliableActiveDelegates);
+					return cb(null, __private.randomizeDelegateList(reliableActiveDelegates, round));
+			});
 	});
 };
+/**
+Check if delegate is reliable
+if the delegate has missed less than max blocks allowed to be missed  it is reliable
+if the delegate has missed more than max blocks allowed to be missed it is not reliable
+**/
+Rounds.prototype.isDelegateReliable = function(delegate, round, cb) {
+	let upperLimit = (round ? round : __private.current);
+	let lowerLimit = upperLimit - constants.reliability.rounds;
+
+	library.db.query(sql.getMissedBlocksCount, { publicKey: delegate.publicKey,
+			upperLimit: upperLimit,
+			lowerLimit: lowerLimit}).then(function(rows) {
+				if(rows[0] && rows[0].sum < constants.reliability.maxMissedBlocks) {
+					return cb(true);
+				}
+				return cb(false);
+		});
+}
 
 // the algorithm to randomize active delegate list after they are ordered by vote descending.
 // Return the new list in the order the delegates are allowed to forge in this round
@@ -335,8 +374,8 @@ __private.randomizeDelegateList = function (activedelegates, round) {
 __private.getKeysSortByVote = function (cb) {
 	modules.accounts.getAccounts({
 		isDelegate: 1,
-		sort: {'vote': -1, 'publicKey': 1},
-		limit: slots.delegates
+		sort: {'vote': -1, 'publicKey': 1}
+		// limit: slots.delegates
 	}, ['publicKey', 'vote'], function (err, rows) {
 		if (err) {
 			return cb(err);
@@ -387,26 +426,21 @@ Rounds.prototype.getActiveDelegates = function(cb) {
 	else {
 		// let's get active delegates from database if any
 		library.db.query(sql.getActiveDelegates, {round: round}).then(function(rows){
-			if(rows.length == constants.activeDelegates){
+			// ok maybe we just started node from scratch, so need to generate it.
+			if(modules.blockchain.getLastBlock().height == 1 && round == 1) {
+					__private.generateDelegateList(round, function(err, activedelegates) {
+						if(err){
+							return cb(err);
+						}
+						__private.activedelegates[round] = activedelegates.map(function(ad){return ad.publicKey;});
+							__private.saveActiveDelegatesOnDatabase(activedelegates, round, function(){});
+						return cb(null, __private.activedelegates[round]);
+					});
+			}
+			else {
 				rows=__private.randomizeDelegateList(rows, round);
 				__private.activedelegates[round]=rows.map(function(row){return row.publicKey;});
 				return cb(null, __private.activedelegates[round]);
-			}
-			// ok maybe we just started node from scratch, so need to generate it.
-			else if(modules.blockchain.getLastBlock().height == 1 && round == 1) {
-				__private.generateDelegateList(round, function(err, activedelegates){
-					if(err){
-						return cb(err);
-					}
-					__private.activedelegates[round] = activedelegates.map(function(ad){return ad.publicKey;});
-					__private.saveActiveDelegatesOnDatabase(activedelegates, round, function(){});
-					return cb(null, __private.activedelegates[round]);
-				});
-			}
-			else {
-				return cb("Can't build active delegates list. Please report. Rebuild form scratch is necessary.");
-				//TODO: add here a sql query to drop all mem_ tables
-				process.exit(0);
 			}
 		});
 	}
@@ -458,7 +492,6 @@ Rounds.prototype.onBind = function (scope) {
 
 //
 Rounds.prototype.onDatabaseLoaded = function (lastBlock) {
-
 	var round = self.getRoundFromHeight(lastBlock.height);
 
 	__private.current = round;
