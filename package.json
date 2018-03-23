@@ -34,6 +34,7 @@
     "forever": "^0.15.3",
     "git-utils": "^5.2.1",
     "ip": "=1.1.3",
+    "is-domain-name": "^1.0.1",
     "json-format": "^1.0.1",
     "json-schema": "=0.2.3",
     "json-sql": "LiskHQ/json-sql#27e1ed1",
