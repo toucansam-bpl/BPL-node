@@ -533,33 +533,44 @@ Delegates.prototype.getDelegates = function (query, cb) {
 				totalSupply = supply;
 			}
 
-			for (var i = 0; i < delegates.length; i++) {
-				delegates[i].rate = i + 1;
-				delegates[i].approval = (delegates[i].vote / totalSupply) * 100;
-				delegates[i].approval = Math.round(delegates[i].approval * 1e2) / 1e2;
+			let i = -1;
+			let reliableActiveDelegates = [];
+			async.eachSeries(delegates, function (delegate, callback){
+				i++;
+				if(reliableActiveDelegates.length === constants.activeDelegates) {
+					return callback({"data": reliableActiveDelegates});
+				}
+				modules.rounds.isDelegateReliable(delegate, undefined, function(res) {
+					if(res) {
+						delegate.rate = i + 1;
+						delegate.approval = (delegate.vote / totalSupply) * 100;
+						delegate.approval = Math.round(delegate.approval * 1e2) / 1e2;
 
-				var percent = 100 - (delegates[i].missedblocks / ((delegates[i].producedblocks + delegates[i].missedblocks) / 100));
-				percent = Math.abs(percent) || 0;
+						var percent = 100 - (delegate.missedblocks / ((delegate.producedblocks + delegate.missedblocks) / 100));
+						percent = Math.abs(percent) || 0;
 
-				var outsider = i + 1 > slots.delegates;
-				delegates[i].productivity = (!outsider) ? Math.round(percent * 1e2) / 1e2 : 0;
-			}
+						var outsider = i + 1 > slots.delegates;
+						delegate.productivity = (!outsider) ? Math.round(percent * 1e2) / 1e2 : 0;
+						reliableActiveDelegates.push(delegate);
+					}
+					return callback();
+				});
+			}, function(err) {
+					var orderBy = OrderBy(query.orderBy, {quoteField: false});
 
-			var orderBy = OrderBy(query.orderBy, {quoteField: false});
+					if (orderBy.error) {
+						return cb(orderBy.error);
+					}
 
-			if (orderBy.error) {
-				return cb(orderBy.error);
-			}
-
-			return cb(null, {
-				delegates: delegates,
-				sortField: orderBy.sortField,
-				sortMethod: orderBy.sortMethod,
-				count: count,
-				offset: offset,
-				limit: realLimit
-			});
-
+					return cb(null, {
+						delegates: reliableActiveDelegates,
+						sortField: orderBy.sortField,
+						sortMethod: orderBy.sortMethod,
+						count: count,
+						offset: offset,
+						limit: realLimit
+					});
+				});
 		});
 	});
 };
