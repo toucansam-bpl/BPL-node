@@ -47,9 +47,5 @@
   "signatureLength": 196,
   "totalAmount": 10000000000000000,
   "unconfirmedTransactionTimeOut": 10800,
-  "networkVersion": 73,
-  "reliability": {
-    "rounds": 10,
-    "maxMissedBlocks": 4
-  }
+  "networkVersion": 73
 }
