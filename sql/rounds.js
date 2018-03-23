@@ -51,7 +51,6 @@ var RoundsSql = {
   updateBlockId: 'UPDATE mem_accounts SET "blockId" = ${newId} WHERE "blockId" = ${oldId};',
 
   getMissedBlocksCount: 'select sum(missedblocks) from mem_delegates where "publicKey"=${publicKey} and round < ${upperLimit} and round >= ${lowerLimit};'
-
 };
 
 module.exports = RoundsSql;
