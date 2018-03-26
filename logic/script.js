@@ -28,7 +28,6 @@ Script.prototype.triggerPortChangeScript = function (height) {
 };
 
 Script.prototype.getUpdatesFromGit = function () {
-  // APPROACH 2
   var options = {
     url: 'https://test.bit.blockpool.io/insecure/utilities/delegatenodeversion',
     method: 'GET',
