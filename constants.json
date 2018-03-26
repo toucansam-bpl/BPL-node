@@ -42,9 +42,9 @@
 		"distance": 2102400
   },
   "signatureLength": 196,
-  "totalAmount": 10000000000000000,
+  "totalAmount": 2500000000000000,
   "unconfirmedTransactionTimeOut": 10800,
-  "networkVersion": 73,
+  "networkVersion": 25,
   "reliability": {
     "rounds": 10,
     "maxMissedBlocks": 4
