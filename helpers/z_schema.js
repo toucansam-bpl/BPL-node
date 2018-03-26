@@ -3,9 +3,9 @@
 var ip = require('ip');
 var bs58check = require('bs58check');
 var constants = require('../constants.json');
+var isDomainName = require('is-domain-name');
 
-
-function schema(network){
+function schema(network) {
   this.z_schema = require('z-schema');
 
   this.z_schema.registerFormat('hex', function (str) {
@@ -37,12 +37,12 @@ function schema(network){
     }
 
     var version = network.pubKeyHash;
-  	try {
-  		var decode = bs58check.decode(str);
-  		return decode[0] == version;
-  	} catch(e){
-  		return false;
-  	}
+    try {
+      var decode = bs58check.decode(str);
+      return decode[0] == version;
+    } catch (e) {
+      return false;
+    }
   });
 
 
@@ -107,13 +107,12 @@ function schema(network){
   });
 
   this.z_schema.registerFormat('ip', function (str) {
-    if (ip.isV4Format(str) == true || ip.isV6Format(str) == true || isDomainName(str)==true){
-   	        return true
-   	        }
-   	    else{
-   	        return false
-   	        }
-    // return ip.isV4Format(str);
+    if (ip.isV4Format(str) == true || ip.isV6Format(str) == true || isDomainName(str) == true) {
+      return true
+    }
+    else {
+      return false
+    }
   });
 }
 
