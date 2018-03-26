@@ -1,5 +1,5 @@
 {
-  "activeDelegates": 51,
+  "activeDelegates": 201,
   "maximumVotes": 1,
   "addressLength": 208,
   "blockHeaderLength": 248,
@@ -29,7 +29,7 @@
   "requestLength": 104,
   "rewards": {
     "type": "proportional",
-    "fixedLastReward": "true",
+    "fixedLastReward": true,
 		"milestones": [
 			"0.000005235866863",
 			"0.000004154265873015873",
