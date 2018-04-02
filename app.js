@@ -19,8 +19,8 @@ var colors = require('colors');
 var vorpal = require('vorpal')();
 var spawn = require('child_process').spawn;
 var constants = require('./constants.json');
-process.env.CONFIG_NAME = appConfig;
-process.env.GENESIS_NAME = genesisblock;
+process.env.CONFIG_NAME = "./config.json";
+process.env.GENESIS_NAME = "./genesisBlock.json";
 
 process.stdin.resume();
 var versionBuild = fs.readFileSync(path.join(__dirname, 'build'), 'utf8');
@@ -41,6 +41,16 @@ if (program.config) {
 	appConfig = require(path.resolve(process.cwd(), program.config));
 	process.env.CONFIG_NAME = program.config;
 }
+
+var config = require('./'+process.env.CONFIG_NAME);
+var bpljs = require('bpljs');
+bpljs = new bpljs.BplClass({
+	"delegates": constants.activeDelegates,
+  "epochTime": constants.epochTime,
+  "interval": constants.blocktime,
+  "network": config.network,
+	"tokenShortName": config.tokenShortName?config.tokenShortName:"BPL"
+});
 
 if (program.genesis) {
 	genesisblock = require(path.resolve(process.cwd(), program.genesis));
@@ -627,8 +637,8 @@ function startInteractiveMode(scope){
 			var self = this;
 	    var passphrase = require("bip39").generateMnemonic();
 			self.log("Seed    - private:",passphrase);
-			self.log("WIF     - private:",require("bpljs").crypto.getKeys(passphrase).toWIF());
-			self.log("Address - public :",require("bpljs").crypto.getAddress(require("bpljs").crypto.getKeys(passphrase).publicKey));
+			self.log("WIF     - private:",bpljs.crypto.getKeys(passphrase).toWIF());
+			self.log("Address - public :",bpljs.crypto.getAddress(bpljs.crypto.getKeys(passphrase).publicKey));
 			callback();
 	  });
 	var account=null;

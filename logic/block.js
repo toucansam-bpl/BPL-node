@@ -8,7 +8,15 @@ var BlockReward = require('../logic/blockReward.js');
 var blocksSQL = require('../sql/blocks.js');
 var bigdecimal = require("bigdecimal");
 var constants = require('../constants.json');
+var config = require('../'+process.env.CONFIG_NAME);
 var bpljs = require('bpljs');
+bpljs = new bpljs.BplClass({
+	"delegates": constants.activeDelegates,
+  "epochTime": constants.epochTime,
+  "interval": constants.blocktime,
+  "network": config.network,
+	"tokenShortName": config.tokenShortName?config.tokenShortName:"BPL"
+});
 
 
 // Private fields
