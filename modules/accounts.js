@@ -9,15 +9,7 @@ var schema = require('../schema/accounts.js');
 var slots = require('../helpers/slots.js');
 var transactionTypes = require('../helpers/transactionTypes.js');
 var constants = require('../constants.json');
-var config = require('../'+process.env.CONFIG_NAME);
 var bpljs = require('bpljs');
-bpljs = new bpljs.BplClass({
-	"delegates": constants.activeDelegates,
-  "epochTime": constants.epochTime,
-  "interval": constants.blocktime,
-  "network": config.network,
-	"tokenShortName": config.tokenShortName?config.tokenShortName:"BPL"
-});
 
 // Private fields
 var modules, library, self, __private = {}, shared = {};
@@ -30,11 +22,17 @@ function Accounts (cb, scope) {
 	library = scope;
 	self = this;
 
+	bpljs = new bpljs.BplClass({
+		"delegates": constants.activeDelegates,
+		"epochTime": constants.epochTime,
+		"interval": constants.blocktime,
+		"network": scope.config.network
+	});
+	
 	var Vote = require('../logic/vote.js');
 	__private.assetTypes[transactionTypes.VOTE] = library.logic.transaction.attachAssetType(
 		transactionTypes.VOTE, new Vote()
 	);
-
 	return cb(null, self);
 }
 

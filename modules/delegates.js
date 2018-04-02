@@ -17,16 +17,7 @@ var transactionTypes = require('../helpers/transactionTypes.js');
 var bigdecimal = require("bigdecimal");
 var crypto = require('crypto');
 var constants = require('../constants.json');
-var config = require('../'+process.env.CONFIG_NAME);
 var bpljs = require('bpljs');
-bpljs = new bpljs.BplClass({
-	"delegates": constants.activeDelegates,
-  "epochTime": constants.epochTime,
-  "interval": constants.blocktime,
-  "network": config.network,
-	"tokenShortName": config.tokenShortName?config.tokenShortName:"BPL"
-});
-
 
 // Private fields
 var modules, library, self, __private = {}, shared = {};
@@ -49,12 +40,17 @@ function Delegates (cb, scope) {
 	library = scope;
 	self = this;
 
+	bpljs = new bpljs.BplClass({
+		"delegates": constants.activeDelegates,
+		"epochTime": constants.epochTime,
+		"interval": constants.blocktime,
+		"network": scope.config.network
+	});
 
 	var Delegate = require('../logic/delegate.js');
 	__private.assetTypes[transactionTypes.DELEGATE] = library.logic.transaction.attachAssetType(
 		transactionTypes.DELEGATE, new Delegate()
 	);
-
 	return cb(null, self);
 }
 

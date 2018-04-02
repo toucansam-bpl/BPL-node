@@ -19,6 +19,8 @@ var colors = require('colors');
 var vorpal = require('vorpal')();
 var spawn = require('child_process').spawn;
 var constants = require('./constants.json');
+var networks = require('./networks.json');
+var bpljs = require('bpljs');
 process.env.CONFIG_NAME = "./config.json";
 process.env.GENESIS_NAME = "./genesisBlock.json";
 
@@ -41,16 +43,6 @@ if (program.config) {
 	appConfig = require(path.resolve(process.cwd(), program.config));
 	process.env.CONFIG_NAME = program.config;
 }
-
-var config = require('./'+process.env.CONFIG_NAME);
-var bpljs = require('bpljs');
-bpljs = new bpljs.BplClass({
-	"delegates": constants.activeDelegates,
-  "epochTime": constants.epochTime,
-  "interval": constants.blocktime,
-  "network": config.network,
-	"tokenShortName": config.tokenShortName?config.tokenShortName:"BPL"
-});
 
 if (program.genesis) {
 	genesisblock = require(path.resolve(process.cwd(), program.genesis));
@@ -374,12 +366,11 @@ d.run(function () {
 			});
 
 			scope.network.server.listen(scope.config.port, scope.config.address, function (err) {
-				scope.logger.info('# '+appConfig.tokenShortName+' node server started on: ' + scope.config.address + ':' + scope.config.port);
-
+				scope.logger.info('# '+scope.config.network.client.tokenShortName+' node server started on: ' + scope.config.address + ':' + scope.config.port);
 				if (!err) {
 					if (scope.config.ssl.enabled) {
 						scope.network.https.listen(scope.config.ssl.options.port, scope.config.ssl.options.address, function (err) {
-							scope.logger.info(appConfig.tokenShortName+' https started: ' + scope.config.ssl.options.address + ':' + scope.config.ssl.options.port);
+							scope.logger.info(scope.config.network.client.tokenShortName+' https started: ' + scope.config.ssl.options.address + ':' + scope.config.ssl.options.port);
 
 							cb(err, scope.network);
 						});
@@ -545,6 +536,13 @@ process.on('uncaughtException', function (err) {
 });
 
 function startInteractiveMode(scope){
+	bpljs = new bpljs.BplClass({
+		"delegates": constants.activeDelegates,
+		"epochTime": constants.epochTime,
+		"interval": constants.blocktime,
+		"network": scope.config.network
+	});
+
 	vorpal
 	  .command('rebuild', 'Rebuild node from scratch')
 	  .action(function(args, callback) {
