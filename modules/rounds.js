@@ -311,22 +311,29 @@ __private.generateDelegateList = function (round, cb) {
 		if (err) {
 			return cb(err);
 		}
-
-		let reliableActiveDelegates = [];
-		async.eachSeries(activedelegates, function (delegate, callback){
-			if(reliableActiveDelegates.length === constants.activeDelegates) {
-				return callback({"data": reliableActiveDelegates});
-			}
-				self.isDelegateReliable(delegate, round, function(res) {
-					if(res) {
-						reliableActiveDelegates.push(delegate);
-					}
-					return callback();
+		if(library.config.network.client.token === "BLOCKPOOL") {
+			console.log(">>>>>>>>>>>>>>>>>>> BLOCKPOOL");
+			modules.delegates.updateActiveDelegate(activedelegates);
+			return cb(null, __private.randomizeDelegateList(activedelegates, round));
+		}
+		else {
+			console.log(">>>>>>>>>>>>>>>>>>> OTHER");
+			let reliableActiveDelegates = [];
+			async.eachSeries(activedelegates, function (delegate, callback){
+				if(reliableActiveDelegates.length === constants.activeDelegates) {
+					return callback({"data": reliableActiveDelegates});
+				}
+					self.isDelegateReliable(delegate, round, function(res) {
+						if(res) {
+							reliableActiveDelegates.push(delegate);
+						}
+						return callback();
+					});
+			}, function(err) {
+						modules.delegates.updateActiveDelegate(reliableActiveDelegates);
+						return cb(null, __private.randomizeDelegateList(reliableActiveDelegates, round));
 				});
-		}, function(err) {
-					modules.delegates.updateActiveDelegate(reliableActiveDelegates);
-					return cb(null, __private.randomizeDelegateList(reliableActiveDelegates, round));
-			});
+		}
 	});
 };
 /**
