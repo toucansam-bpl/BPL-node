@@ -538,11 +538,10 @@ Delegates.prototype.getDelegates = function (query, cb) {
 			}
 
 			let i = -1;
-			let reliableActiveDelegates = [];
 			async.eachSeries(delegates, function (delegate, callback){
 				i++;
-				if(reliableActiveDelegates.length === constants.activeDelegates) {
-					return callback({"data": reliableActiveDelegates});
+				if(i === constants.activeDelegates) {
+					return callback({"data": delegates});
 				}
 				modules.rounds.isDelegateReliable(delegate, undefined, function(err, res) {
 					if(!err) {
@@ -557,7 +556,6 @@ Delegates.prototype.getDelegates = function (query, cb) {
 
 							var outsider = i + 1 > slots.delegates;
 							delegate.productivity = (!outsider) ? Math.round(percent * 1e2) / 1e2 : 0;
-							reliableActiveDelegates.push(delegate);
 						}
 					}
 					return callback();
@@ -570,7 +568,7 @@ Delegates.prototype.getDelegates = function (query, cb) {
 					}
 
 					return cb(null, {
-						delegates: reliableActiveDelegates,
+						delegates: delegates,
 						sortField: orderBy.sortField,
 						sortMethod: orderBy.sortMethod,
 						count: count,
