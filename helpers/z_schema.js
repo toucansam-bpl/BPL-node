@@ -3,7 +3,16 @@
 var ip = require('ip');
 var bs58check = require('bs58check');
 var constants = require('../constants.json');
+var networks = require('../networks.json');
+var config = require('../'+process.env.CONFIG_NAME);
 var isDomainName = require('is-domain-name');
+var bpljs = require('bpljs');
+bpljs = new bpljs.BplClass({
+  "delegates": constants.activeDelegates,
+  "epochTime": constants.epochTime,
+  "interval": constants.blocktime,
+  "network": networks[config.network]
+});
 function schema(network) {
   this.z_schema = require('z-schema');
 
@@ -37,9 +46,8 @@ function schema(network) {
 
     var version = network.pubKeyHash;
     try {
-      str = str.substring(str.indexOf("_") + 1);
-      var decode = bs58check.decode(str);
-      return decode[0] == version;
+        var decode = bpljs.customAddress.bs58checkDecode(str);
+        return decode[0] == version;
     } catch (e) {
       return false;
     }

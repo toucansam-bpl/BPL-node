@@ -10,7 +10,7 @@ var bs58check = require('bs58check');
 var exceptions = require('../helpers/exceptions.js');
 var slots = require('../helpers/slots.js');
 var sql = require('../sql/transactions.js');
-
+var bpljs = require('bpljs');
 // Private fields
 var self, __private = {}, genesisblock = null;
 
@@ -20,6 +20,12 @@ __private.types = {};
 function Transaction (scope, cb) {
 	this.scope = scope;
 	genesisblock = this.scope.genesisblock;
+	bpljs = new bpljs.BplClass({
+		"delegates": constants.activeDelegates,
+		"epochTime": constants.epochTime,
+		"interval": constants.blocktime,
+		"network": scope.config.network
+	});
 	self = this;
 	cb && cb(null, this);
 }
@@ -76,8 +82,7 @@ Transaction.prototype.create = function (data) {
 //
 Transaction.prototype.validateAddress = function(address){
 	try {
-		address = address.substring(address.indexOf("_") + 1);
-		var decode = bs58check.decode(address);
+		var decode = bpljs.customAddress.bs58checkDecode(address);
 		return decode[0] == this.scope.crypto.network.pubKeyHash;
 	} catch(e){
 		return false;
@@ -186,9 +191,7 @@ Transaction.prototype.getBytes = function (trs, skipSignature, skipSecondSignatu
 		}
 
 		if (trs.recipientId) {
-			let recipient = trs.recipientId;
-			recipient = recipient.substring(recipient.indexOf("_") + 1);
-			recipient = bs58check.decode(recipient);
+		  let recipient = bpljs.customAddress.bs58checkDecode(trs.recipientId);
 
 			for (i = 0; i < recipient.length; i++) {
 				bb.writeByte(recipient[i]);
