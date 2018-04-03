@@ -11,7 +11,7 @@ bpljs = new bpljs.BplClass({
   "network": networks[config.network]
 });
 
-var network = bpljs.networks.bpl;
+var network = networks[config.network];
 var ed = {};
 
 ed.makeKeypair = function (seed) {

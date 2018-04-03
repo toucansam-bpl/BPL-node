@@ -1,15 +1,7 @@
 'use strict';
 
 var constants = require('../constants.json');
-var networks = require('../networks.json');
-var config = require('../'+process.env.CONFIG_NAME);
 var bpljs = require('bpljs');
-bpljs = new bpljs.BplClass({
-	"delegates": constants.activeDelegates,
-  "epochTime": constants.epochTime,
-  "interval": constants.blocktime,
-  "network": networks[config.network]
-});
 
 function Crypto(scope){
 	this.scope = scope;
