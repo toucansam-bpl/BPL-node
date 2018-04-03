@@ -544,18 +544,21 @@ Delegates.prototype.getDelegates = function (query, cb) {
 				if(reliableActiveDelegates.length === constants.activeDelegates) {
 					return callback({"data": reliableActiveDelegates});
 				}
-				modules.rounds.isDelegateReliable(delegate, undefined, function(res) {
-					if(res) {
-						delegate.rate = i + 1;
-						delegate.approval = (delegate.vote / totalSupply) * 100;
-						delegate.approval = Math.round(delegate.approval * 1e2) / 1e2;
+				modules.rounds.isDelegateReliable(delegate, undefined, function(err, res) {
+					if(!err) {
+						if(res.isReliable) {
+							delegate.reliability = res.reliability;
+							delegate.rate = i + 1;
+							delegate.approval = (delegate.vote / totalSupply) * 100;
+							delegate.approval = Math.round(delegate.approval * 1e2) / 1e2;
 
-						var percent = 100 - (delegate.missedblocks / ((delegate.producedblocks + delegate.missedblocks) / 100));
-						percent = Math.abs(percent) || 0;
+							var percent = 100 - (delegate.missedblocks / ((delegate.producedblocks + delegate.missedblocks) / 100));
+							percent = Math.abs(percent) || 0;
 
-						var outsider = i + 1 > slots.delegates;
-						delegate.productivity = (!outsider) ? Math.round(percent * 1e2) / 1e2 : 0;
-						reliableActiveDelegates.push(delegate);
+							var outsider = i + 1 > slots.delegates;
+							delegate.productivity = (!outsider) ? Math.round(percent * 1e2) / 1e2 : 0;
+							reliableActiveDelegates.push(delegate);
+						}
 					}
 					return callback();
 				});
