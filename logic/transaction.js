@@ -76,6 +76,7 @@ Transaction.prototype.create = function (data) {
 //
 Transaction.prototype.validateAddress = function(address){
 	try {
+		address = address.substring(address.indexOf("_") + 1);
 		var decode = bs58check.decode(address);
 		return decode[0] == this.scope.crypto.network.pubKeyHash;
 	} catch(e){
@@ -185,7 +186,9 @@ Transaction.prototype.getBytes = function (trs, skipSignature, skipSecondSignatu
 		}
 
 		if (trs.recipientId) {
-			var recipient = bs58check.decode(trs.recipientId);
+			let recipient = trs.recipientId;
+			recipient = recipient.substring(recipient.indexOf("_") + 1);
+			recipient = bs58check.decode(recipient);
 
 			for (i = 0; i < recipient.length; i++) {
 				bb.writeByte(recipient[i]);

@@ -4,7 +4,6 @@ var ip = require('ip');
 var bs58check = require('bs58check');
 var constants = require('../constants.json');
 var isDomainName = require('is-domain-name');
-
 function schema(network) {
   this.z_schema = require('z-schema');
 
@@ -38,6 +37,7 @@ function schema(network) {
 
     var version = network.pubKeyHash;
     try {
+      str = str.substring(str.indexOf("_") + 1);
       var decode = bs58check.decode(str);
       return decode[0] == version;
     } catch (e) {

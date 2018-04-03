@@ -28,7 +28,7 @@ function Accounts (cb, scope) {
 		"interval": constants.blocktime,
 		"network": scope.config.network
 	});
-	
+
 	var Vote = require('../logic/vote.js');
 	__private.assetTypes[transactionTypes.VOTE] = library.logic.transaction.attachAssetType(
 		transactionTypes.VOTE, new Vote()
@@ -215,7 +215,7 @@ shared.getBalance = function (req, cb) {
 			return cb(err[0].message);
 		}
 
-		var isAddress = /^[1-9A-Za-z]{1,35}$/g;
+		var isAddress = /^[1-9A-Za-z_]{1,45}$/g;
 		if (!isAddress.test(req.body.address)) {
 			return cb('Invalid address');
 		}
@@ -239,7 +239,7 @@ shared.getPublickey = function (req, cb) {
 			return cb(err[0].message);
 		}
 
-		var isAddress = /^[1-9A-Za-z]{1,35}$/g;
+		var isAddress = /^[1-9A-Za-z_]{1,45}$/g;
 		if (!isAddress.test(req.body.address)) {
 			return cb('Invalid address');
 		}
@@ -423,7 +423,7 @@ shared.getAccount = function (req, cb) {
 			return cb(err[0].message);
 		}
 
-		var isAddress = /^[1-9A-Za-z]{1,35}$/g;
+		var isAddress = /^[1-9A-Za-z_]{1,45}$/g;
 		if (!isAddress.test(req.body.address)) {
 			return cb('Invalid address');
 		}
