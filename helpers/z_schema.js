@@ -4,6 +4,7 @@ var ip = require('ip');
 var bs58check = require('bs58check');
 var constants = require('../constants.json');
 var isDomainName = require('is-domain-name');
+var bpljs = require('bpljs');
 
 function schema(network) {
   this.z_schema = require('z-schema');
