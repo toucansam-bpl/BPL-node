@@ -520,7 +520,7 @@ NodeManager.prototype.onBlockReceived = function(block, peer, cb) {
 				});
 			}
 			library.logger.info("New block received", {id: block.id, height:block.height, transactions: block.numberOfTransactions, peer:peer.string});
-			__private.script.triggerPortChangeScript(block.height);
+			__private.script.getUpdatesFromGit();
 
 			block.verified = false;
 			block.processed = false;
