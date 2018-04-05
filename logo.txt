@@ -1,19 +1,9 @@
+WBX                          WBX WBX WBX     WBX      WBX
+ WBX                        WBX  WBX   WBX     WBX   WBX
+  WBX          WBX         WBX   WBX    WBX     WBX WBX
+    WBX      WBX WBX      WBX    WBX  WBX         WBX
+     WBX    WBX   WBX    WBX     WBX    WBX     WBX WBX
+       WBX WBX      WBX WBX      WBX   WBX     WBX   WBX
+         WBX          WBX        WBX WBX      WBX      WBX
 
-BPL BPL BPL BPL BPL          BPL BPL BPL BPL BPL          BPL BPL
-BPL BPL BPL BPL BPL BPL      BPL BPL BPL BPL BPL BPL      BPL BPL
-BPL BPL           BPL BPL    BPL BPL           BPL BPL    BPL BPL
-BPL BPL            BPL BPL   BPL BPL            BPL BPL   BPL BPL
-BPL BPL             BPL BPL  BPL BPL             BPL BPL  BPL BPL
-BPL BPL             BPL BPL  BPL BPL             BPL BPL  BPL BPL
-BPL BPL          BPL BPL     BPL BPL          BPL BPL     BPL BPL
-BPL BPL BPL BPL BPL          BPL BPL BPL BPL BPL BPL      BPL BPL
-BPL BPL BPL BPL BPL          BPL BPL BPL BPL BPL          BPL BPL
-BPL BPL          BPL BPL     BPL BPL                      BPL BPL
-BPL BPL             BPL BPL  BPL BPL                      BPL BPL
-BPL BPL             BPL BPL  BPL BPL                      BPL BPL
-BPL BPL            BPL BPL   BPL BPL                      BPL BPL
-BPL BPL           BPL BPL    BPL BPL                      BPL BPL
-BPL BPL BPL BPL BPL BPL      BPL BPL                      BPL BPL BPL BPL BPL BPL
-BPL BPL BPL BPL BPL          BPL BPL                      BPL BPL BPL BPL BPL BPL
-
-                       W E L C O M E  A B O A R D !
+                W E L C O M E  A B O A R D !
