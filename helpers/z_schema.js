@@ -39,8 +39,8 @@ function schema(network) {
 
     var version = network.pubKeyHash;
     try {
-        str = str.substring(address.indexOf("_") + 1);
-        var decode = bs58check.decode(str);
+      //  str = str.substring(address.indexOf("_") + 1);
+        var decode = bpljs.customAddress.bs58checkDecode(str);
         return decode[0] == version;
     } catch (e) {
       return false;
