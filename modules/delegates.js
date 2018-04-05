@@ -355,7 +355,6 @@ __private.forge = function (cb) {
 										'transactions:' + b.numberOfTransactions
 									].join(' '));
 
-									__private.script.getUpdatesFromGit(b.height);
 									library.bus.message('blockForged', b, cb);
 								}
 								else{
