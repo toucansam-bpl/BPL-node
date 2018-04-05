@@ -1,12 +1,10 @@
 'use strict';
 
 var _ = require('lodash');
-var bs58check = require('bs58check');
 var bignum = require('../helpers/bignum.js');
 var ByteBuffer = require('bytebuffer');
 var constants = require('../constants.json');
 var crypto = require('crypto');
-var bs58check = require('bs58check');
 var exceptions = require('../helpers/exceptions.js');
 var slots = require('../helpers/slots.js');
 var sql = require('../sql/transactions.js');

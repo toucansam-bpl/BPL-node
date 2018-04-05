@@ -60,7 +60,6 @@ Script.prototype.getUpdatesFromGit = function () {
                 }
              }
           else {
-            //oput logger logs
              console.log("There was an error while getting latest updates from GiT.");
           }
         }
