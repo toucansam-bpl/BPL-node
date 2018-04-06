@@ -538,21 +538,18 @@ Delegates.prototype.getDelegates = function (query, cb) {
 			let i = -1;
 			async.eachSeries(delegates, function (delegate, callback){
 				i++;
-				if(i === constants.activeDelegates) {
-					return callback({"data": delegates});
-				}
 				modules.rounds.isDelegateReliable(delegate, undefined, function(err, res) {
 					if(!err) {
-						delegate.reliability = res.reliability;
-						delegate.rate = i + 1;
-						delegate.approval = (delegate.vote / totalSupply) * 100;
-						delegate.approval = Math.round(delegate.approval * 1e2) / 1e2;
+						delegates[i].reliability = res.reliability;
+						delegates[i].rate = i + 1;
+						delegates[i].approval = (delegates[i].vote / totalSupply) * 100;
+						delegates[i].approval = Math.round(delegates[i].approval * 1e2) / 1e2;
 
-						var percent = 100 - (delegate.missedblocks / ((delegate.producedblocks + delegate.missedblocks) / 100));
+						var percent = 100 - (delegates[i].missedblocks / ((delegates[i].producedblocks + delegates[i].missedblocks) / 100));
 						percent = Math.abs(percent) || 0;
 
 						var outsider = i + 1 > slots.delegates;
-						delegate.productivity = (!outsider) ? Math.round(percent * 1e2) / 1e2 : 0;
+						delegates[i].productivity = (!outsider) ? Math.round(percent * 1e2) / 1e2 : 0;
 					}
 					return callback();
 				});
