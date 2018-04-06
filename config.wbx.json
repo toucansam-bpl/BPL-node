@@ -36,44 +36,44 @@
   "peers": {
     "minimumNetworkReach": 1,
     "list": [
-      {
-        "ip": "165.227.224.117",
+     {
+        "ip": "lon-01.wbx.woooba.com",
         "port": 9032
       },
       {
-        "ip": "165.227.239.66",
+        "ip": "lon-02.wbx.woooba.com",
         "port": 9032
       },
       {
-        "ip": "138.68.183.82",
+        "ip": "lon-03.wbx.woooba.com",
         "port": 9032
       },
       {
-        "ip": "178.62.23.57",
+        "ip": "lon-04.wbx.woooba.com",
         "port": 9032
       },
       {
-        "ip": "178.62.50.166",
+        "ip": "lon-05.wbx.woooba.com",
         "port": 9032
       },
       {
-        "ip": "165.227.224.124",
+        "ip": "lon-06.wbx.woooba.com",
         "port": 9032
       },
       {
-        "ip": "138.68.183.46",
+        "ip": "lon-07.wbx.woooba.com",
         "port": 9032
       },
       {
-        "ip": "138.68.183.85",
+        "ip": "lon-08.wbx.woooba.com",
         "port": 9032
       },
       {
-        "ip": "165.227.239.102",
+        "ip": "lon-09.wbx.woooba.com",
         "port": 9032
       },
       {
-        "ip": "165.227.224.102",
+        "ip": "lon-10.wbx.woooba.com",
         "port": 9032
       }
     ],
