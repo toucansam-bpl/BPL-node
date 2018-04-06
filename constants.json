@@ -29,25 +29,24 @@
   "requestLength": 104,
   "rewards": {
     "type": "static",
-    "fixedLastReward": "100000000",
+    "fixedLastReward": false,
 		"milestones": [
-      "1000000000",
-      "900000000",
-      "800000000",
-      "700000000",
-      "600000000",
+			"1000000000",
+			"900000000",
+			"800000000",
+			"700000000",
+			"600000000",
       "500000000",
-      "400000000",
-      "300000000",
-      "200000000"
-    ],
-    "offset": 5760,
-    "distance": 5760
+			"400000000",
+			"300000000",
+			"200000000"
+		],
+		"offset": 100,
+		"distance": 1920
   },
   "signatureLength": 196,
   "totalAmount": 10000000000000000,
   "unconfirmedTransactionTimeOut": 10800,
-  "networkVersion": 73,
   "reliability": {
     "rounds": 10,
     "maxMissedBlocks": 4

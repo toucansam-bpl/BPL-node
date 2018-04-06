@@ -8,17 +8,6 @@ var bignum = require('../helpers/bignum.js');
 var Crypto = require('../helpers/crypto.js');
 var networks = require('../networks.json');
 var constants = require('../constants.json');
-// Bpljs class - passing parameters
-// var bpl = require('bpljs');
-// var bpljs = new bpl.BplClass({'interval': constants.blocktime,
-// 	'delegates': constants.activeDelegates,
-// 	'networkVersion': constants.networkVersion});
-
-// Bpljs class - default parameters
-// var bpl = require('bpljs');
-// var bpljs = new bpl.BplClass();
-
-// Bpljs backward compatibility
 var bpljs = require('bpljs');
 
 var genesisAccounts = JSON.parse(fs.readFileSync('./tasks/genesis.testnet.accounts.json'));

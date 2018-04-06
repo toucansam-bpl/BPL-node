@@ -1,9 +1,9 @@
 'use strict';
 
 var ip = require('ip');
-var bs58check = require('bs58check');
 var constants = require('../constants.json');
 var isDomainName = require('is-domain-name');
+var bpljs = require('bpljs');
 
 function schema(network) {
   this.z_schema = require('z-schema');
@@ -38,8 +38,8 @@ function schema(network) {
 
     var version = network.pubKeyHash;
     try {
-      var decode = bs58check.decode(str);
-      return decode[0] == version;
+        var decode = bpljs.customAddress.bs58checkDecode(str);
+        return decode[0] == version;
     } catch (e) {
       return false;
     }

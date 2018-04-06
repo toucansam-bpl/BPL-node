@@ -8,19 +8,7 @@ var BlockReward = require('../logic/blockReward.js');
 var blocksSQL = require('../sql/blocks.js');
 var bigdecimal = require("bigdecimal");
 var constants = require('../constants.json');
-// Bpljs class - passing parameters
-// var bpl = require('bpljs');
-// var bpljs = new bpl.BplClass({'interval': constants.blocktime,
-// 	'delegates': constants.activeDelegates,
-// 	'networkVersion': constants.networkVersion});
-
-// Bpljs class - default parameters
-// var bpl = require('bpljs');
-// var bpljs = new bpl.BplClass();
-
-// Bpljs backward compatibility
 var bpljs = require('bpljs');
-
 
 // Private fields
 var __private = {}, genesisblock = null;
@@ -29,6 +17,12 @@ var __private = {}, genesisblock = null;
 function Block (scope, cb) {
 	this.scope = scope;
 	genesisblock = this.scope.genesisblock;
+	bpljs = new bpljs.BplClass({
+		"delegates": constants.activeDelegates,
+		"epochTime": constants.epochTime,
+		"interval": constants.blocktime,
+		"network": scope.config.network
+	});
 	return cb && cb(null, this);
 }
 

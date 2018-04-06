@@ -311,22 +311,28 @@ __private.generateDelegateList = function (round, cb) {
 		if (err) {
 			return cb(err);
 		}
-
-		let reliableActiveDelegates = [];
-		async.eachSeries(activedelegates, function (delegate, callback){
-			if(reliableActiveDelegates.length === constants.activeDelegates) {
-				return callback({"data": reliableActiveDelegates});
-			}
-				self.isDelegateReliable(delegate, round, function(res) {
-					if(res) {
-						reliableActiveDelegates.push(delegate);
-					}
-					return callback();
+		if(library.config.network.client.token === "BLOCKPOOL") {
+			modules.delegates.updateActiveDelegate(activedelegates);
+			return cb(null, __private.randomizeDelegateList(activedelegates, round));
+		}
+		else {
+			let reliableActiveDelegates = [];
+			async.eachSeries(activedelegates, function (delegate, callback){
+				if(reliableActiveDelegates.length === constants.activeDelegates) {
+					return callback({"data": reliableActiveDelegates});
+				}
+					self.isDelegateReliable(delegate, round, function(err, res) {
+						if(!err) {
+							if(res.isReliable)
+								reliableActiveDelegates.push(delegate);
+						}
+						return callback();
+					});
+			}, function(err) {
+						modules.delegates.updateActiveDelegate(reliableActiveDelegates);
+						return cb(null, __private.randomizeDelegateList(reliableActiveDelegates, round));
 				});
-		}, function(err) {
-					modules.delegates.updateActiveDelegate(reliableActiveDelegates);
-					return cb(null, __private.randomizeDelegateList(reliableActiveDelegates, round));
-			});
+		}
 	});
 };
 /**
@@ -341,10 +347,15 @@ Rounds.prototype.isDelegateReliable = function(delegate, round, cb) {
 	library.db.query(sql.getMissedBlocksCount, { publicKey: delegate.publicKey,
 			upperLimit: upperLimit,
 			lowerLimit: lowerLimit}).then(function(rows) {
-				if(rows[0] && rows[0].sum < constants.reliability.maxMissedBlocks) {
-					return cb(true);
+				if(rows[0]) {
+					let reliability = ((constants.reliability.rounds - rows[0].sum) / constants.reliability.rounds) * 100;
+
+					if(rows[0].sum < constants.reliability.maxMissedBlocks)
+						return cb(null, {"isReliable": true, "reliability": reliability});
+					else
+						return cb(null, {"isReliable": false, "reliability": reliability});
 				}
-				return cb(false);
+				return cb("No result found for delegate "+delegate.publicKey);
 		});
 }
 
@@ -372,11 +383,14 @@ __private.randomizeDelegateList = function (activedelegates, round) {
 // return the list of active delegates from database ranked by votes
 // *WARNING* to be used at the round change only
 __private.getKeysSortByVote = function (cb) {
-	modules.accounts.getAccounts({
+	let params = {
 		isDelegate: 1,
 		sort: {'vote': -1, 'publicKey': 1}
-		// limit: slots.delegates
-	}, ['publicKey', 'vote'], function (err, rows) {
+	};
+	if(library.config.network.client.token === "BLOCKPOOL")
+		params.limit =  slots.delegates;
+
+	modules.accounts.getAccounts(params, ['publicKey', 'vote'], function (err, rows) {
 		if (err) {
 			return cb(err);
 		}

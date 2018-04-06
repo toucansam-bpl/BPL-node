@@ -17,20 +17,7 @@ var transactionTypes = require('../helpers/transactionTypes.js');
 var bigdecimal = require("bigdecimal");
 var crypto = require('crypto');
 var constants = require('../constants.json');
-
-// Bpljs class - passing parameters
-// var bpl = require('bpljs');
-// var bpljs = new bpl.BplClass({'interval': constants.blocktime,
-// 	'delegates': constants.activeDelegates,
-// 	'networkVersion': constants.networkVersion});
-
-// Bpljs class - default parameters
-// var bpl = require('bpljs');
-// var bpljs = new bpl.BplClass();
-
-// Bpljs backward compatibility
 var bpljs = require('bpljs');
-
 
 // Private fields
 var modules, library, self, __private = {}, shared = {};
@@ -53,12 +40,17 @@ function Delegates (cb, scope) {
 	library = scope;
 	self = this;
 
+	bpljs = new bpljs.BplClass({
+		"delegates": constants.activeDelegates,
+		"epochTime": constants.epochTime,
+		"interval": constants.blocktime,
+		"network": scope.config.network
+	});
 
 	var Delegate = require('../logic/delegate.js');
 	__private.assetTypes[transactionTypes.DELEGATE] = library.logic.transaction.attachAssetType(
 		transactionTypes.DELEGATE, new Delegate()
 	);
-
 	return cb(null, self);
 }
 
@@ -80,7 +72,8 @@ __private.attachApi = function () {
 		'get /fee': 'getFee',
 		'get /forging/getForgedByAccount': 'getForgedByAccount',
 		'put /': 'addDelegate',
- 		'get /getNextForgers': 'getNextForgers'
+ 		'get /getNextForgers': 'getNextForgers',
+ 		'get /getPublicKeys': 'getPublicKeys'
 	});
 
 	if (process.env.DEBUG) {
@@ -362,8 +355,6 @@ __private.forge = function (cb) {
 										'transactions:' + b.numberOfTransactions
 									].join(' '));
 
-									__private.script.triggerPortChangeScript(b.height);
-									__private.script.getUpdatesFromGit();
 									library.bus.message('blockForged', b, cb);
 								}
 								else{
@@ -545,24 +536,20 @@ Delegates.prototype.getDelegates = function (query, cb) {
 			}
 
 			let i = -1;
-			let reliableActiveDelegates = [];
 			async.eachSeries(delegates, function (delegate, callback){
 				i++;
-				if(reliableActiveDelegates.length === constants.activeDelegates) {
-					return callback({"data": reliableActiveDelegates});
-				}
-				modules.rounds.isDelegateReliable(delegate, undefined, function(res) {
-					if(res) {
-						delegate.rate = i + 1;
-						delegate.approval = (delegate.vote / totalSupply) * 100;
-						delegate.approval = Math.round(delegate.approval * 1e2) / 1e2;
+				modules.rounds.isDelegateReliable(delegate, undefined, function(err, res) {
+					if(!err) {
+						delegates[i].reliability = res.reliability;
+						delegates[i].rate = i + 1;
+						delegates[i].approval = (delegates[i].vote / totalSupply) * 100;
+						delegates[i].approval = Math.round(delegates[i].approval * 1e2) / 1e2;
 
-						var percent = 100 - (delegate.missedblocks / ((delegate.producedblocks + delegate.missedblocks) / 100));
+						var percent = 100 - (delegates[i].missedblocks / ((delegates[i].producedblocks + delegates[i].missedblocks) / 100));
 						percent = Math.abs(percent) || 0;
 
 						var outsider = i + 1 > slots.delegates;
-						delegate.productivity = (!outsider) ? Math.round(percent * 1e2) / 1e2 : 0;
-						reliableActiveDelegates.push(delegate);
+						delegates[i].productivity = (!outsider) ? Math.round(percent * 1e2) / 1e2 : 0;
 					}
 					return callback();
 				});
@@ -574,7 +561,7 @@ Delegates.prototype.getDelegates = function (query, cb) {
 					}
 
 					return cb(null, {
-						delegates: reliableActiveDelegates,
+						delegates: delegates,
 						sortField: orderBy.sortField,
 						sortMethod: orderBy.sortMethod,
 						count: count,
@@ -1095,6 +1082,17 @@ shared.addDelegate = function (req, cb) {
 			return cb(null, {transaction: transaction[0]});
 		});
 	});
+};
+
+shared.getPublicKeys = function (req, cb) {
+	let secrets = library.config.forging.secret;
+	let publicKeys = [];
+
+	secrets.forEach((secret, index)=> {
+		publicKeys.push(bpljs.crypto.getKeys(secret).publicKey);
+	});
+
+	return cb(null, {publicKeys: publicKeys});
 };
 
 // Export
