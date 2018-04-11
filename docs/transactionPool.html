@@ -1500,7 +1500,7 @@ we keep the error in memory.</p>
 			library.logger.error(<span class="hljs-string">'Error cleaning TransactionPool'</span>, err);
 		}
 		<span class="hljs-keyword">else</span>{
-			library.logger.info(<span class="hljs-string">'Cleaned TransactionPool. Unconfirmed transations undone: '</span> + removedIds.length);
+			library.logger.info(<span class="hljs-string">'Cleaned TransactionPool. Unconfirmed transactions undone: '</span> + removedIds.length);
 		}
 		<span class="hljs-keyword">return</span> cb();
 	});
