@@ -30,7 +30,6 @@ var slots = require('../helpers/slots.js');
 var sql = require('../sql/rounds.js');
 var crypto = require('crypto');
 var bigdecimal = require("bigdecimal");
-
 // managing globals
 var modules, library, self;
 
@@ -307,57 +306,25 @@ __private.updateActiveDelegatesStatsOnDatabase = function(forgerStats, round, cb
 // generate the list of active delegates of the round
 // *WARNING*: To be used exclusively at the beginning of the new round
 __private.generateDelegateList = function (round, cb) {
-	__private.getKeysSortByVote(function (err, activedelegates) {
-		if (err) {
-			return cb(err);
-		}
-		if(library.config.network.client.token === "BLOCKPOOL") {
+	if(library.config.network.client.token === "BLOCKPOOL" || round === 1) {
+		__private.getKeysSortByVote(function (err, activedelegates) {
+			if (err) {
+				return cb(err);
+			}
 			modules.delegates.updateActiveDelegate(activedelegates);
 			return cb(null, __private.randomizeDelegateList(activedelegates, round));
-		}
-		else {
-			let reliableActiveDelegates = [];
-			async.eachSeries(activedelegates, function (delegate, callback){
-				if(reliableActiveDelegates.length === constants.activeDelegates) {
-					return callback({"data": reliableActiveDelegates});
-				}
-					self.isDelegateReliable(delegate, round, function(err, res) {
-						if(!err) {
-							if(res.isReliable)
-								reliableActiveDelegates.push(delegate);
-						}
-						return callback();
-					});
-			}, function(err) {
-						modules.delegates.updateActiveDelegate(reliableActiveDelegates);
-						return cb(null, __private.randomizeDelegateList(reliableActiveDelegates, round));
-				});
-		}
-	});
-};
-/**
-Check if delegate is reliable
-if the delegate has missed less than max blocks allowed to be missed  it is reliable
-if the delegate has missed more than max blocks allowed to be missed it is not reliable
-**/
-Rounds.prototype.isDelegateReliable = function(delegate, round, cb) {
-	let upperLimit = (round ? round : __private.current);
-	let lowerLimit = upperLimit - constants.reliability.rounds;
-
-	library.db.query(sql.getMissedBlocksCount, { publicKey: delegate.publicKey,
-			upperLimit: upperLimit,
-			lowerLimit: lowerLimit}).then(function(rows) {
-				if(rows[0]) {
-					let reliability = ((constants.reliability.rounds - rows[0].sum) / constants.reliability.rounds) * 100;
-
-					if(rows[0].sum < constants.reliability.maxMissedBlocks)
-						return cb(null, {"isReliable": true, "reliability": reliability});
-					else
-						return cb(null, {"isReliable": false, "reliability": reliability});
-				}
-				return cb("No result found for delegate "+delegate.publicKey);
 		});
-}
+	}
+	else {
+		__private.getKeysSortByWeighting(round, function (err, activedelegates) {
+			if (err) {
+				return cb(err);
+			}
+			modules.delegates.updateActiveDelegate(activedelegates);
+			return cb(null, __private.randomizeDelegateList(activedelegates, round));
+		});
+	}
+};
 
 // the algorithm to randomize active delegate list after they are ordered by vote descending.
 // Return the new list in the order the delegates are allowed to forge in this round
@@ -383,23 +350,22 @@ __private.randomizeDelegateList = function (activedelegates, round) {
 // return the list of active delegates from database ranked by votes
 // *WARNING* to be used at the round change only
 __private.getKeysSortByVote = function (cb) {
-	let params = {
-		isDelegate: 1,
-		sort: {'vote': -1, 'publicKey': 1}
-	};
-	if(library.config.network.client.token === "BLOCKPOOL")
-		params.limit =  slots.delegates;
+		let params = {
+			isDelegate: 1,
+			sort: {'vote': -1, 'publicKey': 1},
+			limit: slots.delegates
+		};
 
-	modules.accounts.getAccounts(params, ['publicKey', 'vote'], function (err, rows) {
-		if (err) {
-			return cb(err);
-		}
-		return cb(null, rows);
-	});
+		modules.accounts.getAccounts(params, ['publicKey', 'vote'], function (err, rows) {
+			if (err) {
+				return cb(err);
+			}
+			return cb(null, rows);
+		});
 };
 
 // Retrieve from the database the delegate that have forged blocks during the current round
-__private.getCurrentRoundForgers = function(cb) {
+__private.getCurrentRoundForgers = function (cb) {
 	var round = __private.current;
 	var lastBlock = modules.blockchain.getLastBlock();
 
@@ -411,6 +377,71 @@ __private.getCurrentRoundForgers = function(cb) {
 		return cb(null, rows);
 	}).catch(cb);
 
+}
+
+// return the list of active delegates from database
+// *WARNING* to be used at the round change only
+__private.getKeysSortByWeighting = function (nextround, cb) {
+	let toRound = (nextround ? nextround : __private.current+1);
+	let fromRound = (toRound > constants.reliability.rounds ? toRound - constants.reliability.rounds : 1);
+
+	library.db.query(sql.getDelegatesWeighting, { fromRound: fromRound, toRound: toRound}).then(function (rows) {
+				let activedelegates = self.sortDelegatesByWeighting(rows);
+				activedelegates = activedelegates.slice(0, constants.activeDelegates);
+				return cb(null, activedelegates);
+		}).catch(function (err) {
+				return cb("Unable to get records.");
+		});
+};
+
+//Return current round
+Rounds.prototype.getCurrentRound = function() {
+	return __private.current;
+}
+
+//Sort the delegates on basis of weighting(reliability) criteria
+Rounds.prototype.sortDelegatesByWeighting = function (delegates) {
+	delegates.forEach(function (delegate) {
+		if(delegate.blocksMissedInSpecificRounds === null)
+			delegate.blocksMissedInSpecificRounds = 0;
+		delegate.reliability = ((constants.reliability.rounds - parseInt(delegate.blocksMissedInSpecificRounds)) / constants.reliability.rounds) * 100;
+		delegate.weighting = parseInt(delegate.vote) * delegate.reliability/100;
+	});
+
+	for(let i=0; i<delegates.length; i++)
+  {
+	  for(let j=i+1; j<delegates.length;j++)
+     {
+       if(delegates[i].weighting < delegates[j].weighting)
+       {
+         let temp = delegates[i];
+         delegates[i] = delegates[j];
+         delegates[j] = temp;
+       }
+       else if(delegates[i].weighting === delegates[j].weighting) {
+         if(delegates[i].reliability < delegates[j].reliability) {
+           let temp = delegates[i];
+           delegates[i] = delegates[j];
+           delegates[j] = temp;
+         }
+				 else if(delegates[i].reliability === delegates[j].reliability) {
+					 if(parseInt(delegates[i].vote) < parseInt(delegates[j].vote)) {
+	           let temp = delegates[i];
+	           delegates[i] = delegates[j];
+	           delegates[j] = temp;
+	         }
+					 else if(parseInt(delegates[i].vote) === parseInt(delegates[j].vote)) {
+						 if(delegates[i].publicKey > delegates[j].publicKey) {
+							 let temp = delegates[i];
+		           delegates[i] = delegates[j];
+		           delegates[j] = temp;
+						 }
+					 }
+				 }
+       }
+     }
+  }
+  return delegates;
 }
 
 // ## API getRoundFromHeight
@@ -456,6 +487,8 @@ Rounds.prototype.getActiveDelegates = function(cb) {
 				__private.activedelegates[round]=rows.map(function(row){return row.publicKey;});
 				return cb(null, __private.activedelegates[round]);
 			}
+		}).catch(function (err) {
+				return cb(err);
 		});
 	}
 }
@@ -525,8 +558,6 @@ Rounds.prototype.onDatabaseLoaded = function (lastBlock) {
 		});
 		library.logger.info("loaded "+__private.forgers[round].length+" forgers of round "+round);
 	});
-
-
 };
 
 //
