@@ -31,8 +31,11 @@ var DelegatesSql = {
 
   getVoters: 'SELECT ARRAY_AGG("accountId") AS "accountIds" FROM mem_accounts2delegates WHERE "dependentId" = ${publicKey}',
 
-  getNoOfVotes: 'SELECT count(*)  FROM mem_accounts2delegates WHERE "accountId" = ${accountId};'
-  
+  getNoOfVotes: 'SELECT count(*)  FROM mem_accounts2delegates WHERE "accountId" = ${accountId};',
+
+  getDelegatesWeighting: 'SELECT ENCODE(ma."publicKey", \'hex\') as "publicKey", ma."vote", sum(md."missedblocks") as "blocksMissedInSpecificRounds", ma."username", ma."address", ma."producedblocks", ma."missedblocks" from mem_accounts ma LEFT OUTER JOIN mem_delegates md on '+
+          'ENCODE(ma."publicKey", \'hex\') = md."publicKey" and md.round < ${toRound} and md.round >=${fromRound} where ma."isDelegate"=1 group by ma."publicKey",ma."vote",ma."username", ma."address", ma."producedblocks", ma."missedblocks" ;'
+
 };
 
 module.exports = DelegatesSql;
