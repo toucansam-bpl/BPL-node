@@ -405,7 +405,7 @@ Rounds.prototype.sortDelegatesByWeighting = function (delegates) {
 		if(delegate.blocksMissedInSpecificRounds === null)
 			delegate.blocksMissedInSpecificRounds = 0;
 		delegate.reliability = ((constants.reliability.rounds - parseInt(delegate.blocksMissedInSpecificRounds)) / constants.reliability.rounds) * 100;
-		delegate.weighting = parseInt(delegate.vote) * delegate.reliability;
+		delegate.weighting = parseInt(delegate.vote) * delegate.reliability/100;
 	});
 
 	for(let i=0; i<delegates.length; i++)
