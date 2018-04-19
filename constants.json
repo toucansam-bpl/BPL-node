@@ -48,7 +48,6 @@
   "totalAmount": 10000000000000000,
   "unconfirmedTransactionTimeOut": 10800,
   "reliability": {
-    "rounds": 10,
-    "maxMissedBlocks": 4
+    "rounds": 10
   }
 }
