@@ -489,6 +489,32 @@ __private.loadMyDelegates = function (cb) {
 };
 
 
+__private.getAllDelegates = function(cb) {
+	if(library.config.network.client.token === "BLOCKPOOL") {
+		modules.accounts.getAccounts({
+			isDelegate: 1,
+			sort: { 'vote': -1, 'publicKey': 1 }
+		}, ['username', 'address', 'publicKey', 'vote', 'missedblocks', 'producedblocks'], function (err, delegates) {
+			if (err) {
+				return cb(err);
+			}
+			return cb(delegates);
+		});
+	}
+	else {
+		let round = modules.rounds.getCurrentRound();
+		let toRound = (round ? round : __private.current+1);
+		let fromRound = (toRound > constants.reliability.rounds ? toRound - constants.reliability.rounds : 1);
+
+		library.db.query(sql.getDelegatesWeighting, {fromRound: fromRound, toRound: toRound}).then(function (rows) {
+					let delegates = modules.rounds.sortDelegatesByWeighting(rows);
+					return cb(delegates);
+			}).catch(function (err) {
+					return cb(err);
+
+			});
+	}
+}
 // Public methods
 //
 //__API__ `isAForgingDelegatesPublicKey`
@@ -508,81 +534,60 @@ Delegates.prototype.getDelegates = function (query, cb) {
 	if (!query) {
 		throw 'Missing query argument';
 	}
-	if(library.config.network.client.token === "BLOCKPOOL") {
-		modules.accounts.getAccounts({
-			isDelegate: 1,
-			sort: { 'vote': -1, 'publicKey': 1 }
-		}, ['username', 'address', 'publicKey', 'vote', 'missedblocks', 'producedblocks'], function (err, delegates) {
-			if (err) {
-				return cb(err);
-			}
-	__private.abc(delegates, query, cb);
-		});
-	}
-	else {
-		let round = modules.rounds.getCurrentRound();
-		let toRound = (round ? round : __private.current+1);
-		let fromRound = (toRound > constants.reliability.rounds ? toRound - constants.reliability.rounds : 1);
+	__private.getAllDelegates(function(err, delegates) {
+		if(err) {
+			return cb(err);
+		}
+		else {
+			var limit = query.limit || constants.activeDelegates;
+			var offset = query.offset || 0;
+			var active = query.active;
 
-		library.db.query(sql.getDelegatesWeighting, {fromRound: fromRound, toRound: toRound}).then(function (rows) {
-					let delegates = modules.rounds.sortDelegatesByWeighting(rows);
-					__private.abc(delegates, query, cb);
-			}).catch(function (err) {
-					return cb(err);
+			limit = limit > constants.activeDelegates ? constants.activeDelegates : limit;
 
+			var count = delegates.length;
+			var length = Math.min(limit, count);
+			var realLimit = Math.min(offset + limit, count);
+
+			var lastBlock   = modules.blockchain.getLastBlock();
+			var totalSupply = 0;
+
+			//get total supply in the Blockchain
+			__private.blockReward.calcSupply(lastBlock.height, function(error, supply) {
+				if(!error) {
+					totalSupply = supply;
+				}
+
+				for (var i = 0; i < delegates.length; i++) {
+					delegates[i].rate = i + 1;
+					delegates[i].approval = (delegates[i].vote / totalSupply) * 100;
+					delegates[i].approval = Math.round(delegates[i].approval * 1e2) / 1e2;
+
+					var percent = 100 - (delegates[i].missedblocks / ((delegates[i].producedblocks + delegates[i].missedblocks) / 100));
+					percent = Math.abs(percent) || 0;
+
+					var outsider = i + 1 > slots.delegates;
+					delegates[i].productivity = (!outsider) ? Math.round(percent * 1e2) / 1e2 : 0;
+				}
+
+				var orderBy = OrderBy(query.orderBy, {quoteField: false});
+
+				if (orderBy.error) {
+					return cb(orderBy.error);
+				}
+
+				return cb(null, {
+					delegates: delegates,
+					sortField: orderBy.sortField,
+					sortMethod: orderBy.sortMethod,
+					count: count,
+					offset: offset,
+					limit: realLimit
+				});
 			});
-	}
+		}
+	})
 };
-
-__private.abc = function (delegates, query, cb) {
-	var limit = query.limit || constants.activeDelegates;
-	var offset = query.offset || 0;
-	var active = query.active;
-
-	limit = limit > constants.activeDelegates ? constants.activeDelegates : limit;
-
-	var count = delegates.length;
-	var length = Math.min(limit, count);
-	var realLimit = Math.min(offset + limit, count);
-
-	var lastBlock   = modules.blockchain.getLastBlock();
-	var totalSupply = 0;
-
-	//get total supply in the Blockchain
-	__private.blockReward.calcSupply(lastBlock.height, function(error, supply) {
-		if(!error) {
-			totalSupply = supply;
-		}
-
-		for (var i = 0; i < delegates.length; i++) {
-			delegates[i].rate = i + 1;
-			delegates[i].approval = (delegates[i].vote / totalSupply) * 100;
-			delegates[i].approval = Math.round(delegates[i].approval * 1e2) / 1e2;
-
-			var percent = 100 - (delegates[i].missedblocks / ((delegates[i].producedblocks + delegates[i].missedblocks) / 100));
-			percent = Math.abs(percent) || 0;
-
-			var outsider = i + 1 > slots.delegates;
-			delegates[i].productivity = (!outsider) ? Math.round(percent * 1e2) / 1e2 : 0;
-		}
-
-		var orderBy = OrderBy(query.orderBy, {quoteField: false});
-
-		if (orderBy.error) {
-			return cb(orderBy.error);
-		}
-
-		return cb(null, {
-			delegates: delegates,
-			sortField: orderBy.sortField,
-			sortMethod: orderBy.sortMethod,
-			count: count,
-			offset: offset,
-			limit: realLimit
-		});
-
-	});
-}
 
 //
 //__API__ `checkConfirmedDelegates`
