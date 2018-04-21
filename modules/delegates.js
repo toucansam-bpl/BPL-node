@@ -626,15 +626,6 @@ Delegates.prototype.validateBlockSlot = function (block, cb) {
 		if (delegate_id && block.generatorPublicKey === delegate_id) {
 			return cb(null, block);
 		} else {
-			console.log('>>>>>>>>>>>>>> activeDelegates',activeDelegates);
-			console.log('>>>>>>>>>>>>>> round',round);
-			console.log('>>>>>>>>>>>>>> block.timestamp',block);
-			console.log('>>>>>>>>>>>>>> currentSlot',currentSlot);
-			console.log('>>>>>>>>>>>>>> slots.delegates',slots.delegates);
-			console.log('>>>>>>>>>>>> currentSlot % slots.delegates',(currentSlot % slots.delegates));
-			console.log('>>>>>>>>>>>>>> delegate_id',delegate_id);
-			console.log('>>>>>>>>>>>>>> block.generatorPublicKey',block.generatorPublicKey);
-
 			library.logger.error('Expected generator: ' + delegate_id + ' Received generator: ' + block.generatorPublicKey);
 			return cb('Failed to verify slot: ' + currentSlot);
 		}
