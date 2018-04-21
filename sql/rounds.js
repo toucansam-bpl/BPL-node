@@ -48,10 +48,7 @@ var RoundsSql = {
 
   updateTotalVotes: 'UPDATE mem_accounts m SET vote = (SELECT COALESCE(SUM(b.balance), 0) as vote FROM mem_accounts2delegates a, mem_accounts b where a."accountId" = b.address AND a."dependentId" = encode(m."publicKey", \'hex\')) WHERE m."isDelegate" = 1;',
 
-  updateBlockId: 'UPDATE mem_accounts SET "blockId" = ${newId} WHERE "blockId" = ${oldId};',
-
-  getDelegatesWeighting: 'SELECT ENCODE(ma."publicKey", \'hex\') as "publicKey", ma."vote", sum(md."missedblocks") as "blocksMissedInSpecificRounds" from mem_accounts ma LEFT OUTER JOIN mem_delegates md on '+
-      'ENCODE(ma."publicKey", \'hex\') = md."publicKey" and md.round < ${toRound} and md.round >=${fromRound} where ma."isDelegate"=1 group by ma."publicKey",ma."vote";'
+  updateBlockId: 'UPDATE mem_accounts SET "blockId" = ${newId} WHERE "blockId" = ${oldId};'
 };
 
 module.exports = RoundsSql;
