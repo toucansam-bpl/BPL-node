@@ -489,7 +489,7 @@ __private.loadMyDelegates = function (cb) {
 };
 
 
-__private.getAllDelegates = function(cb) {
+Delegates.prototype.getAllDelegatesSortByWeighting = function(round, limit, cb) {
 	if(library.config.network.client.token === "BLOCKPOOL") {
 		modules.accounts.getAccounts({
 			isDelegate: 1,
@@ -498,20 +498,21 @@ __private.getAllDelegates = function(cb) {
 			if (err) {
 				return cb(err);
 			}
-			return cb(delegates);
+			return cb(null, delegates);
 		});
 	}
 	else {
-		let round = modules.rounds.getCurrentRound();
-		let toRound = (round ? round : __private.current+1);
+		let toRound = (round ? round : __private.current + 1);
 		let fromRound = (toRound > constants.reliability.rounds ? toRound - constants.reliability.rounds : 1);
 
-		library.db.query(sql.getDelegatesWeighting, {fromRound: fromRound, toRound: toRound}).then(function (rows) {
+		library.db.query(sql.getAllDelegates, {fromRound: fromRound, toRound: toRound}).then(function (rows) {
 					let delegates = modules.rounds.sortDelegatesByWeighting(rows);
-					return cb(delegates);
+					if(limit) {
+						delegates = rows.slice(0, limit);
+					}
+					return cb(null, delegates);
 			}).catch(function (err) {
 					return cb(err);
-
 			});
 	}
 }
@@ -534,7 +535,9 @@ Delegates.prototype.getDelegates = function (query, cb) {
 	if (!query) {
 		throw 'Missing query argument';
 	}
-	__private.getAllDelegates(function(err, delegates) {
+
+	let round = modules.rounds.getCurrentRound();
+	self.getAllDelegatesSortByWeighting(round, null, function(err, delegates) {
 		if(err) {
 			return cb(err);
 		}
@@ -623,6 +626,15 @@ Delegates.prototype.validateBlockSlot = function (block, cb) {
 		if (delegate_id && block.generatorPublicKey === delegate_id) {
 			return cb(null, block);
 		} else {
+			console.log('>>>>>>>>>>>>>> activeDelegates',activeDelegates);
+			console.log('>>>>>>>>>>>>>> round',round);
+			console.log('>>>>>>>>>>>>>> block.timestamp',block);
+			console.log('>>>>>>>>>>>>>> currentSlot',currentSlot);
+			console.log('>>>>>>>>>>>>>> slots.delegates',slots.delegates);
+			console.log('>>>>>>>>>>>> currentSlot % slots.delegates',(currentSlot % slots.delegates));
+			console.log('>>>>>>>>>>>>>> delegate_id',delegate_id);
+			console.log('>>>>>>>>>>>>>> block.generatorPublicKey',block.generatorPublicKey);
+
 			library.logger.error('Expected generator: ' + delegate_id + ' Received generator: ' + block.generatorPublicKey);
 			return cb('Failed to verify slot: ' + currentSlot);
 		}
