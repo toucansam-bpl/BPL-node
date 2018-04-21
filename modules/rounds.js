@@ -381,18 +381,32 @@ __private.getCurrentRoundForgers = function (cb) {
 
 // return the list of active delegates from database
 // *WARNING* to be used at the round change only
-__private.getKeysSortByWeighting = function (nextround, cb) {
-	let toRound = (nextround ? nextround : __private.current+1);
-	let fromRound = (toRound > constants.reliability.rounds ? toRound - constants.reliability.rounds : 1);
-
-	library.db.query(sql.getDelegatesWeighting, { fromRound: fromRound, toRound: toRound}).then(function (rows) {
-				let activedelegates = self.sortDelegatesByWeighting(rows);
-				activedelegates = activedelegates.slice(0, constants.activeDelegates);
-				return cb(null, activedelegates);
-		}).catch(function (err) {
-				return cb("Unable to get records.");
-		});
+__private.getKeysSortByWeighting = function (round, cb) {
+	modules.delegates.getAllDelegatesSortByWeighting(round, constants.activeDelegates, function (err, activedelegates) {
+		if(err) {
+			return cb(err);
+		}
+		return cb(null, activedelegates);
+	});
 };
+
+__private.getActiveDelegates  = function(round, cb) {
+	if(library.config.network.client.token === "BLOCKPOOL" || round === 1) {
+		library.db.query(sql.getActiveDelegates, {round: round}).then(function (rows) {
+			return cb(null, rows)
+		}).catch(function(err) {
+			return cb(err);
+		});
+	}
+	else {
+		__private.getKeysSortByWeighting(round, function (err, rows) {
+			if(err) {
+				cb(err);
+			}
+			return cb(null, rows)
+		});
+	}
+}
 
 //Return current round
 Rounds.prototype.getCurrentRound = function() {
@@ -470,25 +484,27 @@ Rounds.prototype.getActiveDelegates = function(cb) {
 	}
 	else {
 		// let's get active delegates from database if any
-		library.db.query(sql.getActiveDelegates, {round: round}).then(function(rows){
-			// ok maybe we just started node from scratch, so need to generate it.
-			if(modules.blockchain.getLastBlock().height == 1 && round == 1) {
-					__private.generateDelegateList(round, function(err, activedelegates) {
-						if(err){
-							return cb(err);
-						}
-						__private.activedelegates[round] = activedelegates.map(function(ad){return ad.publicKey;});
-							__private.saveActiveDelegatesOnDatabase(activedelegates, round, function(){});
-						return cb(null, __private.activedelegates[round]);
-					});
+		__private.getActiveDelegates(round, function (err, rows) {
+			if(err) {
+				return cb(err);
 			}
 			else {
-				rows=__private.randomizeDelegateList(rows, round);
-				__private.activedelegates[round]=rows.map(function(row){return row.publicKey;});
-				return cb(null, __private.activedelegates[round]);
+				if(modules.blockchain.getLastBlock().height == 1 && round == 1) {
+						__private.generateDelegateList(round, function(err, activedelegates) {
+							if(err){
+								return cb(err);
+							}
+							__private.activedelegates[round] = activedelegates.map(function(ad){return ad.publicKey;});
+								__private.saveActiveDelegatesOnDatabase(activedelegates, round, function(){});
+							return cb(null, __private.activedelegates[round]);
+						});
+				}
+				else {
+					rows=__private.randomizeDelegateList(rows, round);
+					__private.activedelegates[round]=rows.map(function(row){return row.publicKey;});
+					return cb(null, __private.activedelegates[round]);
+				}
 			}
-		}).catch(function (err) {
-				return cb(err);
 		});
 	}
 }
@@ -508,14 +524,19 @@ Rounds.prototype.getActiveDelegatesFromRound = function(round, cb) {
 	}
 	else {
 		// let's get active delegates from database if any
-		library.db.query(sql.getActiveDelegates, {round: round}).then(function(rows){
-			if(rows.length == constants.activeDelegates){
-				rows=__private.randomizeDelegateList(rows, round);
-				__private.activedelegates[round]=rows.map(function(row){return row.publicKey;});
-				return cb(null, __private.activedelegates[round]);
+		__private.getActiveDelegates(round, function (err, rows) {
+			if(err) {
+				cb(err);
 			}
 			else {
-				return cb("Can't build active delegates list for round: "+round+". This is likely a bug. Please report. Rebuild form scratch is likely necessary.");
+				if(rows.length == constants.activeDelegates) {
+					rows=__private.randomizeDelegateList(rows, round);
+					__private.activedelegates[round]=rows.map(function(row){return row.publicKey;});
+					return cb(null, __private.activedelegates[round]);
+				}
+				else {
+						return cb("Can't build active delegates list for round: "+round+". This is likely a bug. Please report. Rebuild form scratch is likely necessary.");
+				}
 			}
 		});
 	}
