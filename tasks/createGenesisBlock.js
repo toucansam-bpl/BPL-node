@@ -321,11 +321,11 @@ seed_peers.forEach(function (peer) {
   config.forging.secret = peer.secret;
   config.nethash = genesisBlock.payloadHash;
   config.address = peer.dns;
-  fs.writeFile("private/config." + config.network + "." + peer.ip + ".json", JSON.stringify(config, null, 2));
+  fs.writeFile("private/config." + peer.ip + ".json", JSON.stringify(config, null, 2));
 });
-
+config.address = "127.0.0.1";
 config.forging.secret=[];
-fs.writeFile("private/genesisBlock.wbx.json", JSON.stringify(genesisBlock, null, 2));
-fs.writeFile("private/config.wbx.json", JSON.stringify(config, null, 2));
-fs.writeFile("private/delegatesPassphrases.wbx.json", JSON.stringify(delegates, null, 2));
-fs.writeFile("private/genesisPassphrase.wbx.json", JSON.stringify(genesis, null, 2));
+fs.writeFile("genesisBlock.wbx.mainnet.json", JSON.stringify(genesisBlock, null, 2));
+fs.writeFile("config.wbx.mainnet.json", JSON.stringify(config, null, 2));
+fs.writeFile("private/delegatesPassphrases.wbx.mainnet.json", JSON.stringify(delegates, null, 2));
+fs.writeFile("private/genesisPassphrase.wbx.mainnet.json", JSON.stringify(genesis, null, 2));
