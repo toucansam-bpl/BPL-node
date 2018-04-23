@@ -17,4 +17,5 @@ genesisBlock.testnet.json
 config.mainnet.json
 genesisBlock.mainnet.json
 .vagrant
-private/
+private/genesisPassphrase.*
+private/delegatesPassphrases.*
