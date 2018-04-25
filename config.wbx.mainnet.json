@@ -94,7 +94,6 @@
     "force": true,
     "secret": [
       "your secret goes here"
-      
     ],
     "access": {
       "whiteList": [
