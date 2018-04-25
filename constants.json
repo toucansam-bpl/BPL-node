@@ -41,8 +41,8 @@
 			"300000000",
 			"200000000"
 		],
-		"offset": 100,
-		"distance": 1920
+		"offset": 80640,   
+		"distance": 210240, 
   },
   "signatureLength": 196,
   "totalAmount": 10000000000000000,
