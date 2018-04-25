@@ -41,8 +41,8 @@
 			"300000000",
 			"200000000"
 		],
-		"offset": 100,
-		"distance": 1920
+		"offset": 80640,   // Start rewards after 14 days
+		"distance": 210240, // 1 year distance between each milestone
   },
   "signatureLength": 196,
   "totalAmount": 10000000000000000,
