@@ -37,43 +37,43 @@
     "minimumNetworkReach": 1,
     "list": [
       {
-        "ip": "34.241.254.153",
+        "ip": "wbx01.woooba.com",
         "port": 9030
       },
       {
-        "ip": "54.77.197.87",
+        "ip": "wbx02.woooba.com",
         "port": 9030
       },
       {
-        "ip": "34.245.198.24",
+        "ip": "wbx03.woooba.com",
         "port": 9030
       },
       {
-        "ip": "52.51.70.176",
+        "ip": "wbx04.woooba.com",
         "port": 9030
       },
       {
-        "ip": "52.17.73.115",
+        "ip": "wbx05.woooba.com",
         "port": 9030
       },
       {
-        "ip": "34.243.203.231",
+        "ip": "wbx06.woooba.com",
         "port": 9030
       },
       {
-        "ip": "34.243.135.72",
+        "ip": "wbx07.woooba.com",
         "port": 9030
       },
       {
-        "ip": "34.245.40.20",
+        "ip": "wbx08.woooba.com",
         "port": 9030
       },
       {
-        "ip": "34.245.219.5",
+        "ip": "wbx09.woooba.com",
         "port": 9030
       },
       {
-        "ip": "52.49.9.126",
+        "ip": "wbx10.woooba.com",
         "port": 9030
       }
     ],
