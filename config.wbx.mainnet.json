@@ -1,7 +1,7 @@
 {
-  "port": 9030,
-  "address": "wbx01.woooba.com",
-  "version": "0.3.0",
+  "port": 9032,
+  "address": "127.0.0.1",
+  "version": "0.4.0",
   "fileLogLevel": "info",
   "logFileName": "logs/wbx.log",
   "consoleLogLevel": "debug",
@@ -11,7 +11,7 @@
     "port": 5432,
     "database": "wbx_mainnet",
     "user": "ubuntu",
-    "password": "Pa$$word",
+    "password": "93124n56rtmc",
     "poolSize": 20,
     "poolIdleTimeout": 30000,
     "reapIntervalMillis": 1000,
@@ -36,45 +36,14 @@
   "peers": {
     "minimumNetworkReach": 1,
     "list": [
+      {},
       {
-        "ip": "wbx01.woooba.com",
-        "port": 9030
+        "ip": "165.227.224.117",
+        "port": 9032
       },
       {
-        "ip": "wbx02.woooba.com",
-        "port": 9030
-      },
-      {
-        "ip": "wbx03.woooba.com",
-        "port": 9030
-      },
-      {
-        "ip": "wbx04.woooba.com",
-        "port": 9030
-      },
-      {
-        "ip": "wbx05.woooba.com",
-        "port": 9030
-      },
-      {
-        "ip": "wbx06.woooba.com",
-        "port": 9030
-      },
-      {
-        "ip": "wbx07.woooba.com",
-        "port": 9030
-      },
-      {
-        "ip": "wbx08.woooba.com",
-        "port": 9030
-      },
-      {
-        "ip": "wbx09.woooba.com",
-        "port": 9030
-      },
-      {
-        "ip": "wbx10.woooba.com",
-        "port": 9030
+        "ip": "165.227.24.117",
+        "port": 9032
       }
     ],
     "blackList": [],
@@ -92,9 +61,7 @@
   "forging": {
     "coldstart": 6,
     "force": true,
-    "secret": [
-      "your secret goes here"
-    ],
+    "secret": [],
     "access": {
       "whiteList": [
         "127.0.0.1"
@@ -115,5 +82,5 @@
     }
   },
   "network": "WBX-mainnet",
-  "nethash": "427df0ffd19d7a8123346e99f8115c00b0cb81af3795e0bc19059650cb89239e"
+  "nethash": "027bf2baf491a449ef4c2980c0f7d208a37776f7054945ed453523b5ef5427ec"
 }
