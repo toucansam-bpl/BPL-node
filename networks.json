@@ -70,7 +70,7 @@
       "token": "WOOBUX",
       "tokenShortName": "WBX",
       "symbol": "W",
-      "explorer": "http://165.227.224.102:9033"
+      "explorer": "http://wbx-explorer.woooba.com:9033/"
     }
   },
   "WBX-testnet": {
