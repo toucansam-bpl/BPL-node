@@ -1,6 +1,6 @@
 {
   "port": 9032,
-  "address": "127.0.0.1",
+  "address": "0.0.0.0",
   "version": "0.4.0",
   "fileLogLevel": "info",
   "logFileName": "logs/wbx.log",
