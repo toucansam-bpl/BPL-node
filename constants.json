@@ -29,7 +29,7 @@
   "requestLength": 104,
   "rewards": {
     "type": "proportional",
-    "fixedLastReward": "10000000",
+    "fixedLastReward": 10000000,
 		"milestones": [
 			"0.000005235866863",
 			"0.000004154265873015873",
