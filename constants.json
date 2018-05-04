@@ -4,7 +4,7 @@
   "addressLength": 208,
   "blockHeaderLength": 248,
   "confirmationLength": 77,
-  "epochTime": "2017-12-21T13:00:00.000Z",
+  "epochTime": "2017-03-21T13:00:00.000Z",
   "fees": {
     "send": 10000000,
     "vote": 100000000,
@@ -29,19 +29,21 @@
   "requestLength": 104,
   "rewards": {
     "type": "proportional",
-    "fixedLastReward": "true",
+    "fixedLastReward": "10000000",
 		"milestones": [
 			"0.000005235866863",
 			"0.000004154265873015873",
 			"0.000003115699404761905",
 			"0.000002077132936507936",
-			"0.000001038566468253968",
-      "10000000"
+			"0.000001038566468253968"
 		],
 		"offset": 17280,
-		"distance": 2102400,
+		"distance": 2102400
   },
   "signatureLength": 196,
-  "totalAmount": 10000000000000000,
-  "unconfirmedTransactionTimeOut": 10800
+  "totalAmount": 2500000000000000,
+  "unconfirmedTransactionTimeOut": 10800,
+  "reliability": {
+    "rounds": 10
+  }
 }

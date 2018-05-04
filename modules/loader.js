@@ -7,7 +7,6 @@ var ip = require('ip');
 var Router = require('../helpers/router.js');
 var schema = require('../schema/loader.js');
 var sql = require('../sql/loader.js');
-var constants = require('../constants.json');
 
 require('colors');
 
@@ -799,13 +798,14 @@ shared.sync = function (req, cb) {
 };
 
 shared.autoconfigure = function (req, cb) {
+	var network = library.config.network;
+	network.nethash = library.config.nethash;
 	return cb(null, {
-		network: {
-	    "nethash": library.config.nethash,
-	    "token": library.config.network.client.token,
-	    "symbol": library.config.network.client.symbol,
-	    "explorer": library.config.network.client.explorer,
-	    "version": library.config.network.pubKeyHash
+		network: network,
+		config: {
+			"delegates": constants.activeDelegates,
+	    "epochTime": constants.epochTime,
+	    "interval": constants.blocktime
 		}
 	});
 };

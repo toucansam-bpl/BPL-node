@@ -19,6 +19,10 @@ var colors = require('colors');
 var vorpal = require('vorpal')();
 var spawn = require('child_process').spawn;
 var constants = require('./constants.json');
+var networks = require('./networks.json');
+var bpljs = require('bpljs');
+process.env.CONFIG_NAME = "./config.json";
+process.env.GENESIS_NAME = "./genesisBlock.json";
 
 process.stdin.resume();
 var versionBuild = fs.readFileSync(path.join(__dirname, 'build'), 'utf8');
@@ -37,10 +41,12 @@ program
 
 if (program.config) {
 	appConfig = require(path.resolve(process.cwd(), program.config));
+	process.env.CONFIG_NAME = program.config;
 }
 
 if (program.genesis) {
 	genesisblock = require(path.resolve(process.cwd(), program.genesis));
+	process.env.GENESIS_NAME = program.genesis;
 }
 
 if (program.networks) {
@@ -360,12 +366,11 @@ d.run(function () {
 			});
 
 			scope.network.server.listen(scope.config.port, scope.config.address, function (err) {
-				scope.logger.info('# '+appConfig.tokenShortName+' node server started on: ' + scope.config.address + ':' + scope.config.port);
-
+				scope.logger.info('# '+scope.config.network.client.tokenShortName+' node server started on: ' + scope.config.address + ':' + scope.config.port);
 				if (!err) {
 					if (scope.config.ssl.enabled) {
 						scope.network.https.listen(scope.config.ssl.options.port, scope.config.ssl.options.address, function (err) {
-							scope.logger.info(appConfig.tokenShortName+' https started: ' + scope.config.ssl.options.address + ':' + scope.config.ssl.options.port);
+							scope.logger.info(scope.config.network.client.tokenShortName+' https started: ' + scope.config.ssl.options.address + ':' + scope.config.ssl.options.port);
 
 							cb(err, scope.network);
 						});
@@ -531,6 +536,13 @@ process.on('uncaughtException', function (err) {
 });
 
 function startInteractiveMode(scope){
+	bpljs = new bpljs.BplClass({
+		"delegates": constants.activeDelegates,
+		"epochTime": constants.epochTime,
+		"interval": constants.blocktime,
+		"network": scope.config.network
+	});
+
 	vorpal
 	  .command('rebuild', 'Rebuild node from scratch')
 	  .action(function(args, callback) {
@@ -623,8 +635,8 @@ function startInteractiveMode(scope){
 			var self = this;
 	    var passphrase = require("bip39").generateMnemonic();
 			self.log("Seed    - private:",passphrase);
-			self.log("WIF     - private:",require("bpljs").crypto.getKeys(passphrase).toWIF());
-			self.log("Address - public :",require("bpljs").crypto.getAddress(require("bpljs").crypto.getKeys(passphrase).publicKey));
+			self.log("WIF     - private:",bpljs.crypto.getKeys(passphrase).toWIF());
+			self.log("Address - public :",bpljs.crypto.getAddress(bpljs.crypto.getKeys(passphrase).publicKey));
 			callback();
 	  });
 	var account=null;
