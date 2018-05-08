@@ -117,6 +117,7 @@ describe('GET /api/blocks/getStatus', function () {
 			node.expect(res.body).to.have.property('success').to.be.ok;
 			node.expect(res.body).to.have.property('epoch').to.be.a('string');
 			node.expect(res.body).to.have.property('height').to.be.a('number');
+			node.expect(res.body).to.have.property('id').to.be.a('number');
 			node.expect(res.body).to.have.property('fee').to.be.a('number');
 			node.expect(res.body).to.have.property('milestone').to.be.a('number');
 			node.expect(res.body).to.have.property('nethash').to.be.a('string');
