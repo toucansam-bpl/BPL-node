@@ -37,87 +37,71 @@
     "minimumNetworkReach": 1,
     "list": [
       {
-        "ip": "13.124.137.65",
+        "ip": "ec2-13-124-137-65.ap-northeast-2.compute.amazonaws.com",
         "port": 9028
       },
       {
-        "ip": "52.66.184.223",
+        "ip": "ec2-52-66-184-223.ap-south-1.compute.amazonaws.com",
         "port": 9028
       },
       {
-        "ip": "34.211.111.67",
+        "ip": "ec2-13-59-176-127.us-east-2.compute.amazonaws.com",
         "port": 9028
       },
       {
-        "ip": "13.59.176.127",
+        "ip": "ec2-54-175-122-162.compute-1.amazonaws.com",
         "port": 9028
       },
       {
-        "ip": "54.175.122.162",
+        "ip": "ec2-13-126-40-180.ap-south-1.compute.amazonaws.com",
         "port": 9028
       },
       {
-        "ip": "13.126.40.180",
+        "ip": "ec2-54-93-85-178.eu-central-1.compute.amazonaws.com",
         "port": 9028
       },
       {
-        "ip": "54.93.85.178",
+        "ip": "ec2-54-246-214-229.eu-west-1.compute.amazonaws.com",
         "port": 9028
       },
       {
-        "ip": "54.246.214.229",
+        "ip": "ec2-35-182-28-68.ca-central-1.compute.amazonaws.com",
         "port": 9028
       },
       {
-        "ip": "35.182.28.68",
+        "ip": "ec2-54-252-170-222.ap-southeast-2.compute.amazonaws.com",
         "port": 9028
       },
       {
-        "ip": "54.153.35.65",
+        "ip": "ec2-13-124-137-65.ap-northeast-2.compute.amazonaws.com",
         "port": 9028
       },
       {
-        "ip": "54.252.170.222",
+        "ip": "ec2-52-78-18-248.ap-northeast-2.compute.amazonaws.com",
         "port": 9028
       },
       {
-        "ip": "13.124.137.65",
+        "ip": "ec2-54-206-6-159.ap-southeast-2.compute.amazonaws.com",
         "port": 9028
       },
       {
-        "ip": "52.78.18.248",
+        "ip": "ec2-52-60-226-39.ca-central-1.compute.amazonaws.com",
         "port": 9028
       },
       {
-        "ip": "54.206.6.159",
+        "ip": "ec2-52-60-223-205.ca-central-1.compute.amazonaws.com",
         "port": 9028
       },
       {
-        "ip": "54.183.178.42",
+        "ip": "ec2-176-34-156-16.eu-west-1.compute.amazonaws.com",
         "port": 9028
       },
       {
-        "ip": "54.241.135.25",
+        "ip": "ec2-54-154-120-195.eu-west-1.compute.amazonaws.com",
         "port": 9028
       },
       {
-        "ip": "52.60.226.39",
-        "port": 9028
-      },
-      {
-        "ip": "52.60.223.205",
-        "port": 9028
-      },
-      {
-        "ip": "176.34.156.16",
-        "port": 9028
-      },
-      {
-        "ip": "54.154.120.195",
-        "port": 9028
-      },
-      {
-        "ip": "54.93.33.249",
+        "ip": "ec2-54-93-33-249.eu-central-1.compute.amazonaws.com",
         "port": 9028
       }
     ],
@@ -157,5 +141,5 @@
     }
   },
   "network": "BPL-testnet",
-  "nethash": "f9b98b78d2012ba8fd75538e3569bbc071ce27f0f93414218bc34bc72bdeb3db"
+  "nethash": "f9b98b78d2012ba8fd75538e3569bbc071ce27f0f93414218bc34bc72bdeb3db",
 }
