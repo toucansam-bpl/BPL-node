@@ -5,7 +5,7 @@ var memAccountsSQL = require('../sql/memAccounts.js');;
 var blocksSQL = require('../sql/blocks.js');
 var delegateSQL = require('../sql/delegates.js');
 var bigdecimal = require("bigdecimal");
-
+var version = require('../package.json').version;
 // Private fields
 var __private = {};
 
@@ -41,6 +41,23 @@ __private.parseHeight = function (height) {
 	}
 };
 
+__private.calcBonusReward = function(reward, height){
+	 let down = bigdecimal.RoundingMode.DOWN();
+
+	if(height > 6 && version === '0.6.1' )
+	{
+		let bonusReward = new bigdecimal.BigDecimal('500000000.0000000000');
+		reward = new bigdecimal.BigDecimal(reward);
+		reward = reward.add(bonusReward);
+		reward =  reward.setScale(10, down);
+		reward = reward.toString();
+		return reward;
+ 	}
+	else {
+		return reward;
+	}
+};
+
 // Public methods
 //
 //__API__ `calcMilestone`
@@ -67,7 +84,6 @@ BlockReward.prototype.calcPercentageForMilestone = function (height) {
 		return this.milestones[milestone];
 	}
 };
-
 //
 //__API__ `customCalcReward`
 // calculate reward based on percentage
@@ -78,7 +94,6 @@ BlockReward.prototype.customCalcReward = function (dependentId, height, cb) {
 	var milestone = this.calcMilestone(height);
 	var zeroReward ="0.0000000000";
 	var down = bigdecimal.RoundingMode.DOWN();
-
 		var rewardAmount = new bigdecimal.BigDecimal("0.0000000000");
 		if(height >= this.rewardOffset) {
 			if(constants.rewards.type === "proportional") {
@@ -87,7 +102,9 @@ BlockReward.prototype.customCalcReward = function (dependentId, height, cb) {
 					if(constants.rewards.fixedLastReward && typeof(constants.rewards.fixedLastReward) === "number") {
 						var fixedReward = new bigdecimal.BigDecimal(""+constants.rewards.fixedLastReward);
 						fixedReward = fixedReward.setScale(10, down);
-						return cb(null, fixedReward.toString());
+						fixedReward = fixedReward.toString();
+						fixedReward = __private.calcBonusReward(fixedReward, height);
+						return cb(null, fixedReward);
 					}
 					else
 						this.getProportionalReward(dependentId, height, cb);
@@ -103,6 +120,7 @@ BlockReward.prototype.customCalcReward = function (dependentId, height, cb) {
 				return cb(null, zeroReward);
 			}
 };
+
 
 BlockReward.prototype.getStaticReward = function (height, cb) {
 	var down = bigdecimal.RoundingMode.DOWN();
@@ -156,7 +174,7 @@ BlockReward.prototype.getProportionalReward = function (dependentId, height, cb)
 											rewardAmount =  votersTotalBalance.multiply(bigDecimalPercent);
 											rewardAmount =  rewardAmount.setScale(10, down);
 											rewardAmount = rewardAmount.toString();
-
+											rewardAmount = __private.calcBonusReward(rewardAmount,height);
 											if(rewardAmount == '0E-10')
 												return cb (null, zeroReward);
 											return cb(null, rewardAmount);
@@ -176,7 +194,9 @@ BlockReward.prototype.getProportionalReward = function (dependentId, height, cb)
 			}
 			else {
 				library.logger.info('Couldn\'t find any voters for delegate: ',dependentId);
-				return cb(null, zeroReward);
+				let rewardAmount = '0.0000000000';
+				rewardAmount = __private.calcBonusReward(rewardAmount, height);
+				return cb(null, rewardAmount);
 			}
 	}).catch(function (err) {
 		library.logger.error(err);
@@ -264,6 +284,7 @@ BlockReward.prototype.calcSupply = function(height, cb){
 		//return supply * Math.pow(10,8);
 	}
 };
+
 
 // Export
 module.exports = BlockReward;
