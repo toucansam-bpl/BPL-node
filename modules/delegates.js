@@ -490,7 +490,7 @@ __private.loadMyDelegates = function (cb) {
 
 
 Delegates.prototype.getAllDelegatesSortByWeighting = function(round, limit, cb) {
-	if(library.config.network.client.token === "BLOCKPOOL") {
+	if(round < 226) {
 		modules.accounts.getAccounts({
 			isDelegate: 1,
 			sort: { 'vote': -1, 'publicKey': 1 }
