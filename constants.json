@@ -44,6 +44,7 @@
   "totalAmount": 2500000000000000,
   "unconfirmedTransactionTimeOut": 10800,
   "reliability": {
-    "rounds": 10
+    "roundCycle": 10,
+    "triggerAtRound": 226
   }
 }

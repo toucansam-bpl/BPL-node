@@ -55,7 +55,7 @@ __private.calcBonusReward = function(reward, height){
 		if(reward == '0E-10')
 			reward = '0.0000000000';
 		else
-		reward = reward.toString();
+		  reward = reward.toString();
 		return reward;
 };
 

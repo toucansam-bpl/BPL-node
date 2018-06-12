@@ -490,7 +490,7 @@ __private.loadMyDelegates = function (cb) {
 
 
 Delegates.prototype.getAllDelegatesSortByWeighting = function(round, limit, cb) {
-	if(round < 226) {
+	if(round < constants.reliability.triggerAtRound) {
 		modules.accounts.getAccounts({
 			isDelegate: 1,
 			sort: { 'vote': -1, 'publicKey': 1 }
@@ -503,7 +503,7 @@ Delegates.prototype.getAllDelegatesSortByWeighting = function(round, limit, cb) 
 	}
 	else {
 		let toRound = (round ? round : __private.current + 1);
-		let fromRound = (toRound > constants.reliability.rounds ? toRound - constants.reliability.rounds : 1);
+		let fromRound = (toRound > constants.reliability.roundCycle ? toRound - constants.reliability.roundCycle : 1);
 
 		library.db.query(sql.getAllDelegates, {fromRound: fromRound, toRound: toRound}).then(function (rows) {
 					let delegates = modules.rounds.sortDelegatesByWeighting(rows);

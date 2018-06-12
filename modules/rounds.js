@@ -306,7 +306,7 @@ __private.updateActiveDelegatesStatsOnDatabase = function(forgerStats, round, cb
 // generate the list of active delegates of the round
 // *WARNING*: To be used exclusively at the beginning of the new round
 __private.generateDelegateList = function (round, cb) {
-	if(round < 226) {
+	if(round < constants.reliability.triggerAtRound) {
 		__private.getKeysSortByVote(function (err, activedelegates) {
 			if (err) {
 				return cb(err);
@@ -391,7 +391,7 @@ __private.getKeysSortByWeighting = function (round, cb) {
 };
 
 __private.getActiveDelegates  = function(round, cb) {
-	if(round < 226) {
+	if(round < constants.reliability.triggerAtRound) {
 		library.db.query(sql.getActiveDelegates, {round: round}).then(function (rows) {
 			return cb(null, rows)
 		}).catch(function(err) {
@@ -418,7 +418,7 @@ Rounds.prototype.sortDelegatesByWeighting = function (delegates) {
 	delegates.forEach(function (delegate) {
 		if(delegate.blocksMissedInSpecificRounds === null)
 			delegate.blocksMissedInSpecificRounds = 0;
-		delegate.reliability = ((constants.reliability.rounds - parseInt(delegate.blocksMissedInSpecificRounds)) / constants.reliability.rounds) * 100;
+		delegate.reliability = ((constants.reliability.roundCycle - parseInt(delegate.blocksMissedInSpecificRounds)) / constants.reliability.roundCycle) * 100;
 		delegate.weighting = parseInt(delegate.vote) * delegate.reliability/100;
 	});
 
