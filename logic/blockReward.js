@@ -45,7 +45,7 @@ __private.calcBonusReward = function(reward, height){
     let down = bigdecimal.RoundingMode.DOWN();
 	 	var zeroReward ="0.0000000000";
 
-	if(height > 10000 && version === '0.6.1' )
+	if(height > 293460 && version === '0.6.1' )
 	{
 		reward =  reward.setScale(10, down);
 		let bonusReward = new bigdecimal.BigDecimal('500000000.0000000000');
