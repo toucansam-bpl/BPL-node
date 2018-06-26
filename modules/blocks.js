@@ -1716,11 +1716,12 @@ shared.getStatus = function (req, cb) {
 	var counter = 0;
 
 	var status = {
-		epoch:     new Date(constants.epochTime),
-		height:    block.height,
-		fee:       library.logic.block.calculateFee(),
-		milestone: __private.blockReward.calcMilestone(block.height),
-		nethash:   library.config.nethash,
+		epoch:       constants.epochTime,
+		height:      block.height,
+		lastBlockId: block.id,
+		fee:         library.logic.block.calculateFee(),
+		milestone:   __private.blockReward.calcMilestone(block.height),
+		nethash:     library.config.nethash,
 	};
 
 	__private.blockReward.calcRewardForHeight(modules.blockchain.getLastBlock().height,function(error, details) {
