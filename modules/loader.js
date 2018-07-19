@@ -814,8 +814,8 @@ shared.autoconfigure = function (req, cb) {
 		},
 		config: {
 			"delegates": constants.activeDelegates,
-	    "epochTime": constants.epochTime,
-	    "interval": constants.blocktime
+			"epochTime": constants.epochTime,
+			"interval": constants.blocktime
 		}
 	});
 };
