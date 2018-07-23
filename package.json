@@ -18,7 +18,7 @@
     "bigdecimal": "^0.6.1",
     "bip39": "^2.2.0",
     "body-parser": "^1.18.3",
-    "bpljs": "git+https://github.com/cyrus19901/bpl-js.git#updatepackagejson",
+    "bpljs": "=0.2.6",
     "bytebuffer": "=5.0.1",
     "change-case": "=3.0.0",
     "colors": "=1.1.2",
