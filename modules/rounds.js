@@ -30,9 +30,10 @@ var slots = require('../helpers/slots.js');
 var sql = require('../sql/rounds.js');
 var crypto = require('crypto');
 var bigdecimal = require("bigdecimal");
+var Router = require('../helpers/router.js');
 
 // managing globals
-var modules, library, self;
+var modules, library, self, shared = {};
 
 
 // holding the round state
@@ -61,6 +62,31 @@ function Rounds (cb, scope) {
 	self = this;
 
 	return cb(null, self);
+}
+
+__private.attachApi = function () {
+	var router = new Router();
+
+	router.use(function (req, res, next) {
+		if (modules) { return next(); }
+		res.status(500).send({success: false, error: 'Blockchain is loading'});
+	});
+
+	router.map(shared, {
+		'get /getActiveDelegates': 'getActiveDelegates',
+		'get /getActiveDelegatesFromRound': 'getActiveDelegatesFromRound',
+	});
+
+	router.use(function (req, res, next) {
+		res.status(500).send({success: false, error: 'API endpoint was not found'});
+	});
+
+	library.network.app.use('/api/rounds', router);
+	library.network.app.use(function (err, req, res, next) {
+		if (!err) { return next(); }
+		library.logger.error('API error ' + req.url, err);
+		res.status(500).send({success: false, error: 'API error: ' + err.message});
+	});
 }
 
 //
@@ -380,6 +406,26 @@ Rounds.prototype.getRoundFromHeight = function (height) {
 
 //
 Rounds.prototype.getActiveDelegates = function(cb) {
+	shared.getActiveDelegates(cb)
+}
+
+// return the active delegates from a historical round.
+// *SAFE* to be be invoked whenever
+//
+//__API__ `getActiveDelegates`
+
+//
+Rounds.prototype.getActiveDelegatesFromRound = function(round, cb) {
+	shared.getActiveDelegatesFromRound(round, cb)
+}
+
+Rounds.prototype.onAttachPublicApi = function () {
+	console.log('Attaching rounds api')
+	__private.attachApi();
+};
+
+
+shared.getActiveDelegates = function(cb) {
 	var round = __private.current;
 	if(__private.activedelegates[round]){
 		return cb(null, __private.activedelegates[round]);
@@ -412,13 +458,7 @@ Rounds.prototype.getActiveDelegates = function(cb) {
 	}
 }
 
-// return the active delegates from a historical round.
-// *SAFE* to be be invoked whenever
-//
-//__API__ `getActiveDelegates`
-
-//
-Rounds.prototype.getActiveDelegatesFromRound = function(round, cb) {
+shared.getActiveDelegatesFromRound = function(round, cb) {
 	if(round > __private.current){
 		return cb("Node has not reached yet this round", {requestedRound: round, currentRound: __private.current});
 	}
@@ -439,7 +479,6 @@ Rounds.prototype.getActiveDelegatesFromRound = function(round, cb) {
 		});
 	}
 }
-
 
 
 // Events
