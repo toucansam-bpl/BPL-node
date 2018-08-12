@@ -466,8 +466,23 @@ Rounds.prototype.getActiveDelegatesFromRound = function(round, cb) {
 	}
 }
 
+Rounds.prototype.getCurrentRound = function () {
+	return __private.current
+};
+
+Rounds.prototype.getCurrentSlot = function () {
+	return self.getSlot(modules.blockchain.getLastBlock());
+};
+
+Rounds.prototype.getSlot = function (block) {
+	return slots.getSlotNumber(block.timestamp);
+};
+
+Rounds.prototype.isCurrentRound = function (roundNumber) {
+	return __private.current === roundNumber
+};
+
 Rounds.prototype.onAttachPublicApi = function () {
-	console.log('Attaching rounds api')
 	__private.attachApi();
 };
 
@@ -479,23 +494,46 @@ shared.getRound = function(req, cb) {
 		}
 
 		var roundNumber;
+
 		if (req.body.roundNumber) {
 			roundNumber = req.body.roundNumber;
 		} else if (req.body.blockHeight) {
 			roundNumber = self.getRoundFromHeight(req.body.blockHeight)
 		} else {
-			roundNumber = __private.current
+			roundNumber = self.getCurrentRound()
 		}
+
+		var isCurrentRound = self.isCurrentRound(roundNumber)
 
 		self.getActiveDelegatesFromRound(roundNumber, function (err, activeDelegates) {
 			if (err) {
 				return cb(err);
 			}
 
-			return cb(null, {
-				activeDelegates,
+			var currentSlotNumber = self.getCurrentSlot()
+
+			var result = activeDelegates.reduce(function(all, publicKey, i) {
+				var slot = i + 1;
+				var delegate = {
+					publicKey,
+					slot,
+				};
+
+				if (isCurrentRound && slot > currentSlotNumber) {
+					all.upcomingForgers.push(delegate)
+				} else {
+					all.completedForgers.push(delegate)
+				}
+
+				return all
+			}, {
+				completedForgers: [],
 				roundNumber,
+				slotNumber,
+				upcomingForgers: [],
 			});
+
+			return cb(null, result);
 		});
 	});	
 }
