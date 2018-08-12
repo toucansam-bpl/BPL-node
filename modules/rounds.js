@@ -474,6 +474,15 @@ Rounds.prototype.getCurrentSlot = function () {
 	return self.getSlot(modules.blockchain.getLastBlock());
 };
 
+Rounds.prototype.getRoundSlot = function (slot) {
+	// Assumptions (as far as I can tell from looking at the code):
+	//   Genesis block: slot 0
+	//   First slot of any round has a remainder of 1 (1, 202, 403, etc.)
+	//   Last slot of any round has a remainder of 0 (201, 402, etc.)
+	//   We need the round's slot to start with 1 and end with 201
+	return ((slot - 1) % slots.delegates) + 1
+};
+
 Rounds.prototype.getSlot = function (block) {
 	return slots.getSlotNumber(block.timestamp);
 };
@@ -510,7 +519,8 @@ shared.getRound = function(req, cb) {
 				return cb(err);
 			}
 
-			var currentSlotNumber = self.getCurrentSlot()
+			var currentSlot = self.getCurrentSlot()
+			var roundSlot = self.getRoundSlot(currentSlot)
 
 			var result = activeDelegates.reduce(function(all, publicKey, i) {
 				var slot = i + 1;
@@ -519,7 +529,7 @@ shared.getRound = function(req, cb) {
 					slot,
 				};
 
-				if (isCurrentRound && slot > currentSlotNumber) {
+				if (isCurrentRound && slot > roundSlot) {
 					all.upcomingForgers.push(delegate)
 				} else {
 					all.completedForgers.push(delegate)
@@ -528,8 +538,9 @@ shared.getRound = function(req, cb) {
 				return all
 			}, {
 				completedForgers: [],
-				roundNumber,
-				currentSlotNumber,
+				number: roundNumber,
+				currentSlot,
+				roundSlot,
 				upcomingForgers: [],
 			});
 
