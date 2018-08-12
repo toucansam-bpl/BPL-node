@@ -529,7 +529,7 @@ shared.getRound = function(req, cb) {
 			}, {
 				completedForgers: [],
 				roundNumber,
-				slotNumber,
+				currentSlotNumber,
 				upcomingForgers: [],
 			});
 
