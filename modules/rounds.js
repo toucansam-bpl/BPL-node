@@ -31,6 +31,7 @@ var sql = require('../sql/rounds.js');
 var crypto = require('crypto');
 var bigdecimal = require("bigdecimal");
 var Router = require('../helpers/router.js');
+var schema = require('../schema/rounds.js');
 
 // managing globals
 var modules, library, self, shared = {};
@@ -73,8 +74,7 @@ __private.attachApi = function () {
 	});
 
 	router.map(shared, {
-		'get /getActiveDelegates': 'getActiveDelegates',
-		'get /getActiveDelegatesFromRound': 'getActiveDelegatesFromRound',
+		'get /': 'getRound',
 	});
 
 	router.use(function (req, res, next) {
@@ -406,26 +406,6 @@ Rounds.prototype.getRoundFromHeight = function (height) {
 
 //
 Rounds.prototype.getActiveDelegates = function(cb) {
-	shared.getActiveDelegates(cb)
-}
-
-// return the active delegates from a historical round.
-// *SAFE* to be be invoked whenever
-//
-//__API__ `getActiveDelegates`
-
-//
-Rounds.prototype.getActiveDelegatesFromRound = function(round, cb) {
-	shared.getActiveDelegatesFromRound(round, cb)
-}
-
-Rounds.prototype.onAttachPublicApi = function () {
-	console.log('Attaching rounds api')
-	__private.attachApi();
-};
-
-
-shared.getActiveDelegates = function(cb) {
 	var round = __private.current;
 	if(__private.activedelegates[round]){
 		return cb(null, __private.activedelegates[round]);
@@ -458,7 +438,13 @@ shared.getActiveDelegates = function(cb) {
 	}
 }
 
-shared.getActiveDelegatesFromRound = function(round, cb) {
+// return the active delegates from a historical round.
+// *SAFE* to be be invoked whenever
+//
+//__API__ `getActiveDelegates`
+
+//
+Rounds.prototype.getActiveDelegatesFromRound = function(round, cb) {
 	if(round > __private.current){
 		return cb("Node has not reached yet this round", {requestedRound: round, currentRound: __private.current});
 	}
@@ -478,6 +464,40 @@ shared.getActiveDelegatesFromRound = function(round, cb) {
 			}
 		});
 	}
+}
+
+Rounds.prototype.onAttachPublicApi = function () {
+	console.log('Attaching rounds api')
+	__private.attachApi();
+};
+
+
+shared.getRound = function(req, cb) {
+	library.schema.validate(req.body, schema.getRound, function (err) {
+		if (err) {
+			return cb(err[0].message);
+		}
+
+		var roundNumber;
+		if (req.body.roundNumber) {
+			roundNumber = req.body.roundNumber;
+		} else if (req.body.blockHeight) {
+			roundNumber = self.getRoundFromHeight(req.body.blockHeight)
+		} else {
+			roundNumber = __private.current
+		}
+
+		self.getActiveDelegatesFromRound(roundNumber, function (err, activeDelegates) {
+			if (err) {
+				return cb(err);
+			}
+
+			return cb(null, {
+				activeDelegates,
+				roundNumber,
+			});
+		});
+	});	
 }
 
 
