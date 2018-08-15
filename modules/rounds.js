@@ -595,7 +595,7 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 
 		if (!isRoundComplete) {
 			for (var i = 0; i < remainingBlockCount; i += 1) {
-				delegateIndex = getNextDelegateIndex();
+				var delegateIndex = getNextDelegateIndex();
 				result.expectedForgers.push({
 					blockRoundSlot: blocks.length + i + 1,
 					publicKey: activeDelegates[delegateIndex]
