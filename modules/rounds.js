@@ -545,6 +545,7 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 		var roundSlot = blocks.length;
 		var delegateIndex = null
 		var initResult = {
+			activeDelegates,
 			delegateActivity: [],
 			expectedForgers: [],
 			roundNumber,
@@ -564,6 +565,7 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 				delegateRoundInfo.block = block;
 				delegateRoundInfo.hasMissedBlock = false;
 			} else {
+				delegateRoundInfo.forgerPublicKey = forger;
 				delegateRoundInfo.hasMissedBlock = true;
 			}
 			all.delegateActivity.push(delegateRoundInfo);
