@@ -542,6 +542,8 @@ function createDelegateIndexer(activeDelegates, initialBlock) {
 			delegateIndex === slots.delegates - 1 ? 0 : delegateIndex + 1;
 		}
 
+		console.log(`Delegate index: ${delegateIndex} and delegates processed: ${delegatesProcessed}`)
+
 		var forger = block.generatorPublicKey;
 		var delegate = activeDelegates[delegateIndex]
 		var delegateRoundInfo = {
