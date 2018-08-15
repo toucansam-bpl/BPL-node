@@ -531,7 +531,7 @@ function createDelegateIndexer(activeDelegates, initialBlock) {
 	var delegateIndex = null
 	var delegatesProcessed = 0;
 
-	return function(forger) {
+	return function(block) {
 		delegatesProcessed += 1
 
 		if (delegateIndex === null) {
@@ -542,6 +542,7 @@ function createDelegateIndexer(activeDelegates, initialBlock) {
 			delegateIndex === slots.delegates - 1 ? 0 : delegateIndex + 1;
 		}
 
+		var forger = block.generatorPublicKey;
 		var delegate = activeDelegates[delegateIndex]
 		var delegateRoundInfo = {
 			roundSlot: delegatesProcessed,
@@ -579,12 +580,11 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 		var getNextDelegate = createDelegateIndexer(activeDelegates, blocks[0]);
 
 		var result = blocks.reduce(function(all, block) {
-			var forger = block.generatorPublicKey;
 			var delegatesTested = 0;
 
 			var delegate = null;
 			do {
-				delegate = getNextDelegate(forger);
+				delegate = getNextDelegate(block);
 				console.log(delegate)
 				all.delegateActivity.push(delegate);
 				delegatesTested += 1;
