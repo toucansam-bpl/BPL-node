@@ -1623,7 +1623,7 @@ Blocks.prototype.getBlocksInRange = function (rangeArgs, cb) {
 		params.toBlock = rangeArgs.toBlock;
 	}
 
-	var orderBy = OrderBy('height:desc', {
+	var orderBy = OrderBy('height:asc', {
 			sortFields: sql.sortFields,
 			fieldPrefix: 'b_'
 		}
