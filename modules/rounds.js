@@ -474,13 +474,13 @@ Rounds.prototype.getCurrentSlot = function () {
 	return self.getSlot(modules.blockchain.getLastBlock());
 };
 
-Rounds.prototype.getRoundSlot = function (slot) {
-	// Assumptions (as far as I can tell from looking at the code):
-	//   Genesis block: slot 0
-	//   First slot of any round has a remainder of 1 (1, 202, 403, etc.)
-	//   Last slot of any round has a remainder of 0 (201, 402, etc.)
-	//   We need the round's slot to start with 1 and end with 201
-	return ((slot - 1) % slots.delegates) + 1
+Rounds.prototype.getFirstBlockOfRound = function (round) {
+	var previousRound = round - 1
+	return self.getLastBlockOfRound(previousRound) + 1
+};
+
+Rounds.prototype.getLastBlockOfRound = function (round) {
+	return round * slots.delegates
 };
 
 Rounds.prototype.getSlot = function (block) {
@@ -495,58 +495,86 @@ Rounds.prototype.onAttachPublicApi = function () {
 	__private.attachApi();
 };
 
-
-shared.getRound = function(req, cb) {
-	library.schema.validate(req.body, schema.getRound, function (err) {
-		if (err) {
-			return cb(err[0].message);
-		}
-
-		var roundNumber;
-
-		if (req.body.roundNumber) {
-			roundNumber = req.body.roundNumber;
-		} else if (req.body.blockHeight) {
-			roundNumber = self.getRoundFromHeight(req.body.blockHeight)
-		} else {
-			roundNumber = self.getCurrentRound()
-		}
-
-		var isCurrentRound = self.isCurrentRound(roundNumber)
-
-		self.getActiveDelegatesFromRound(roundNumber, function (err, activeDelegates) {
+function validatedRequest(schemaItem, handler) {
+	return function(req, cb) {
+		library.schema.validate(req.body, schema.getRound, function (err) {
 			if (err) {
-				return cb(err);
+				return cb(err[0].message);
+			}
+			handler(req, cb);
+		})
+	}
+}
+
+function getRoundFromRequest(req) {
+	if (req.body.roundNumber) {
+		return req.body.roundNumber;
+	} else if (req.body.blockHeight) {
+		return self.getRoundFromHeight(req.body.blockHeight);
+	}
+	return self.getCurrentRound();
+}
+
+function getRoundDelegatesAndBlocks(round, cb) {
+	self.getActiveDelegatesFromRound(round, function (err, activeDelegates) {
+		if (err) return cb(err);
+
+		var rangeArgs = {
+			fromBlock: self.getFirstBlockOfRound(round),
+			toBlock: self.getLastBlockOfRound(round)
+		}
+		modules.blocks.getBlocksInRange(rangeArgs, function(err, blocks) {
+			if (err) return cb(err);
+
+			cb(null, activeDelegates, blocks)
+		})
+	})
+}
+
+shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
+	var roundNumber = getRoundFromRequest(req);
+
+	getRoundDelegatesAndBlocks(roundNumber, function (err, activeDelegates, blocks) {
+		if (err) return cb(err);
+
+		var isCurrentRound = self.isCurrentRound(roundNumber);
+		var roundSlot = blocks.length;
+		var forgerIndex = 0
+		var initResult = {
+			completedForgers: [],
+			roundNumber,
+			roundSlot,
+			upcomingForgers: [],
+			activeDelegates,
+			blocks
+		};
+
+		var result = blocks.reduce(function(all, block, i) {
+			var blockRoundSlot = i + 1;
+			var forger = block.generatorPublicKey;
+
+			return all;
+		}, initResult)
+
+		var result2 = activeDelegates.reduce(function(all, publicKey, i) {
+			var slot = i + 1;
+			var delegate = {
+				publicKey,
+				slot,
+			};
+
+			if (isCurrentRound && slot > roundSlot) {
+				all.upcomingForgers.push(delegate)
+			} else {
+				all.completedForgers.push(delegate)
 			}
 
-			var currentSlot = self.getCurrentSlot()
-			var roundSlot = self.getRoundSlot(currentSlot)
+			return all
+		}, 
+	);
 
-			var result = activeDelegates.reduce(function(all, publicKey, i) {
-				var slot = i + 1;
-				var delegate = {
-					publicKey,
-					slot,
-				};
-
-				if (isCurrentRound && slot > roundSlot) {
-					all.upcomingForgers.push(delegate)
-				} else {
-					all.completedForgers.push(delegate)
-				}
-
-				return all
-			}, {
-				completedForgers: [],
-				number: roundNumber,
-				currentSlot,
-				roundSlot,
-				upcomingForgers: [],
-			});
-
-			return cb(null, result);
-		});
-	});	
+		return cb(null, result);
+	});
 }
 
 

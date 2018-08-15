@@ -1606,6 +1606,44 @@ Blocks.prototype.cleanup = function (cb) {
 	}
 };
 
+Blocks.prototype.getBlocksInRange = function (rangeArgs, cb) {
+	var params = {};
+	var where = [];
+
+	if (rangeArgs.fromBlock) {
+		where.push('"b_height" >= ${fromBlock}');
+		params.fromBlock = filter.fromBlock;
+	}
+
+	if (rangeArgs.toBlock) {
+		where.push('"b_height" <= ${toBlock}');
+		params.toBlock = filter.toBlock;
+	}
+
+	var orderBy = OrderBy('height:desc', {
+			sortFields: sql.sortFields,
+			fieldPrefix: 'b_'
+		}
+	);
+
+	library.db.query(sql.list({
+		where: where,
+		sortField: orderBy.sortField,
+		sortMethod: orderBy.sortMethod
+	}), params).then(function (rows) {
+		var blocks = [];
+
+		for (var i = 0; i < rows.length; i++) {
+			blocks.push(library.logic.block.dbRead(rows[i]));
+		}
+
+		return cb(null, data);
+	}).catch(function (err) {
+		library.logger.error("stack", err.stack);
+		return cb('Blocks#list error');
+	});
+}
+
 // Shared public API
 shared.getBlock = function (req, cb) {
 
