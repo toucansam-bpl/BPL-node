@@ -549,18 +549,11 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 		};
 
 		function getNextDelegateIndex() {
-			console.log("initial delegate index", delegateIndex)
+			// This is from modules/delegates.js line: 593. 
 			if (delegateIndex === null) {
 				let initialBlock = blocks[0];
-				for(var i = 0; i < activeDelegates.length; i += 1) {
-					
-					console.log (activeDelegates[i], initialBlock.generatorPublicKey) 
-					if (activeDelegates[i] === initialBlock.generatorPublicKey) {
-						delegateIndex = i;
-						break;
-					}
-				}
-				return delegateIndex;
+				var currentSlot = slots.getSlotNumber(initialBlock.timestamp);
+				return activeDelegates[currentSlot % slots.delegates];
 			}
 			return delegateIndex === slots.delegates - 1 ? 0 : delegateIndex + 1;
 		}
