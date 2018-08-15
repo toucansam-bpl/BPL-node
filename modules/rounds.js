@@ -523,14 +523,11 @@ function getRoundDelegatesAndBlocks(round, cb) {
 			fromBlock: self.getFirstBlockOfRound(round),
 			toBlock: self.getLastBlockOfRound(round)
 		}
-			cb(null, activeDelegates, [])
-			/*
 		modules.blocks.getBlocksInRange(rangeArgs, function(err, blocks) {
 			if (err) return cb(err);
 
 			cb(null, activeDelegates, blocks)
 		})
-		*/
 	})
 }
 
@@ -573,8 +570,7 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 			}
 
 			return all
-		}, 
-	);
+		}, initResult);
 
 		return cb(null, result);
 	});
