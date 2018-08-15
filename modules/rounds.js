@@ -545,6 +545,7 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 		var roundSlot = blocks.length;
 		var delegateIndex = null
 		var initResult = {
+			activeDelegates,
 			delegateActivity: [],
 			expectedForgers: [],
 			fromBlock: self.getFirstBlockOfRound(roundNumber),
@@ -554,6 +555,8 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 		};
 
 		var result = blocks.reduce(function(all, block, blockIndex) {
+			delegateIndex = getNextDelegateIndex();
+
 			var blockRoundSlot = blockIndex + 1;
 			var forger = block.generatorPublicKey;
 			var delegate = activeDelegates[delegateIndex];
@@ -571,18 +574,16 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 			}
 			all.delegateActivity.push(delegateRoundInfo);
 
-			delegateIndex = getNextDelegateIndex();
-
 			return all;
 		}, initResult);
 
 		if (!isRoundComplete) {
 			for (var i = 0; i < remainingBlockCount; i += 1) {
+				delegateIndex = getNextDelegateIndex();
 				result.expectedForgers.push({
 					blockRoundSlot: blocks.length + i + 1,
 					publicKey: activeDelegates[delegateIndex]
 				});
-				delegateIndex = getNextDelegateIndex();
 			}
 		}
 
