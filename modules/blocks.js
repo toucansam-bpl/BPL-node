@@ -1607,7 +1607,10 @@ Blocks.prototype.cleanup = function (cb) {
 };
 
 Blocks.prototype.getBlocksInRange = function (rangeArgs, cb) {
-	var params = {};
+	var params = {
+		limit: 201,
+		offset: 0
+	};
 	var where = [];
 
 	if (rangeArgs.fromBlock) {
