@@ -563,10 +563,13 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 
 		var result = blocks.reduce(function(all, block, blockIndex) {
 			delegateIndex = getNextDelegateIndex();
+			console.log(`Delegate index: ${delegateIndex}`)
 
 			var blockRoundSlot = blockIndex + 1;
 			var forger = block.generatorPublicKey;
 			var delegate = activeDelegates[delegateIndex];
+
+			console.log(`Forger: ${forger} and Delegate: ${delegate}`)
 
 			var delegateRoundInfo = {
 				blockRoundSlot,
