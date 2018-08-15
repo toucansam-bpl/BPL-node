@@ -527,17 +527,30 @@ function getRoundDelegatesAndBlocks(round, cb) {
 	})
 }
 
+function createDelegateIndexer(initialBlock) {
+	var delegateIndex = null
+
+	return function() {
+		if (delegateIndex === null) {
+			// This is from modules/delegates.js line: 593.
+			var currentSlot = slots.getSlotNumber(initialBlock.timestamp);
+			delegateIndex = currentSlot % slots.delegates;
+		} else {
+			delegateIndex === slots.delegates - 1 ? 0 : delegateIndex + 1;
+		}
+		return delegateIndex
+	}
+}
+
 shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 	var roundNumber = getRoundFromRequest(req);
 
 	getRoundDelegatesAndBlocks(roundNumber, function (err, activeDelegates, blocks) {
 		if (err) return cb(err);
 
-
 		var isRoundComplete = blocks.length === slots.delegates;
 		var remainingBlockCount = slots.delegates - blocks.length;
 		var roundSlot = blocks.length;
-		var delegateIndex = null
 		var initResult = {
 			activeDelegates,
 			delegateActivity: [],
@@ -547,39 +560,35 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 			roundNumber,
 			roundSlot
 		};
+		var getNextDelegateIndex = createDelegateIndexer(blocks[0]);
+		var delegatesProcessed = 0;
 
-		function getNextDelegateIndex() {
-			if (delegateIndex === null) {
-				let initialBlock = blocks[0];
-
-				// This is from modules/delegates.js line: 593.
-				var currentSlot = slots.getSlotNumber(initialBlock.timestamp);
-				return currentSlot % slots.delegates;
-			}
-			return delegateIndex === slots.delegates - 1 ? 0 : delegateIndex + 1;
-		}
-
-		var result = blocks.reduce(function(all, block, blockIndex) {
-			delegateIndex = getNextDelegateIndex();
-
-			var blockRoundSlot = blockIndex + 1;
+		var result = blocks.reduce(function(all, block) {
 			var forger = block.generatorPublicKey;
-			var delegate = activeDelegates[delegateIndex];
 
-			// console.log(`Forger: ${forger} and Delegate: ${delegate}`)
+			for (var i = 0; i < slots.delegates; i += 1) {
+				var delegateIndex = getNextDelegateIndex();
+				var delegate = activeDelegates[delegateIndex];
+				delegatesProcessed += 1
+	
+				var delegateRoundInfo = {
+					roundSlot: delegatesProcessed,
+					publicKey: delegate
+				};
 
-			var delegateRoundInfo = {
-				blockRoundSlot,
-				publicKey: delegate
-			};
-			if (forger === delegate) {
-				delegateRoundInfo.block = block;
-				delegateRoundInfo.hasMissedBlock = false;
-			} else {
-				delegateRoundInfo.forgerPublicKey = forger;
-				delegateRoundInfo.hasMissedBlock = true;
+				if (forger === delegate) {
+					delegateRoundInfo.block = block;
+					delegateRoundInfo.hasMissedBlock = false;
+				} else {
+					delegateRoundInfo.forgerPublicKey = forger;
+					delegateRoundInfo.hasMissedBlock = true;
+				}
+
+				all.delegateActivity.push(delegateRoundInfo);
+				if(delegateRoundInfo.hasMissedBlock) {
+					break;
+				}
 			}
-			all.delegateActivity.push(delegateRoundInfo);
 
 			return all;
 		}, initResult);
