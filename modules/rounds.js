@@ -536,19 +536,24 @@ function createDelegateFactory(activeDelegates, getNextDelegateIndex) {
 		var delegateIndex = getNextDelegateIndex();
 		var forger = block.generatorPublicKey;
 		var delegate = activeDelegates[delegateIndex];
-		var delegateRoundInfo = {
+		var roundSlot = {
 			roundSlot: delegatesProcessed,
 			publicKey: delegate
 		};
 
 		if (forger === delegate) {
-			delegateRoundInfo.block = block;
-			delegateRoundInfo.hasMissedBlock = false;
+			roundSlot.blockHeight = block.height;
+			roundSlot.hasMissedBlock = false;
+			roundSlot.reward = block.reward;
+			roundSlot.timestamp = block.timestamp;
+			roundSlot.totalAmount = block.totalAmount;
+			roundSlot.totalFee = block.totalFee;
+			roundSlot.totalForged = block.totalForged;
 		} else {
-			delegateRoundInfo.forgerPublicKey = forger;
-			delegateRoundInfo.hasMissedBlock = true;
+			roundSlot.forgerPublicKey = forger;
+			roundSlot.hasMissedBlock = true;
 		}
-		return delegateRoundInfo;
+		return roundSlot;
 	}
 }
 
