@@ -533,21 +533,6 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 	getRoundDelegatesAndBlocks(roundNumber, function (err, activeDelegates, blocks) {
 		if (err) return cb(err);
 
-		function getNextDelegateIndex() {
-			if (delegateIndex === null) {
-				let initialBlock = blocks[0];
-				for(var i = 0; i < activeDelegates.legnth; i += 1) {
-					
-					console.log (activeDelegates[i], initialBlock.generatorPublicKey) 
-					if (activeDelegates[i] === initialBlock.generatorPublicKey) {
-						delegateIndex = i;
-						break;
-					}
-				}
-				return delegateIndex;
-			}
-			return delegateIndex === slots.delegates - 1 ? 0 : delegateIndex + 1;
-		}
 
 		var isRoundComplete = blocks.length === slots.delegates;
 		var remainingBlockCount = slots.delegates - blocks.length;
@@ -562,6 +547,23 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 			roundNumber,
 			roundSlot
 		};
+
+		function getNextDelegateIndex() {
+			console.log("initial delegate index", delegateIndex)
+			if (delegateIndex === null) {
+				let initialBlock = blocks[0];
+				for(var i = 0; i < activeDelegates.legnth; i += 1) {
+					
+					console.log (activeDelegates[i], initialBlock.generatorPublicKey) 
+					if (activeDelegates[i] === initialBlock.generatorPublicKey) {
+						delegateIndex = i;
+						break;
+					}
+				}
+				return delegateIndex;
+			}
+			return delegateIndex === slots.delegates - 1 ? 0 : delegateIndex + 1;
+		}
 
 		var result = blocks.reduce(function(all, block, blockIndex) {
 			delegateIndex = getNextDelegateIndex();
