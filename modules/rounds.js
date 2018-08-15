@@ -534,9 +534,11 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 		if (err) return cb(err);
 
 		function getNextDelegateIndex() {
-			if (delegateIndex == null) {
+			if (delegateIndex === null) {
 				let initialBlock = blocks[0];
 				for(var i = 0; i < activeDelegates.legnth; i += 1) {
+					
+					console.log (activeDelegates[i], initialBlock.generatorPublicKey) 
 					if (activeDelegates[i] === initialBlock.generatorPublicKey) {
 						delegateIndex = i;
 						break;
@@ -563,13 +565,12 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 
 		var result = blocks.reduce(function(all, block, blockIndex) {
 			delegateIndex = getNextDelegateIndex();
-			console.log(`Delegate index: ${delegateIndex}`)
 
 			var blockRoundSlot = blockIndex + 1;
 			var forger = block.generatorPublicKey;
 			var delegate = activeDelegates[delegateIndex];
 
-			console.log(`Forger: ${forger} and Delegate: ${delegate}`)
+			// console.log(`Forger: ${forger} and Delegate: ${delegate}`)
 
 			var delegateRoundInfo = {
 				blockRoundSlot,
