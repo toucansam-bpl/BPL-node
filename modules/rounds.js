@@ -527,10 +527,13 @@ function getRoundDelegatesAndBlocks(round, cb) {
 	})
 }
 
-function createDelegateIndexer(initialBlock) {
+function createDelegateIndexer(initialBlock, activeDelegates) {
 	var delegateIndex = null
+	var delegatesProcessed = 0;
 
-	return function() {
+	return function(forger) {
+		delegatesProcessed += 1
+
 		if (delegateIndex === null) {
 			// This is from modules/delegates.js line: 593.
 			var currentSlot = slots.getSlotNumber(initialBlock.timestamp);
@@ -538,7 +541,20 @@ function createDelegateIndexer(initialBlock) {
 		} else {
 			delegateIndex === slots.delegates - 1 ? 0 : delegateIndex + 1;
 		}
-		return delegateIndex
+
+		var delegate = activeDelegates[delegateIndex]
+		var delegateRoundInfo = {
+			roundSlot: delegatesProcessed,
+			publicKey: delegate
+		};
+		if (forger === delegate) {
+			delegateRoundInfo.block = block;
+			delegateRoundInfo.hasMissedBlock = false;
+		} else {
+			delegateRoundInfo.forgerPublicKey = forger;
+			delegateRoundInfo.hasMissedBlock = true;
+		}
+		return delegateRoundInfo;
 	}
 }
 
@@ -560,35 +576,19 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 			roundNumber,
 			roundSlot
 		};
-		var getNextDelegateIndex = createDelegateIndexer(blocks[0]);
-		var delegatesProcessed = 0;
+		var getNextDelegate = createDelegateIndexer(activeDelegates, blocks[0]);
 
 		var result = blocks.reduce(function(all, block) {
 			var forger = block.generatorPublicKey;
+			var delegatesTested = 0;
 
-			for (var i = 0; i < slots.delegates; i += 1) {
-				var delegateIndex = getNextDelegateIndex();
-				var delegate = activeDelegates[delegateIndex];
-				delegatesProcessed += 1
-	
-				var delegateRoundInfo = {
-					roundSlot: delegatesProcessed,
-					publicKey: delegate
-				};
-
-				if (forger === delegate) {
-					delegateRoundInfo.block = block;
-					delegateRoundInfo.hasMissedBlock = false;
-				} else {
-					delegateRoundInfo.forgerPublicKey = forger;
-					delegateRoundInfo.hasMissedBlock = true;
-				}
-
-				all.delegateActivity.push(delegateRoundInfo);
-				if(!delegateRoundInfo.hasMissedBlock) {
-					break;
-				}
-			}
+			var delegate = null;
+			do {
+				delegate = getNextDelegate(forger);
+				console.log(delegate)
+				all.delegateActivity.push(delegate);
+				delegatesTested += 1;
+			} while (delegate.hasMissedBlock && delegatesTested < 201);
 
 			return all;
 		}, initResult);
