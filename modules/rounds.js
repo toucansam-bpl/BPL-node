@@ -467,7 +467,7 @@ Rounds.prototype.getActiveDelegatesFromRound = function(round, cb) {
 }
 
 Rounds.prototype.getCurrentRound = function () {
-	return __private.current
+	return __private.current;
 };
 
 Rounds.prototype.getCurrentSlot = function () {
@@ -475,12 +475,12 @@ Rounds.prototype.getCurrentSlot = function () {
 };
 
 Rounds.prototype.getFirstBlockOfRound = function (round) {
-	var previousRound = round - 1
-	return self.getLastBlockOfRound(previousRound) + 1
+	var previousRound = round - 1;
+	return self.getLastBlockOfRound(previousRound) + 1;
 };
 
 Rounds.prototype.getLastBlockOfRound = function (round) {
-	return round * slots.delegates
+	return round * slots.delegates;
 };
 
 Rounds.prototype.getSlot = function (block) {
@@ -488,7 +488,7 @@ Rounds.prototype.getSlot = function (block) {
 };
 
 Rounds.prototype.isCurrentRound = function (roundNumber) {
-	return __private.current === roundNumber
+	return __private.current === roundNumber;
 };
 
 Rounds.prototype.onAttachPublicApi = function () {
@@ -497,7 +497,7 @@ Rounds.prototype.onAttachPublicApi = function () {
 
 function validatedRequest(schemaItem, handler) {
 	return function(req, cb) {
-		library.schema.validate(req.body, schema.getRound, function (err) {
+		library.schema.validate(req.body, schemaItem, function (err) {
 			if (err) {
 				return cb(err[0].message);
 			}
@@ -575,7 +575,7 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 
 		return cb(null, result);
 	});
-}
+})
 
 
 // Events
