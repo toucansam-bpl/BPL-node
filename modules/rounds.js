@@ -552,7 +552,7 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 			console.log("initial delegate index", delegateIndex)
 			if (delegateIndex === null) {
 				let initialBlock = blocks[0];
-				for(var i = 0; i < activeDelegates.legnth; i += 1) {
+				for(var i = 0; i < activeDelegates.length; i += 1) {
 					
 					console.log (activeDelegates[i], initialBlock.generatorPublicKey) 
 					if (activeDelegates[i] === initialBlock.generatorPublicKey) {
