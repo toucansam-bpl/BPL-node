@@ -527,29 +527,22 @@ function getRoundDelegatesAndBlocks(round, cb) {
 	})
 }
 
-function createDelegateIndexer(activeDelegates, initialBlock) {
-	var delegateIndex = null
+function createDelegateFactory(activeDelegates, getNextDelegateIndex) {
 	var delegatesProcessed = 0;
 
 	return function(block) {
-		delegatesProcessed += 1
+		delegatesProcessed += 1;
 
-		if (delegateIndex === null) {
-			// This is from modules/delegates.js line: 593.
-			var currentSlot = slots.getSlotNumber(initialBlock.timestamp);
-			delegateIndex = currentSlot % slots.delegates;
-		} else {
-			delegateIndex === slots.delegates - 1 ? 0 : delegateIndex + 1;
-		}
-
-		console.log(`Delegate index: ${delegateIndex} and delegates processed: ${delegatesProcessed}`)
-
+		var delegateIndex = getNextDelegateIndex();
 		var forger = block.generatorPublicKey;
-		var delegate = activeDelegates[delegateIndex]
+		var delegate = activeDelegates[delegateIndex];
 		var delegateRoundInfo = {
 			roundSlot: delegatesProcessed,
 			publicKey: delegate
 		};
+
+		console.log(`Delegate index: ${delegateIndex} and delegates processed: ${delegatesProcessed}`)
+
 		if (forger === delegate) {
 			delegateRoundInfo.block = block;
 			delegateRoundInfo.hasMissedBlock = false;
@@ -558,6 +551,21 @@ function createDelegateIndexer(activeDelegates, initialBlock) {
 			delegateRoundInfo.hasMissedBlock = true;
 		}
 		return delegateRoundInfo;
+	}
+}
+
+function createDelegateIndexer(initialBlock) {
+	var delegateIndex = null;
+
+	return function() {
+		if (delegateIndex === null) {
+			// This is from modules/delegates.js line: 593.
+			var currentSlot = slots.getSlotNumber(initialBlock.timestamp);
+			delegateIndex = currentSlot % slots.delegates;
+		} else {
+			delegateIndex = delegateIndex === slots.delegates - 1 ? 0 : delegateIndex + 1;
+		}
+		return delegateIndex;
 	}
 }
 
@@ -579,7 +587,8 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 			roundNumber,
 			roundSlot
 		};
-		var getNextDelegate = createDelegateIndexer(activeDelegates, blocks[0]);
+		var getNextDelegateIndex = createDelegateIndexer(blocks[0]);
+		var getNextDelegate = createDelegateFactory(activeDelegates, getNextDelegateIndex);
 
 		var result = blocks.reduce(function(all, block) {
 			var delegatesTested = 0;
@@ -595,7 +604,6 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 			return all;
 		}, initResult);
 
-		/*
 		if (!isRoundComplete) {
 			for (var i = 0; i < remainingBlockCount; i += 1) {
 				var delegateIndex = getNextDelegateIndex();
@@ -605,7 +613,6 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 				});
 			}
 		}
-		*/
 
 		return cb(null, result);
 	});
