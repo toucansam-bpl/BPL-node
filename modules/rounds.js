@@ -549,11 +549,12 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 		};
 
 		function getNextDelegateIndex() {
-			// This is from modules/delegates.js line: 593. 
 			if (delegateIndex === null) {
 				let initialBlock = blocks[0];
+
+				// This is from modules/delegates.js line: 593.
 				var currentSlot = slots.getSlotNumber(initialBlock.timestamp);
-				return activeDelegates[currentSlot % slots.delegates];
+				return currentSlot % slots.delegates;
 			}
 			return delegateIndex === slots.delegates - 1 ? 0 : delegateIndex + 1;
 		}
