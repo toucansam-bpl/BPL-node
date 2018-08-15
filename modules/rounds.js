@@ -487,10 +487,6 @@ Rounds.prototype.getSlot = function (block) {
 	return slots.getSlotNumber(block.timestamp);
 };
 
-Rounds.prototype.isCurrentRound = function (roundNumber) {
-	return __private.current === roundNumber;
-};
-
 Rounds.prototype.onAttachPublicApi = function () {
 	__private.attachApi();
 };
@@ -537,40 +533,51 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 	getRoundDelegatesAndBlocks(roundNumber, function (err, activeDelegates, blocks) {
 		if (err) return cb(err);
 
-		var isCurrentRound = self.isCurrentRound(roundNumber);
+		function getNextDelegateIndex() {
+			return delegateIndex === slots.delegates - 1 ? 0 : delegateIndex + 1;
+		}
+
+		var isRoundComplete = blocks.length === slots.delegates;
+		var remainingBlockCount = slots.delegates - blocks.length;
 		var roundSlot = blocks.length;
-		var forgerIndex = 0
+		var delegateIndex = 0
 		var initResult = {
-			completedForgers: [],
+			delegateActivity: [],
+			expectedForgers: [],
 			roundNumber,
-			roundSlot,
-			upcomingForgers: [],
-			activeDelegates,
-			blocks
+			roundSlot
 		};
 
-		var result = blocks.reduce(function(all, block, i) {
-			var blockRoundSlot = i + 1;
+		var result = blocks.reduce(function(all, block, blockIndex) {
+			var blockRoundSlot = blockIndex + 1;
 			var forger = block.generatorPublicKey;
+			var delegate = activeDelegates[delegateIndex];
+
+			var delegateRoundInfo = {
+				blockRoundSlot,
+				publicKey: delegate
+			};
+			if (forger === delegate) {
+				delegateRoundInfo.block = block;
+				delegateRoundInfo.hasMissedBlock = false;
+			} else {
+				delegateRoundInfo.hasMissedBlock = true;
+			}
+			all.delegateActivity.push(delegateRoundInfo);
+
+			delegateIndex = getNextDelegateIndex()
 
 			return all;
 		}, initResult)
 
-		var result2 = activeDelegates.reduce(function(all, publicKey, i) {
-			var slot = i + 1;
-			var delegate = {
-				publicKey,
-				slot,
-			};
-
-			if (isCurrentRound && slot > roundSlot) {
-				all.upcomingForgers.push(delegate)
-			} else {
-				all.completedForgers.push(delegate)
+		if (!isRoundComplete) {
+			for (var i = 0; i < remainingBlockCount; i += 1) {
+				result.expectedForgers.push({
+					blockRoundSlot: blocks.length + i + 1,
+					publicKey: activeDelegates[delegateIndex]
+				})
 			}
-
-			return all
-		}, initResult);
+		}
 
 		return cb(null, result);
 	});
