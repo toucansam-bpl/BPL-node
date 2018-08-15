@@ -541,8 +541,6 @@ function createDelegateFactory(activeDelegates, getNextDelegateIndex) {
 			publicKey: delegate
 		};
 
-		console.log(`Delegate index: ${delegateIndex} and delegates processed: ${delegatesProcessed}`)
-
 		if (forger === delegate) {
 			delegateRoundInfo.block = block;
 			delegateRoundInfo.hasMissedBlock = false;
@@ -596,7 +594,6 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 			var delegate = null;
 			do {
 				delegate = getNextDelegate(block);
-				console.log(delegate)
 				all.delegateActivity.push(delegate);
 				delegatesTested += 1;
 			} while (delegate.hasMissedBlock && delegatesTested < 201);
@@ -608,7 +605,7 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 			for (var i = 0; i < remainingBlockCount; i += 1) {
 				var delegateIndex = getNextDelegateIndex();
 				result.expectedForgers.push({
-					blockRoundSlot: blocks.length + i + 1,
+					blockRoundSlot: result.delegateActivity.length + i + 1,
 					publicKey: activeDelegates[delegateIndex]
 				});
 			}
