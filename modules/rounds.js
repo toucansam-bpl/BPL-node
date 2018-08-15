@@ -585,7 +585,7 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 				}
 
 				all.delegateActivity.push(delegateRoundInfo);
-				if(delegateRoundInfo.hasMissedBlock) {
+				if(!delegateRoundInfo.hasMissedBlock) {
 					break;
 				}
 			}
