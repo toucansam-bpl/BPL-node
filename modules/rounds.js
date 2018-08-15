@@ -547,7 +547,7 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 		var initResult = {
 			delegateActivity: [],
 			expectedForgers: [],
-			fromBlock: self.getFirstBlockOfRound(roundNUmber),
+			fromBlock: self.getFirstBlockOfRound(roundNumber),
 			toBlock: self.getLastBlockOfRound(roundNumber),
 			roundNumber,
 			roundSlot
