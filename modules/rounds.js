@@ -527,7 +527,7 @@ function getRoundDelegatesAndBlocks(round, cb) {
 	})
 }
 
-function createDelegateIndexer(initialBlock, activeDelegates) {
+function createDelegateIndexer(activeDelegates, initialBlock) {
 	var delegateIndex = null
 	var delegatesProcessed = 0;
 
@@ -593,6 +593,7 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 			return all;
 		}, initResult);
 
+		/*
 		if (!isRoundComplete) {
 			for (var i = 0; i < remainingBlockCount; i += 1) {
 				var delegateIndex = getNextDelegateIndex();
@@ -602,6 +603,7 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 				});
 			}
 		}
+		*/
 
 		return cb(null, result);
 	});
