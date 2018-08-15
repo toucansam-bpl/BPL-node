@@ -580,15 +580,12 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 
 		var isRoundComplete = blocks.length === slots.delegates;
 		var remainingBlockCount = slots.delegates - blocks.length;
-		var roundSlot = blocks.length;
 		var initResult = {
-			activeDelegates,
 			delegateActivity: [],
 			expectedForgers: [],
 			fromBlock: self.getFirstBlockOfRound(roundNumber),
 			toBlock: self.getLastBlockOfRound(roundNumber),
 			roundNumber,
-			roundSlot
 		};
 		var getNextDelegateIndex = createDelegateIndexer(blocks[0]);
 		var getNextDelegate = createDelegateFactory(activeDelegates, getNextDelegateIndex);
