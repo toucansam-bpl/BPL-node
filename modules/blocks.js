@@ -1612,12 +1612,12 @@ Blocks.prototype.getBlocksInRange = function (rangeArgs, cb) {
 
 	if (rangeArgs.fromBlock) {
 		where.push('"b_height" >= ${fromBlock}');
-		params.fromBlock = filter.fromBlock;
+		params.fromBlock = rangeArgs.fromBlock;
 	}
 
 	if (rangeArgs.toBlock) {
 		where.push('"b_height" <= ${toBlock}');
-		params.toBlock = filter.toBlock;
+		params.toBlock = rangeArgs.toBlock;
 	}
 
 	var orderBy = OrderBy('height:desc', {
