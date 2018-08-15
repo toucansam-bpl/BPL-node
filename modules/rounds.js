@@ -523,19 +523,61 @@ function getRoundDelegatesAndBlocks(round, cb) {
 			fromBlock: self.getFirstBlockOfRound(round),
 			toBlock: self.getLastBlockOfRound(round)
 		}
+			cb(null, activeDelegates, [])
+			/*
 		modules.blocks.getBlocksInRange(rangeArgs, function(err, blocks) {
 			if (err) return cb(err);
 
 			cb(null, activeDelegates, blocks)
 		})
+		*/
 	})
 }
 
 shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 	var roundNumber = getRoundFromRequest(req);
 
+	getRoundDelegatesAndBlocks(roundNumber, function (err, activeDelegates, blocks) {
+		if (err) return cb(err);
 
-		return cb(null, roundNumber);
+		var isCurrentRound = self.isCurrentRound(roundNumber);
+		var roundSlot = blocks.length;
+		var forgerIndex = 0
+		var initResult = {
+			completedForgers: [],
+			roundNumber,
+			roundSlot,
+			upcomingForgers: [],
+			activeDelegates,
+			blocks
+		};
+
+		var result = blocks.reduce(function(all, block, i) {
+			var blockRoundSlot = i + 1;
+			var forger = block.generatorPublicKey;
+
+			return all;
+		}, initResult)
+
+		var result2 = activeDelegates.reduce(function(all, publicKey, i) {
+			var slot = i + 1;
+			var delegate = {
+				publicKey,
+				slot,
+			};
+
+			if (isCurrentRound && slot > roundSlot) {
+				all.upcomingForgers.push(delegate)
+			} else {
+				all.completedForgers.push(delegate)
+			}
+
+			return all
+		}, 
+	);
+
+		return cb(null, result);
+	});
 })
 
 
