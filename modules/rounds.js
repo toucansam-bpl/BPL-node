@@ -534,9 +534,16 @@ shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
 		if (err) return cb(err);
 
 		function getNextDelegateIndex() {
-			// Due to how the forger index is calculated (currentSlot % slots.delegates),
-			//   the first forger is always the last delegate in the active delegates list
-			if (delegateIndex === null) return 200;
+			if (delegateIndex == null) {
+				let initialBlock = blocks[0];
+				for(var i = 0; i < activeDelegates.legnth; i += 1) {
+					if (activeDelegates.publicKey === initialBlock.generatorPublicKey) {
+						delegateIndex = i;
+						break;
+					}
+				}
+				return delegateIndex;
+			}
 			return delegateIndex === slots.delegates - 1 ? 0 : delegateIndex + 1;
 		}
 
