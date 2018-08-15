@@ -1640,7 +1640,7 @@ Blocks.prototype.getBlocksInRange = function (rangeArgs, cb) {
 			blocks.push(library.logic.block.dbRead(rows[i]));
 		}
 
-		return cb(null, data);
+		return cb(null, blocks);
 	}).catch(function (err) {
 		library.logger.error("stack", err.stack);
 		return cb('Blocks#list error');
