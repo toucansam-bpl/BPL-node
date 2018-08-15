@@ -495,6 +495,48 @@ Rounds.prototype.onAttachPublicApi = function () {
 	__private.attachApi();
 };
 
+function validatedRequest(schemaItem, handler) {
+	return function(req, cb) {
+		library.schema.validate(req.body, schemaItem, function (err) {
+			if (err) {
+				return cb(err[0].message);
+			}
+			handler(req, cb);
+		})
+	}
+}
+
+function getRoundFromRequest(req) {
+	if (req.body.roundNumber) {
+		return req.body.roundNumber;
+	} else if (req.body.blockHeight) {
+		return self.getRoundFromHeight(req.body.blockHeight);
+	}
+	return self.getCurrentRound();
+}
+
+function getRoundDelegatesAndBlocks(round, cb) {
+	self.getActiveDelegatesFromRound(round, function (err, activeDelegates) {
+		if (err) return cb(err);
+
+		var rangeArgs = {
+			fromBlock: self.getFirstBlockOfRound(round),
+			toBlock: self.getLastBlockOfRound(round)
+		}
+		modules.blocks.getBlocksInRange(rangeArgs, function(err, blocks) {
+			if (err) return cb(err);
+
+			cb(null, activeDelegates, blocks)
+		})
+	})
+}
+
+shared.getRound = validatedRequest(schema.getRound, function (req, cb) {
+	var roundNumber = getRoundFromRequest(req);
+
+
+		return cb(null, roundNumber);
+})
 
 
 // Events
