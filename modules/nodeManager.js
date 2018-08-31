@@ -160,7 +160,9 @@ NodeManager.prototype.onBlocksReceived = function(blocks, peer, cb) {
 			block.totalAmount = parseInt(block.totalAmount);
 			block.totalFee = parseInt(block.totalFee);
 			block.verified = false;
-		  block.processed = false;
+
+		  	block.processed = false;
+ 			if (block.numberOfTransactions == 0) block.transactions = [];
       // looks like the last block pulled, let's broadcast it
 			block.broadcast = blocks.length == 1;
 
@@ -534,7 +536,9 @@ NodeManager.prototype.onBlockReceived = function(block, peer, cb) {
 				return library.bus.message('verifyBlock', block, function(err){
 					if(err){
 						library.logger.error("Error processing block at height", block.height);
-						modules.blockchain.removeBlock(block);
+					}
+					else{
+						modules.blockchain.upsertBlock(block);
 					}
 					return mSequence(err, block);
 				});
