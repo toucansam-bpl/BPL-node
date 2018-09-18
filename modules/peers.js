@@ -50,8 +50,8 @@ Peers.prototype.accept = function(peer){
 			candidate = new Peer(peer.ip, peer.port, peer.version, peer.os);
 			__private.peers[peer.ip] = candidate;
 		}
-	}
-	else {
+		candidate.unban();
+	} else {
 		candidate = new Peer(peer.ip, peer.port, peer.version, peer.os);
 		__private.peers[peer.ip] = candidate;
 	}
@@ -225,7 +225,7 @@ Peers.prototype.listBroadcastPeers = function() {
 	var peers = Object.values(__private.peers);
 
 	var list = peers.filter(function(peer){
-		return peer.status!="FORK" && !peer.liteclient;
+		return peer.status == "OK";
 	});
 
 	return shuffle(list);
