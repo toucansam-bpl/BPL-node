@@ -1,61 +1,72 @@
-# BLOCKPOOL
+# BPL Node
 
+<p align="center">
+    <img src="./banner.png" />
+</p>
 
-# Simple Blockpool Node Installation #
+[![Github Latest Release](https://badgen.now.sh/github/release/blockpool-io/bpl-node)](https://github.com/blockpool-io/bpl-node/releases/latest)
+[![License: MIT](https://badgen.now.sh/badge/license/MIT)](https://opensource.org/licenses/MIT)
+
+## Simple Blockpool Node Installation
 
 Download the Blockpool install script
 
 https://github.com/blockpool-io/BPL-node/blob/bpl-mainnet/BPL_Node_Install_Script.sh
 
-Open up your terminal
+Open up your terminal and type
+
+```
 ./BPL_Node_Install_Script.sh
+```
 
 Let the script finish.
 
-**Add configurations for your node**
+### Add configurations for your node
 
 ```
-	Change the following in config.mainnet.json :
+# Change the following in config.mainnet.json:
+
 “address“: “set your IP”
 “database”: “set database name”
 “user”: “set database user”
 “password”: “set database password”
 “list”: [
-	{
-		“ip”: “set your IP address”
-		“port”: “set the port on which your node will be running”
-	},
-{
-		“ip”: “Set seed node IP address”
-		“port”: “set the port on which seed node will be running”
-	}
+  {
+    “ip”: “set your IP address”
+    “port”: “set the port on which your node will be running”
+  },
+  {
+    “ip”: “Set seed node IP address”
+    “port”: “set the port on which seed node will be running”
+  }
 ]
 ```
 
-**Launch BPL node**
+### Launch BPL node
+
+#### Mainnet
 
 ```
-To launch BPL node on mainnet:
 forever start app.js -c config.mainnet.json -g genesisBlock.mainnet.json
 ```
 
-# Detailed steps for setting up BPL node on Linux, Windows and Debian
+#### Testnet
+```
+forever start app.js -c config.testnet.json -g genesisBlock.testnet.json
+```
 
+## Detailed steps for setting up BPL node on Linux, Windows and Debian
 
-**Linux/Ubuntu (We have tested with Ubuntu v16.0.4)**
+### Linux/Ubuntu (We have tested with Ubuntu v16.0.4)
 
-
-**Developer Installation**
-
-
-**Install essentials**
+#### Install essentials
 
 ```
 sudo apt-get update
 sudo apt-get install -y curl build-essential python git
 ```
 
-**Install Node.js (min version: 6.9.2)**
+#### Install Node.js (min version: 6.9.2)
 
 ```
 sudo apt-get install -y nodejs
@@ -64,13 +75,13 @@ sudo npm install -g n
 sudo n 6.9.2
 ```
 
-**Install grunt-cli (globally)**
+#### Install grunt-cli (globally)
 
 ```
 sudo npm install grunt-cli -g
 ```
 
-**Install PostgreSQL (min version: 9.5.2)**
+#### Install PostgreSQL (min version: 9.5.2)
 
 ```
 sudo apt-get install -y postgresql postgresql-contrib
@@ -78,7 +89,7 @@ sudo -u postgres createuser -P --createdb $USER
 createdb ‘Database Name’  (this should match with the database name from config file)
 ```
 
-**Clone BPL Node repository**
+#### Clone BPL Node repository
 
 ```
 git clone https://github.com/blockpool-io/BPL-node.git   (make sure you have git installed)
@@ -86,7 +97,7 @@ cd BPL-node
 git checkout bpl-mainnet
 ```
 
-**Install node modules**
+#### Install node modules
 
 ```
 sudo apt-get install -y libpq-dev
@@ -95,53 +106,49 @@ npm install
 npm install forever -g
 ```
 
-**Add configurations for your node**
+#### Add configurations for your node
 
 ```
-	Change the following in config.mainnet.json :
+# Change the following in config.mainnet.json:
+
 “address“: “set your IP”
 “database”: “set database name”
 “user”: “set database user”
 “password”: “set database password”
 “list”: [
-	{
-		“ip”: “set your IP address”
-		“port”: “set the port on which your node will be running”
-	},
-{
-		“ip”: “Set seed node IP address”
-		“port”: “set the port on which seed node will be running”
-	}
+  {
+    “ip”: “set your IP address”
+    “port”: “set the port on which your node will be running”
+  },
+  {
+    “ip”: “Set seed node IP address”
+    “port”: “set the port on which seed node will be running”
+  }
 ]
 ```
 
-**Launch BPL node**
+#### Launch BPL node on Mainnet
 
 ```
-To launch BPL node on mainnet:
 forever start app.js -c config.mainnet.json -g genesisBlock.mainnet.json
 ```
 
-
-# Windows 7
-
-**Developer Installation**
-**Install essentials**
+#### Launch BPL node on Testnet
 
 ```
- Python(min version 2.7.0) URL -  https://www.python.org/downloads/ 
- Visual Studio c++ 2010 express
-```
-```
-Install Node.js (min version 6.9.2)
- URL - https://nodejs.org/en/download/
-```
-```
- Install PostgreSQL (min version 5.5.2)
- URL -  http://www.postgresql.org/download/windows/
+forever start app.js -c config.testnet.json -g genesisBlock.testnet.json
 ```
 
-**Add following environment variable:**
+### Windows 7
+
+#### Install essentials
+
+- [Python (min version 2.7)](https://www.python.org/downloads/)
+- [Visual Studio c++ 2010 express](https://www.microsoft.com/en-gb/download/details.aspx?id=14632)
+- [Node.js (min version 6.9.2)](https://nodejs.org/en/download/)
+- [PostgreSQL (min version 5.5.2)](http://www.postgresql.org/download/windows/)
+
+#### Add following environment variable
 
 ```
 PATH as C:\Program Files\PostgreSQL\9.5\bin 
@@ -150,8 +157,7 @@ Modify the file ‘pg_hba’, present at the location  C:\Program Files\PostgreS
 Replace ‘md5’ with ‘trust’  under ‘METHOD’ column
 ```
 
-
-**Restart psql:**
+#### Restart psql
 
 ```
 My Computer → Manage → Services and Application → Services → Restart postgres service
@@ -162,7 +168,7 @@ Create database:
 Create database ‘Database Name’ Name’  (this should match with the database name from config file)
 ```
 
-**Clone repository**
+#### Clone repository
 
 ```
 git clone https://github.com/blockpool-io/BPL-node.git (make sure you have git installed)
@@ -170,7 +176,7 @@ cd BPL-node
 git checkout bpl-mainnet
 ```
 
-**Install node modules**
+#### Install node modules
 
 ```
 npm install --global --production windows-build-tools 
@@ -178,47 +184,50 @@ npm install libpq secp256k1
 npm install
 ```
 
-**Add configurations for your node**
+#### Add configurations for your node
 
 ```
-Change the following in config.mainnet.json:
+# Change the following in config.mainnet.json:
+
 “address“: “set your IP”
 “database”: “set database name”
 “user”: “set database user”
 “password”: “set database password”
 “list”: [
-	{
-		“ip”: “set your IP address”
-		“port”: “set the port on which your node will be running”
-},
-{
-//For 5 Windows nodes, seed IP is already configured in the shared 5 files so no need of adding this entry
-		“ip”: “Set seed node IP address”
-		“port”: “set the port on which seed node will be running”
-}
+  {
+    “ip”: “set your IP address”
+    “port”: “set the port on which your node will be running”
+  },
+  // For 5 Windows nodes, seed IP is already configured in the shared 5 files so no need of adding this entry
+  {
+    “ip”: “Set seed node IP address”
+    “port”: “set the port on which seed node will be running”
+  }
 ]
 ```
 
-**Launch BPL node**
-**To launch BPL on mainnet:**
+#### Launch BPL node on Mainnet
 
 ```
 npm run start:bplmainnet
 ```
 
+#### Launch BPL node on Testnet
 
+```
+npm run start:bpltestnet
+```
 
-# Debian- (We have tested with Jessie 8.7)
+### Debian (We have tested with Jessie 8.7)
 
-**Developer Installation**
-**Install essentials**
+#### Install essentials
 
 ```
 sudo apt-get update
 sudo apt-get install -y curl build-essential python git
 ```
 
-**Install Node.js (min version: 6.9.2)**
+#### Install Node.js (min version: 6.9.2)
 
 ```
 sudo apt-get install -y nodejs
@@ -227,14 +236,16 @@ sudo npm install -g n
 sudo n 6.9.2
 ```
 
-**Install grunt-cli (globally)**
+#### Install grunt-cli (globally)
 
 ```
 sudo npm install grunt-cli -g
 ```
 
-**Install PostgreSQL (min version: 9.5.2)**
-**Since Debian 8.8/8.8 installs psql 9.4.12 , we will need to add the repository manually to install psql 9.5:**
+#### Install PostgreSQL (min version: 9.5.2)
+
+> Since Debian 8.8/8.8 installs psql 9.4.12 , we will need to add the repository manually to install psql 9.5
+
 
 ```
 wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | sudo apt-key add -
@@ -245,7 +256,7 @@ sudo -u postgres createuser –createdb $USER
 createdb ‘Database Name’  (this should match with the database name from config file)
 ```
 
-**Clone BPL Node repository**
+#### Clone BPL Node repository
 
 ```
 If git is not found, following adds the repository manually:
@@ -259,7 +270,7 @@ cd BPL-node
 git checkout mainnet
 ```
 
-**Install node modules**
+#### Install node modules
 
 ```
 sudo apt-get install libpq-dev
@@ -267,58 +278,48 @@ npm install libpq secp256k1
 npm install
 ```
 
-**Add configurations for your node**
-**Change the following in config.mainnet.json:**
+#### Add configurations for your node
 
 ```
+# Change the following in config.mainnet.json:
+
 “address“: “set your IP”
 “database”: “set database name”
 “user”: “set database user”
 “password”: “set database password”
 “list”: [
-	{
-		“ip”: “set your IP address”
-		“port”: “set the port on which your node will be running”
-	},
-{
-		“ip”: “Set seed node IP address”
-		“port”: “set the port on which seed node will be running”
-	}
+  {
+    “ip”: “set your IP address”
+    “port”: “set the port on which your node will be running”
+  },
+  {
+    “ip”: “Set seed node IP address”
+    “port”: “set the port on which seed node will be running”
+  }
 ]
 ```
 
-**Launch BPL node**
-**To launch BPL node on mainnet:**
+#### Launch BPL node on Mainnet
 
 ```
 npm run start:bplmainnet
 ```
 
-```
-,,,,,,,,,,,,
-```
+#### Launch BPL node on Testnet
 
+```
+npm run start:bpltestnet
+```
 
 ## Authors
-- Raj Singh <rsingh@blockpool.io>
-- Brandon Cook <bcook@blockpool.io>
-- FX Thoorens <fx.thoorens@ark.io>
-- Boris Povod <boris@crypti.me>
-- Pavel Nekrasov <landgraf.paul@gmail.com>
-- Sebastian Stupurac <stupurac.sebastian@gmail.com>
-- Oliver Beddows <oliver@lisk.io>
+- [Raj Singh](https://github.com/cyrus19901)
+- [Brandon Cook](https://github.com/locohammerhead)
+- [FX Thorens](https://github.com/fix)
+- [Boris Povod](https://github.com/borispovod)
+- [Pavel Nekrasov](https://github.com/freeart)
+- [Sebastian Stupurac](https://github.com/bdevelle)
+- [Oliver Beddows](https://github.com/karmocoma)
+- [All Contributors](../../contributors)
 
 ## License
-
-The MIT License (MIT)
-
-Copyright (c) 2016 BlockPool
-Copyright (c) 2016 Ark
-Copyright (c) 2016 Lisk
-Copyright (c) 2014-2015 Crypti
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:  
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+[MIT](LICENSE) © [Blockpool](https://blockpool.io)
