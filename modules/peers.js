@@ -115,22 +115,24 @@ __private.updatePeersList = function (cb) {
 
 				library.schema.validate(peer, schema.updatePeersList.peer, function (err) {
 					if (err) {
-						err.forEach(function (e) {
-							library.logger.error(['Rejecting invalid peer:', peer.ip, e.path, e.message].join(' '));
-						});
+						library.logger.error(err);
+						return eachCb();
 					} else {
 						// make sure every node we're trying to add is real
 						modules.transport.requestFromPeer(peer, {
 							api: '/status',
 							method: 'GET'
 						}, function (err, res) {
-							if (res.body && res.body.height) {
-								library.logger.debug("Adding peer", peer.ip);
-								self.accept(peer);
+							if (err) {
+								library.logger.error(err);
 								return eachCb();
-							} else {
-								library.logger.error(['Rejecting invalid peer:', peer.ip, e.path, e.message].join(' '));
-								return eachCb();
+							}
+							else {
+								if (res.body && res.body.height) {
+									library.logger.debug("Adding peer", peer.ip);
+									self.accept(peer);
+									return eachCb();
+								}
 							}
 						});
 					}
