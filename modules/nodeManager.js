@@ -6,6 +6,7 @@ var sql = require('../sql/nodeManager.js');
 var os = require('os');
 var bigdecimal = require("bigdecimal");
 var Script = require('../logic/script.js');
+var constants = require('../constants.json');
 
 var self, library, modules;
 
@@ -160,8 +161,9 @@ NodeManager.prototype.onBlocksReceived = function(blocks, peer, cb) {
 			block.totalAmount = parseInt(block.totalAmount);
 			block.totalFee = parseInt(block.totalFee);
 			block.verified = false;
-		  block.processed = false;
-      // looks like the last block pulled, let's broadcast it
+			block.processed = false;
+			if (block.numberOfTransactions == 0) block.transactions = [];
+     		// looks like the last block pulled, let's broadcast it
 			block.broadcast = blocks.length == 1;
 
 			// rationale: onBlocksReceived received is called within another thread than onBlockReceived
@@ -210,7 +212,7 @@ NodeManager.prototype.onRebuildBlockchain = function(blocksToRemove, state, cb) 
 				else if(network.height > lastBlock.height){
 					library.logger.info("Observed network height is higher", {network: network.height, node:lastBlock.height});
 					library.logger.info("Rebuilding from network");
-					if(network.height - lastBlock.height > 201){
+					if(network.height - lastBlock.height > constants.activeDelegates){
 						blocksToRemove = 200;
 					}
 					return modules.blocks.removeSomeBlocks(blocksToRemove, mSequence);
@@ -519,7 +521,6 @@ NodeManager.prototype.onBlockReceived = function(block, peer, cb) {
 				});
 			}
 			library.logger.info("New block received", {id: block.id, height:block.height, transactions: block.numberOfTransactions, peer:peer.string});
-			__private.script.triggerPortChangeScript(block.height);
 
 			block.verified = false;
 			block.processed = false;
@@ -529,12 +530,13 @@ NodeManager.prototype.onBlockReceived = function(block, peer, cb) {
 					modules.blockchain.removeBlock(block);
 					return mSequence(err, block);
 				}
-				modules.blockchain.upsertBlock(block);
+
 				library.logger.debug("processing block with "+block.transactions.length+" transactions", block.height);
 				return library.bus.message('verifyBlock', block, function(err){
 					if(err){
 						library.logger.error("Error processing block at height", block.height);
-						modules.blockchain.removeBlock(block);
+					} else {
+						modules.blockchain.upsertBlock(block);
 					}
 					return mSequence(err, block);
 				});

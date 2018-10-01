@@ -4,7 +4,7 @@ var _ = require('lodash');
 var async = require('async');
 var BlockReward = require('../logic/blockReward.js');
 var ByteBuffer = require('bytebuffer');
-var constants = require('../helpers/constants.js');
+var constants = require('../constants.json');
 var crypto = require('crypto');
 var genesisblock = null;
 var Inserts = require('../helpers/inserts.js');
@@ -97,6 +97,8 @@ __private.attachApi = function () {
 		'get /getEpoch': 'getEpoch',
 		'get /getHeight': 'getHeight',
 		'get /getNethash': 'getNethash',
+		'get /getActiveDelegates': 'getActiveDelegates',
+		'get /getBlockTime': 'getBlockTime',
 		'get /getFee': 'getFee',
 		'get /getFees': 'getFees',
 		'get /getMilestone': 'getMilestone',
@@ -269,7 +271,7 @@ __private.saveBlock = function (block, cb) {
 		}).then(function () {
 			var temp = promise.values.reward;
 			temp /= 100000000;
-			library.logger.info('Reward - '+temp+' BPL given for forging block - '+promise.values.id);
+			library.logger.info('Reward - '+temp+' '+library.config.network.client.tokenShortName+' given for forging block - '+promise.values.id);
 			return __private.afterSave(block, cb);
 		}).catch(function (err) {
 			library.logger.error("stack", err.stack);
@@ -576,7 +578,7 @@ Blocks.prototype.getCommonBlock = function (peer, height, cb) {
 				if (err || res.body.error) {
 					return waterCb(err || res.body.error.toString());
 				} else if (!res.body.common) {
-					return waterCb(['Chain comparison failed with peer:', peer.string, 'using ids:', ids].join(' '));
+					return waterCb(['Chain comparison failed with peer:', peer.toString(), 'using ids:', ids].join(' '));
 				} else {
 					return waterCb(null, res);
 				}
@@ -590,7 +592,7 @@ Blocks.prototype.getCommonBlock = function (peer, height, cb) {
 				height: res.body.common.height
 			}).then(function (rows) {
 				if (!rows.length || !rows[0].count) {
-					return waterCb(['Chain comparison failed with peer:', peer.string, 'using block:', JSON.stringify(res.body.common)].join(' '));
+					return waterCb(['Chain comparison failed with peer:', peer.toString(), 'using block:', JSON.stringify(res.body.common)].join(' '));
 				} else {
 					return waterCb(null, res.body);
 				}
@@ -858,7 +860,7 @@ Blocks.prototype.getLastBlock = function () {
 	var lastBlock = modules.blockchain.getLastBlock();
 
 	if (lastBlock) {
-		var epoch = constants.epochTime / 1000;
+		var epoch = new Date(constants.epochTime) / 1000;
 		var lastBlockTime = epoch + lastBlock.timestamp;
 		var currentTime = new Date().getTime() / 1000;
 
@@ -1645,7 +1647,7 @@ shared.getBlocks = function (req, cb) {
 
 shared.getEpoch = function (req, cb) {
 
-	return cb(null, {epoch: constants.epochTime});
+	return cb(null, {epoch: new Date(constants.epochTime)});
 };
 
 shared.getHeight = function (req, cb) {
@@ -1667,6 +1669,16 @@ shared.getFees = function (req, cb) {
 shared.getNethash = function (req, cb) {
 
 	return cb(null, {nethash: library.config.nethash});
+};
+//Addition of blocktime and active delegates
+shared.getActiveDelegates = function (req, cb) {
+
+	return cb(null, {activeDelegates: constants.activeDelegates});
+};
+
+shared.getBlockTime = function (req, cb) {
+
+	return cb(null, {blockTime: constants.blocktime});
 };
 
 shared.getMilestone = function (req, cb) {
@@ -1704,11 +1716,12 @@ shared.getStatus = function (req, cb) {
 	var counter = 0;
 
 	var status = {
-		epoch:     constants.epochTime,
-		height:    block.height,
-		fee:       library.logic.block.calculateFee(),
-		milestone: __private.blockReward.calcMilestone(block.height),
-		nethash:   library.config.nethash,
+		epoch:       constants.epochTime,
+		height:      block.height,
+		lastBlockId: block.id,
+		fee:         library.logic.block.calculateFee(),
+		milestone:   __private.blockReward.calcMilestone(block.height),
+		nethash:     library.config.nethash,
 	};
 
 	__private.blockReward.calcRewardForHeight(modules.blockchain.getLastBlock().height,function(error, details) {
