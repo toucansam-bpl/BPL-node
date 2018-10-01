@@ -9,7 +9,7 @@
 
 ## Simple Blockpool Node Installation
 
-Download the Blockpool install script
+Download Blockpool Commander
 
 https://github.com/blockpool-io/BPL-node/blob/bpl-mainnet/BPL_Node_Install_Script.sh
 
@@ -151,7 +151,7 @@ forever start app.js -c config.testnet.json -g genesisBlock.testnet.json
 #### Add following environment variable
 
 ```
-PATH as C:\Program Files\PostgreSQL\9.5\bin 
+PATH as C:\Program Files\PostgreSQL\9.5\bin
 (Windows Start -> Right click on Computer → Advanced System settings → Environment variables)
 Modify the file ‘pg_hba’, present at the location  C:\Program Files\PostgreSQL\9.5\data\pg_hba
 Replace ‘md5’ with ‘trust’  under ‘METHOD’ column
@@ -179,7 +179,7 @@ git checkout bpl-mainnet
 #### Install node modules
 
 ```
-npm install --global --production windows-build-tools 
+npm install --global --production windows-build-tools
 npm install libpq secp256k1
 npm install
 ```

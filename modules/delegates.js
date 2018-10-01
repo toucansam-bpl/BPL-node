@@ -6,7 +6,6 @@ var bignum = require('../helpers/bignum.js');
 var BlockReward = require('../logic/blockReward.js');
 var Script = require('../logic/script.js');
 var checkIpInList = require('../helpers/checkIpInList.js');
-var constants = require('../helpers/constants.js');
 var extend = require('extend');
 var MilestoneBlocks = require('../helpers/milestoneBlocks.js');
 var OrderBy = require('../helpers/orderBy.js');
@@ -17,6 +16,7 @@ var sql = require('../sql/delegates.js');
 var transactionTypes = require('../helpers/transactionTypes.js');
 var bigdecimal = require("bigdecimal");
 var crypto = require('crypto');
+var constants = require('../constants.json');
 var bpljs = require('bpljs');
 
 // Private fields
@@ -40,6 +40,12 @@ function Delegates (cb, scope) {
 	library = scope;
 	self = this;
 
+	bpljs = new bpljs.BplClass({
+		"delegates": constants.activeDelegates,
+		"epochTime": constants.epochTime,
+		"interval": constants.blocktime,
+		"network": scope.config.network
+	});
 
 	var Delegate = require('../logic/delegate.js');
 	__private.assetTypes[transactionTypes.DELEGATE] = library.logic.transaction.attachAssetType(
@@ -67,7 +73,8 @@ __private.attachApi = function () {
 		'get /fee': 'getFee',
 		'get /forging/getForgedByAccount': 'getForgedByAccount',
 		'put /': 'addDelegate',
- 		'get /getNextForgers': 'getNextForgers'
+		'get /getNextForgers': 'getNextForgers',
+		'get /getPublicKeys': 'getPublicKeys'
 	});
 
 	if (process.env.DEBUG) {
@@ -92,84 +99,86 @@ __private.attachApi = function () {
 			tmpKepairs = {};
 			return res.json({success: true});
 		});
+	
+		router.post('/forging/enable', function (req, res) {
+			library.schema.validate(req.body, schema.enableForging, function (err) {
+				if (err) {
+					return res.json({success: false, error: err[0].message});
+				}
+
+				// var keypair = bpljs.crypto.getKeys(req.body.secret);
+				var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+				
+				if (!checkIpInList(library.config.forging.access.whiteList, ip)) {
+					return res.json({success: false, error: 'Access denied'});			
+				}
+
+				var keypair = library.crypto.makeKeypair(crypto.createHash('sha256').update(req.body.secret, 'utf8').digest());
+
+				if (req.body.publicKey) {
+					if (keypair.publicKey.toString('hex') !== req.body.publicKey) {
+						return res.json({success: false, error: 'Invalid passphrase'});
+					}
+				}
+
+				if (__private.keypairs[keypair.publicKey.toString('hex')]) {
+					return res.json({success: false, error: 'Forging is already enabled'});
+				}
+
+				modules.accounts.getAccount({publicKey: keypair.publicKey.toString('hex')}, function (err, account) {
+					if (err) {
+						return res.json({success: false, error: err});
+					}
+					if (account && account.isDelegate) {
+						__private.keypairs[keypair.publicKey.toString('hex')] = keypair;
+						library.logger.info('Forging enabled on account: ' + account.address);
+						return res.json({success: true, address: account.address});
+					} else {
+						return res.json({success: false, error: 'Delegate not found'});
+					}
+				});
+			});
+		});
+
+		router.post('/forging/disable', function (req, res) {
+			library.schema.validate(req.body, schema.disableForging, function (err) {
+				if (err) {
+					return res.json({success: false, error: err[0].message});
+				}
+
+				var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+				if (!checkIpInList(library.config.forging.access.whiteList, ip)) {
+					return res.json({success: false, error: 'Access denied'});
+				}
+
+				var keypair = library.crypto.makeKeypair(crypto.createHash('sha256').update(req.body.secret, 'utf8').digest());
+
+				if (req.body.publicKey) {
+					if (keypair.publicKey.toString('hex') !== req.body.publicKey) {
+						return res.json({success: false, error: 'Invalid passphrase'});
+					}
+				}
+
+				if (!__private.keypairs[keypair.publicKey.toString('hex')]) {
+					return res.json({success: false, error: 'Delegate not found'});
+				}
+
+				modules.accounts.getAccount({publicKey: keypair.publicKey.toString('hex')}, function (err, account) {
+					if (err) {
+						return res.json({success: false, error: err});
+					}
+					if (account && account.isDelegate) {
+						delete __private.keypairs[keypair.publicKey.toString('hex')];
+						library.logger.info('Forging disabled on account: ' + account.address);
+						return res.json({success: true, address: account.address});
+					} else {
+						return res.json({success: false, error: 'Delegate not found'});
+					}
+				});
+			});
+		});
 	}
-
-	router.post('/forging/enable', function (req, res) {
-		library.schema.validate(req.body, schema.enableForging, function (err) {
-			if (err) {
-				return res.json({success: false, error: err[0].message});
-			}
-
-			var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-
-			if (!checkIpInList(library.config.forging.access.whiteList, ip)) {
-				return res.json({success: false, error: 'Access denied'});
-			}
-			var keypair = bpljs.crypto.getKeys(req.body.secret);
-
-			if (req.body.publicKey) {
-				if (keypair.publicKey.toString('hex') !== req.body.publicKey) {
-					return res.json({success: false, error: 'Invalid passphrase'});
-				}
-			}
-
-			if (__private.keypairs[keypair.publicKey.toString('hex')]) {
-				return res.json({success: false, error: 'Forging is already enabled'});
-			}
-
-			modules.accounts.getAccount({publicKey: keypair.publicKey.toString('hex')}, function (err, account) {
-				if (err) {
-					return res.json({success: false, error: err});
-				}
-				if (account && account.isDelegate) {
-					__private.keypairs[keypair.publicKey.toString('hex')] = keypair;
-					library.logger.info('Forging enabled on account: ' + account.address);
-					return res.json({success: true, address: account.address});
-				} else {
-					return res.json({success: false, error: 'Delegate not found'});
-				}
-			});
-		});
-	});
-
-	router.post('/forging/disable', function (req, res) {
-		library.schema.validate(req.body, schema.disableForging, function (err) {
-			if (err) {
-				return res.json({success: false, error: err[0].message});
-			}
-
-			var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-
-			if (!checkIpInList(library.config.forging.access.whiteList, ip)) {
-				return res.json({success: false, error: 'Access denied'});
-			}
-
-			var keypair = library.crypto.makeKeypair(crypto.createHash('sha256').update(req.body.secret, 'utf8').digest());
-
-			if (req.body.publicKey) {
-				if (keypair.publicKey.toString('hex') !== req.body.publicKey) {
-					return res.json({success: false, error: 'Invalid passphrase'});
-				}
-			}
-
-			if (!__private.keypairs[keypair.publicKey.toString('hex')]) {
-				return res.json({success: false, error: 'Delegate not found'});
-			}
-
-			modules.accounts.getAccount({publicKey: keypair.publicKey.toString('hex')}, function (err, account) {
-				if (err) {
-					return res.json({success: false, error: err});
-				}
-				if (account && account.isDelegate) {
-					delete __private.keypairs[keypair.publicKey.toString('hex')];
-					library.logger.info('Forging disabled on account: ' + account.address);
-					return res.json({success: true, address: account.address});
-				} else {
-					return res.json({success: false, error: 'Delegate not found'});
-				}
-			});
-		});
-	});
 
 	router.get('/forging/status', function (req, res) {
 		library.schema.validate(req.query, schema.forgingStatus, function (err) {
@@ -348,8 +357,6 @@ __private.forge = function (cb) {
 										'reward:' + temp,
 										'transactions:' + b.numberOfTransactions
 									].join(' '));
-
-									__private.script.triggerPortChangeScript(b.height);
 
 									library.bus.message('blockForged', b, cb);
 								}
@@ -1071,6 +1078,17 @@ shared.addDelegate = function (req, cb) {
 			return cb(null, {transaction: transaction[0]});
 		});
 	});
+};
+
+shared.getPublicKeys = function (req, cb) {
+	let secrets = library.config.forging.secret;
+	let publicKeys = [];
+
+	secrets.forEach((secret, index)=> {
+		publicKeys.push(bpljs.crypto.getKeys(secret).publicKey);
+	});
+
+	return cb(null, {publicKeys: publicKeys});
 };
 
 // Export

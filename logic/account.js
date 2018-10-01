@@ -5,7 +5,7 @@ var pgp = require('pg-promise');
 var path = require('path');
 var jsonSql = require('json-sql')();
 jsonSql.setDialect('postgresql');
-var constants = require('../helpers/constants.js');
+var constants = require('../constants.json');
 var slots = require('../helpers/slots.js');
 
 // Private fields
@@ -17,7 +17,7 @@ function Account (scope, cb) {
 
 	self = this;
 	db = this.scope.db;
-	library = this.scope.library;
+	library = this.scope;
 	genesisBlock = this.scope.genesisblock.block;
 
 	this.table = 'mem_accounts';
