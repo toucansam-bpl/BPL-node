@@ -206,8 +206,11 @@ __private.attachApi = function () {
 			library.logger.debug("Peer version below minimum - " + req.peer.ip + ": " + req.peer.version);
 		}
 
-		if (block.height > 2499837 && req.peer.version < "0.4.3") { // Reject blocks from old peers since they will still have the bad votes from round 9823
-			library.logger.debug("Received block with height above 2499837 from old peer, ignoring it - " + req.peer.ip + ": " + req.peer.version);
+		if ( // while this shouldn't be necessary, this helps avoid potential stagnation
+			(block.height > 2499837 && req.peer.version < "0.4.3") // Ignore blocks from old peers since they will still have the bad votes from round 9823
+			|| (block.height > 2499999 && req.peer.version < "0.5.0") // Ignore blocks from old peers since they won't have fixed rewards implemented
+		) { 
+			library.logger.debug("Received block from peer below version cutoff, ignoring it - " + req.peer.ip + ": " + req.peer.version);
 		} else {
 			library.bus.message('blockReceived', block, req.peer, function(error, data){
 				if(error){
