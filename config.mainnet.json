@@ -2,7 +2,7 @@
   "port": 9030,
   "address": "0.0.0.0",
   "version": "0.5.0",
-  "minimumVersion": "0.3.0",
+  "minimumVersion": "0.5.0",
   "fileLogLevel": "info",
   "logFileName": "logs/bpl.log",
   "consoleLogLevel": "debug",
