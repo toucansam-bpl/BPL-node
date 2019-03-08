@@ -26,13 +26,15 @@
 
 var async = require('async');
 var constants = require('../constants.json');
+var Router = require('../helpers/router.js');
+var schema = require('../schema/rounds.js')
 var slots = require('../helpers/slots.js');
 var sql = require('../sql/rounds.js');
 var crypto = require('crypto');
 var bigdecimal = require("bigdecimal");
 
 // managing globals
-var modules, library, self;
+var modules, library, self, shared = {};
 
 
 // holding the round state
@@ -62,6 +64,29 @@ function Rounds (cb, scope) {
 
 	return cb(null, self);
 }
+
+// Private methods
+__private.attachApi = function () {
+	var router = new Router();
+
+	router.use(function (req, res, next) {
+		if (modules) { return next(); }
+		res.status(500).send({success: false, error: 'Blockchain is loading'});
+	});
+
+	router.map(shared, {
+		'get /lastForgedBlocks': 'getLastForgedBlocks',
+		'get /': 'getRound',
+	});
+
+	library.network.app.use('/api/rounds', router);
+	library.network.app.use(function (err, req, res, next) {
+		if (!err) { return next(); }
+		library.logger.error('API error ' + req.url, err);
+		res.status(500).send({success: false, error: 'API error: ' + err.message});
+	});
+}
+
 
 //
 //__API__ `tick`
@@ -407,12 +432,20 @@ __private.getCurrentRoundForgers = function(cb) {
 
 	// well exactly the last height of previous round,
 	// but using '>' in sql query will actually select the first block of the current round
-	var firstHeightOfround = (round-1) * slots.delegates;
+	var firstHeightOfround = __private.getLastHeightOfRound(round-1);
 
 	library.db.query(sql.getRoundForgers, {minheight: firstHeightOfround, maxheight: lastBlock.height}).then(function(rows){
 		return cb(null, rows);
 	}).catch(cb);
 
+}
+
+__private.getFirstHeightOfRound = function(round) {
+	return __private.getLastHeightOfRound(round - 1) + 1;
+}
+
+__private.getLastHeightOfRound = function(round) {
+	return round * slots.delegates;
 }
 
 // ## API getRoundFromHeight
@@ -499,6 +532,14 @@ Rounds.prototype.getActiveDelegatesFromRound = function(round, cb) {
 
 // Events
 //
+//__EVENT__ `onAttachPublicApi`
+
+//
+Rounds.prototype.onAttachPublicApi = function () {
+	__private.attachApi();
+};
+
+//
 //__EVENT__ `onBind`
 
 //
@@ -544,6 +585,98 @@ Rounds.prototype.onDatabaseLoaded = function (lastBlock) {
 Rounds.prototype.cleanup = function (cb) {
 	return cb();
 };
+
+
+// Shared
+shared.getRound = function (req, cb) {
+	library.schema.validate(req.body, schema.getRound, function(err) {
+		if (err) return cb(err[0].message);
+
+		var round = req.body.round || __private.current;
+		if (round > __private.current) {
+			return cb('Round ' + round + ' is greater than current round ' + __private.current);
+		}
+
+		var blocksParams = {
+			endHeight: __private.getLastHeightOfRound(round),
+			startHeight: __private.getFirstHeightOfRound(round),
+		};
+		library.db.query(sql.getRoundBlocks, blocksParams)
+			.then(function (rows) {
+				var blocks = rows.map(function (row) { return library.logic.block.dbRead(row); });
+				var lastBlockOfLastRound = blocks.shift()
+				library.db.query(sql.getRoundDelegates, { round: round })
+					.then(function (delegates) {
+						var currentSupply = blocks[blocks.length - 1].supply;
+						delegates.forEach(function (delegate, i) {
+							// Copied directly from modules/delegates lines 542-550 
+							delegate.rate = i + 1;
+							delegate.approval = (delegate.vote / currentSupply) * 100;
+							delegate.approval = Math.round(delegate.approval * 1e2) / 1e2;
+			
+							var percent = 100 - (delegate.missedblocks / ((delegate.producedblocks + delegate.missedblocks) / 100));
+							percent = Math.abs(percent) || 0;
+			
+							var outsider = i + 1 > slots.delegates;
+							delegate.productivity = (!outsider) ? Math.round(percent * 1e2) / 1e2 : 0;
+						});
+						delegates = __private.randomizeDelegateList(delegates, round);
+
+						var firstSlotOfRound = slots.getSlotNumber(lastBlockOfLastRound.timestamp) + 1
+						var delegatesInForgingOrder = []
+						for (var i = 0; i < slots.delegates; i += 1) {
+							var slotNumber = firstSlotOfRound + i
+							var delegateIndex = slotNumber % slots.delegates
+							delegatesInForgingOrder.push(delegates[delegateIndex])
+						}
+						return cb(null, {
+							activeDelegates: delegatesInForgingOrder,
+							endHeight: blocksParams.endHeight,
+							blocks: blocks,
+							round: round,
+							startHeight: blocksParams.startHeight,
+						});
+					}).catch(function (err) {
+						library.logger.error("stack", err.stack);
+						return cb('Rounds#getRoundDelegates error');
+					});
+			}).catch(function (err) {
+				library.logger.error("stack", err.stack);
+				return cb('Rounds#getRoundBlocks error');
+			});
+	});
+}
+
+shared.getLastForgedBlocks = function (req, cb) {
+	library.schema.validate(req.body, schema.lastForgedBlocks, function(err) {
+		if (err) return cb(err[0].message);
+
+		var round = req.body.round || __private.current;
+		if (round > __private.current) {
+			return cb('Round ' + round + ' is greater than current round ' + __private.current);
+		}
+
+		var sqlParams = {
+			height: __private.getFirstHeightOfRound(round + 1),
+			round: round,
+		};
+		library.db.query(sql.getActiveDelegatesLastForgedBlock, sqlParams)
+			.then(function (rows) {
+				var result = rows.map(function (row) {
+					return library.logic.block.dbRead(row);
+				});
+		
+				return cb(null, {
+					lastBlocks: result,
+					round: round,
+				});
+			}).catch(function (err) {
+				library.logger.error("stack", err.stack);
+				return cb('Rounds#getLastForgedBlock error');
+			});
+	});
+}
+
 
 // Export
 module.exports = Rounds;

@@ -48,7 +48,48 @@ var RoundsSql = {
 
   updateTotalVotes: 'UPDATE mem_accounts m SET vote = (SELECT COALESCE(SUM(b.balance), 0) as vote FROM mem_accounts2delegates a, mem_accounts b where a."accountId" = b.address AND a."dependentId" = encode(m."publicKey", \'hex\')) WHERE m."isDelegate" = 1;',
 
-  updateBlockId: 'UPDATE mem_accounts SET "blockId" = ${newId} WHERE "blockId" = ${oldId};'
+  updateBlockId: 'UPDATE mem_accounts SET "blockId" = ${newId} WHERE "blockId" = ${oldId};',
+
+  getActiveDelegatesLastForgedBlock:
+    'SELECT lastblocks.*'
+  + '  FROM ('
+  + '    SELECT *'
+  + '      FROM mem_delegates'
+  + '     WHERE round = (${round})::bigint'
+  + '  ) d'
+  + ' INNER JOIN ('
+  + '   SELECT b.*'
+  + '     FROM blocks_list b'
+  + '    INNER JOIN ('
+  + '      SELECT "b_generatorPublicKey", MAX(bl.b_height) LastBlockHeight'
+  + '        FROM blocks_list bl'
+  + '       WHERE bl.b_height < (${height})::bigint'
+  + '       GROUP BY "b_generatorPublicKey"'
+  + '     ) lbh'
+  + '    ON b.b_height = lbh.lastblockheight'
+  + '  ) lastblocks'
+  + ' ON "publicKey" = lastblocks."b_generatorPublicKey"'
+  + ';',
+
+  getRoundBlocks:
+    'SELECT *'
+  + '  FROM blocks_list'
+  + ' WHERE b_height >= (${startHeight})::bigint'
+  + '   AND b_height <= (${endHeight})::bigint'
+  + ' ORDER BY b_height ASC'
+  + ';',
+
+  getRoundDelegates:
+    'SELECT a.username, a.address, ENCODE(a."publicKey", \'hex\') "publicKey", a.vote, a.missedblocks, a.producedblocks'
+  + '  FROM mem_accounts a'
+  + ' INNER JOIN ('
+  + '    SELECT *'
+  + '      FROM mem_delegates'
+  + '     WHERE round = (${round})::bigint'
+  + '   ) active'
+  + '    ON active."publicKey" = ENCODE(a."publicKey", \'hex\')'
+  + ' ORDER BY active.vote DESC, active."publicKey" ASC'
+  + ';',
 };
 
 module.exports = RoundsSql;
