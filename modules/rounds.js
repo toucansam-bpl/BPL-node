@@ -599,7 +599,7 @@ shared.getRound = function (req, cb) {
 
 		var blocksParams = {
 			endHeight: __private.getLastHeightOfRound(round),
-			startHeight: __private.getFirstHeightOfRound(round),
+			startHeight: __private.getLastHeightOfRound(round - 1),
 		};
 		library.db.query(sql.getRoundBlocks, blocksParams)
 			.then(function (rows) {
@@ -631,10 +631,10 @@ shared.getRound = function (req, cb) {
 						}
 						return cb(null, {
 							activeDelegates: delegatesInForgingOrder,
-							endHeight: blocksParams.endHeight,
+							endHeight: __private.getLastHeightOfRound(round),
 							blocks: blocks,
 							round: round,
-							startHeight: blocksParams.startHeight,
+							startHeight: __private.getFirstHeightOfRound(round),
 						});
 					}).catch(function (err) {
 						library.logger.error("stack", err.stack);
